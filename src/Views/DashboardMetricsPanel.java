@@ -15,7 +15,7 @@ public class DashboardMetricsPanel extends JPanel {
 
     public void init() {
         this.setLayout(new BorderLayout());
-
+        this.setMaximumSize(new Dimension(600, 900));
         JLabel title = new JLabel("Some Key Metrics");
         JList<String> metrics = new JList<>();
 
