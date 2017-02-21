@@ -36,6 +36,7 @@ public class DashboardMainFrame extends JFrame {
         this.add(fileSelect);
         this.add(Box.createRigidArea(new Dimension(50, 0)));
         this.add(metrics);
+        this.add(Box.createRigidArea(new Dimension(50, 0)));
 
         this.setVisible(true);
     }

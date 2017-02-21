@@ -21,7 +21,7 @@ public class DashboardFileSelectPanel extends JPanel {
     }
 
     public void init() {
-        this.setMaximumSize(new Dimension(700, 900));
+        this.setMaximumSize(new Dimension(500, 900));
         this.setLayout(new BorderLayout());
 
         //Create title label and panel for it to go on
@@ -49,8 +49,13 @@ public class DashboardFileSelectPanel extends JPanel {
         buttonPanel.add(Box.createHorizontalStrut(100));
         this.add(buttonPanel, BorderLayout.SOUTH);
 
+        JPanel chooseAndPreviewPanel = new JPanel();
+        chooseAndPreviewPanel.setLayout(new BoxLayout(chooseAndPreviewPanel, BoxLayout.Y_AXIS));
+
+
         //Create preview JTextPane
         JTextPane preview = new JTextPane();
+        preview.setEditable(false);
         this.add(preview, BorderLayout.CENTER);
 
         //Instantiate JFileChooser which will appear when buttons are clicked
