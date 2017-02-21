@@ -35,7 +35,6 @@ public class DashboardFileSelectPanel extends JPanel {
         //Create buttons and panel for them to go on
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-
         JButton submit = new JButton("Confirm");
 
         buttonPanel.add(Box.createRigidArea(new Dimension(100, 100)));
@@ -45,6 +44,7 @@ public class DashboardFileSelectPanel extends JPanel {
         buttonPanel.add(Box.createHorizontalStrut(100));
         this.add(buttonPanel, BorderLayout.SOUTH);
 
+        //Create the panel for the three preview and choose panels
         JPanel chooseAndPreviewPanel = new JPanel();
         chooseAndPreviewPanel.setLayout(new BoxLayout(chooseAndPreviewPanel, BoxLayout.Y_AXIS));
         DashboardFilePreviewPanel impressionChoose = new DashboardFilePreviewPanel(LogType.IMPRESSION, homeDir);
