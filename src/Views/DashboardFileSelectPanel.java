@@ -1,8 +1,6 @@
 package Views;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 
@@ -14,7 +12,6 @@ import java.io.File;
 public class DashboardFileSelectPanel extends JPanel {
 
     private File homeDir;
-    private JFileChooser chooser;
 
     public DashboardFileSelectPanel(File homeDir) {
         this.homeDir = homeDir;
@@ -25,7 +22,7 @@ public class DashboardFileSelectPanel extends JPanel {
         this.setLayout(new BorderLayout());
 
         //Create title label and panel for it to go on
-        JLabel title = new JLabel("Choose a file");
+        JLabel title = new JLabel("Choose your log files");
         title.setHorizontalAlignment(SwingConstants.CENTER);
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
@@ -40,28 +37,27 @@ public class DashboardFileSelectPanel extends JPanel {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         JButton submit = new JButton("Confirm");
-        JButton choose = new JButton("Import CSV File...");
 
         buttonPanel.add(Box.createRigidArea(new Dimension(100, 100)));
-        buttonPanel.add(choose);
         buttonPanel.add(Box.createHorizontalGlue());
         buttonPanel.add(submit);
+        buttonPanel.add(Box.createHorizontalGlue());
         buttonPanel.add(Box.createHorizontalStrut(100));
         this.add(buttonPanel, BorderLayout.SOUTH);
 
         JPanel chooseAndPreviewPanel = new JPanel();
         chooseAndPreviewPanel.setLayout(new BoxLayout(chooseAndPreviewPanel, BoxLayout.Y_AXIS));
+        DashboardFilePreviewPanel impressionChoose = new DashboardFilePreviewPanel(LogType.IMPRESSION, homeDir);
+        DashboardFilePreviewPanel clickChoose = new DashboardFilePreviewPanel(LogType.CLICK, homeDir);
+        DashboardFilePreviewPanel serverChoose = new DashboardFilePreviewPanel(LogType.SERVER, homeDir);
 
+        chooseAndPreviewPanel.add(impressionChoose);
+        chooseAndPreviewPanel.add(Box.createRigidArea(new Dimension(0, 50)));
+        chooseAndPreviewPanel.add(clickChoose);
+        chooseAndPreviewPanel.add(Box.createRigidArea(new Dimension(0, 50)));
+        chooseAndPreviewPanel.add(serverChoose);
 
-        //Create preview JTextPane
-        JTextPane preview = new JTextPane();
-        preview.setEditable(false);
-        this.add(preview, BorderLayout.CENTER);
-
-        //Instantiate JFileChooser which will appear when buttons are clicked
-        chooser = new JFileChooser(homeDir);
-        FileNameExtensionFilter csvFilter = new FileNameExtensionFilter("CSV Files", "csv");
-        chooser.setFileFilter(csvFilter);
+        this.add(chooseAndPreviewPanel, BorderLayout.CENTER);
 
     }
 

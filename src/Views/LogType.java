@@ -15,7 +15,7 @@ public enum LogType {
     }
 
     public String toString() {
-        return this.name;
+        return this.name + " Log";
     }
 
 }
