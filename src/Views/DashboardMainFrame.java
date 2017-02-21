@@ -1,6 +1,7 @@
 package Views;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 
 /**
@@ -26,9 +27,15 @@ public class DashboardMainFrame extends JFrame {
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
 
         DashboardFileSelectPanel fileSelect = new DashboardFileSelectPanel(homeDir);
+        fileSelect.init();
 
         DashboardMetricsPanel metrics = new DashboardMetricsPanel();
+        metrics.init();
 
+        this.add(Box.createRigidArea(new Dimension(50, 0)));
+        this.add(fileSelect);
+        this.add(Box.createRigidArea(new Dimension(50, 0)));
+        this.add(metrics);
 
         this.setVisible(true);
     }
