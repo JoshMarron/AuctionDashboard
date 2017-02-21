@@ -1,14 +1,18 @@
 package Views;
 
 import javax.swing.*;
+import java.io.File;
 
 /**
- * Created by marro on 21/02/2017.
+ * DashboardMainFrame is the main frame visible during the running of the application, which contains all of the
+ * GUI elements.
  */
 public class DashboardMainFrame extends JFrame {
 
-    public DashboardMainFrame() {
+    private File homeDir;
 
+    public DashboardMainFrame(File homeDir) {
+        this.homeDir = homeDir;
     }
 
     public void init() {
@@ -20,6 +24,11 @@ public class DashboardMainFrame extends JFrame {
         this.setContentPane(contentPane);
 
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
+
+        DashboardFileSelectPanel fileSelect = new DashboardFileSelectPanel(homeDir);
+
+        DashboardMetricsPanel metrics = new DashboardMetricsPanel();
+
 
         this.setVisible(true);
     }
