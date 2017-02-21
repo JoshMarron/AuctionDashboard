@@ -69,10 +69,15 @@ public class DashboardFilePreviewPanel extends JPanel {
 
             // TODO make this method set the preview in the JTextPane
             if (chooserVal == JFileChooser.APPROVE_OPTION) {
+                isLogSelected = true;
                 String fileWithoutPath = chooser.getSelectedFile().getName();
                 logFileName.setText(fileWithoutPath);
                 repaint();
             }
         }
+    }
+
+    public boolean isLogSelected() {
+        return isLogSelected;
     }
 }
