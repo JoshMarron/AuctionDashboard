@@ -4,7 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Created by marro on 21/02/2017.
+ * DashboardMetricsPanel is the GUI element responsible for displaying a list of metrics computed by the application.
+ * This will only be a necessary component for Increment 1.
  */
 public class DashboardMetricsPanel extends JPanel {
 
