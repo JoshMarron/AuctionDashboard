@@ -9,6 +9,8 @@ import java.awt.*;
  */
 public class DashboardMetricsPanel extends JPanel {
 
+    private DefaultListModel<String> metricsModel;
+
     public DashboardMetricsPanel() {
 
     }
@@ -25,10 +27,19 @@ public class DashboardMetricsPanel extends JPanel {
         titlePanel.add(title);
         titlePanel.add(Box.createHorizontalGlue());
 
-        JList<String> metrics = new JList<>();
+        metricsModel = new DefaultListModel<>();
+        JList<String> metrics = new JList<>(metricsModel);
 
         this.add(titlePanel, BorderLayout.NORTH);
         this.add(metrics, BorderLayout.CENTER);
         this.add(Box.createRigidArea(new Dimension(0, 100)), BorderLayout.SOUTH);
+    }
+
+    public void putMetricInTextList(String name, Double data) {
+        if (!metricsModel.isEmpty()) {
+            metricsModel.remove(0);
+        }
+        String displayData = name + ": " + data;
+        metricsModel.addElement(displayData);
     }
 }

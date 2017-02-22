@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.Map;
 
 /**
  * DashboardMainFrame is the main frame visible during the running of the application, which contains all of the
@@ -14,10 +15,8 @@ import java.io.File;
 public class DashboardMainFrame extends JFrame {
 
     private File homeDir;
-    private boolean isImpressionSelected = false;
-    private boolean isClickSelected = false;
-    private boolean isServerSelected = false;
     private DashboardMainFrameController controller;
+    private DashboardMetricsPanel metricsPanel;
 
     public DashboardMainFrame(File homeDir) {
         this.homeDir = homeDir;
@@ -36,13 +35,13 @@ public class DashboardMainFrame extends JFrame {
         DashboardFileSelectPanel fileSelect = new DashboardFileSelectPanel(homeDir, this);
         fileSelect.init();
 
-        DashboardMetricsPanel metrics = new DashboardMetricsPanel();
-        metrics.init();
+        metricsPanel = new DashboardMetricsPanel();
+        metricsPanel.init();
 
         this.add(Box.createRigidArea(new Dimension(50, 0)));
         this.add(fileSelect);
         this.add(Box.createRigidArea(new Dimension(50, 0)));
-        this.add(metrics);
+        this.add(metricsPanel);
         this.add(Box.createRigidArea(new Dimension(50, 0)));
 
         this.setVisible(true);
@@ -56,4 +55,8 @@ public class DashboardMainFrame extends JFrame {
         this.controller.processFiles(files);
     }
 
+
+    public void displayMetrics(Map<String, Double> data) {
+        data.forEach((name, value) -> metricsPanel.putMetricInTextList(name, value));
+    }
 }
