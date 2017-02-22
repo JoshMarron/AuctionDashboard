@@ -4,6 +4,7 @@ import Controllers.DashboardMainFrameController;
 
 import java.util.List;
 import javax.swing.*;
+import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.io.File;
 import java.util.Map;
@@ -13,6 +14,8 @@ import java.util.Map;
  * GUI elements.
  */
 public class DashboardMainFrame extends JFrame {
+
+    public static final Color BG_COLOR = new Color(184, 200, 209);
 
     private File homeDir;
     private DashboardMainFrameController controller;
@@ -27,8 +30,13 @@ public class DashboardMainFrame extends JFrame {
         this.setSize(1200, 900);
         this.setName("Ad Auction Dashboard");
 
+        System.setProperty("awt.useSystemAAFontSettings","on");
+        System.setProperty("swing.aatext", "true");
+        this.setUIFont(new FontUIResource("Tahoma", Font.BOLD, 14));
+
         JPanel contentPane = new JPanel();
         this.setContentPane(contentPane);
+        contentPane.setBackground(BG_COLOR);
 
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
 
@@ -58,5 +66,15 @@ public class DashboardMainFrame extends JFrame {
 
     public void displayMetrics(Map<String, Double> data) {
         data.forEach((name, value) -> metricsPanel.putMetricInTextList(name, value));
+    }
+
+    public void setUIFont (FontUIResource f){
+        java.util.Enumeration keys = UIManager.getDefaults().keys();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            Object value = UIManager.get(key);
+            if (value != null && value instanceof FontUIResource)
+                UIManager.put(key, f);
+        }
     }
 }

@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,12 +29,15 @@ public class DashboardFileSelectPanel extends JPanel {
 
     public void init() {
         this.setMaximumSize(new Dimension(500, 900));
+        this.setBackground(DashboardMainFrame.BG_COLOR);
         this.setLayout(new BorderLayout());
 
         //Create title label and panel for it to go on
         JLabel title = new JLabel("Choose your log files");
+        title.setFont(new Font(title.getFont().getName(), title.getFont().getStyle(), 20));
         title.setHorizontalAlignment(SwingConstants.CENTER);
         JPanel titlePanel = new JPanel();
+        titlePanel.setOpaque(false);
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
         titlePanel.add(Box.createRigidArea(new Dimension(0, 70)));
         titlePanel.add(Box.createHorizontalGlue());
@@ -45,6 +47,7 @@ public class DashboardFileSelectPanel extends JPanel {
 
         //Create buttons and panel for them to go on
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         JButton confirm = new JButton("Confirm");
         confirm.addActionListener(new ConfirmListener());
