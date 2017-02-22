@@ -2,10 +2,15 @@ package Views;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 /**
  * DashboardFilePreviewPanel allows the user to select a file with a file chooser, see its name, and
@@ -18,7 +23,8 @@ public class DashboardFilePreviewPanel extends JPanel {
     private JFileChooser chooser;
     private boolean isLogSelected; //True if a file has been selected
     private JLabel logFileName;
-    private JTextPane preview;
+    private JTextArea preview;
+    private File selectedFile;
 
     public DashboardFilePreviewPanel(LogType logType, File homeDir) {
         this.logType = logType;
@@ -45,7 +51,7 @@ public class DashboardFilePreviewPanel extends JPanel {
 
         JPanel previewTextPanel = new JPanel();
         previewTextPanel.setLayout(new BorderLayout());
-        preview = new JTextPane();
+        preview = new JTextArea();
         preview.setEditable(false);
 
         previewTextPanel.add(preview, BorderLayout.CENTER);
@@ -71,6 +77,8 @@ public class DashboardFilePreviewPanel extends JPanel {
             if (chooserVal == JFileChooser.APPROVE_OPTION) {
                 isLogSelected = true;
                 String fileWithoutPath = chooser.getSelectedFile().getName();
+                selectedFile = chooser.getSelectedFile();
+                DashboardFilePreviewPanel.this.setPreview(selectedFile);
                 logFileName.setText(fileWithoutPath);
                 repaint();
             }
@@ -79,5 +87,18 @@ public class DashboardFilePreviewPanel extends JPanel {
 
     public boolean isLogSelected() {
         return isLogSelected;
+    }
+
+    public File getSelectedFile() {
+        return this.selectedFile;
+    }
+
+    private void setPreview(File selected) {
+
+        try (Stream<String> fileStream = Files.lines(Paths.get(selected.getPath()))) {
+            fileStream.limit(5).forEach((str) -> {preview.append(str + '\n');});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
