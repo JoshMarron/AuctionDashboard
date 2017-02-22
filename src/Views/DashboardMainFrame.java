@@ -1,5 +1,7 @@
 package Views;
 
+import Controllers.DashboardMainFrameController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -11,6 +13,10 @@ import java.io.File;
 public class DashboardMainFrame extends JFrame {
 
     private File homeDir;
+    private boolean isImpressionSelected = false;
+    private boolean isClickSelected = false;
+    private boolean isServerSelected = false;
+    private DashboardMainFrameController controller;
 
     public DashboardMainFrame(File homeDir) {
         this.homeDir = homeDir;
@@ -39,6 +45,10 @@ public class DashboardMainFrame extends JFrame {
         this.add(Box.createRigidArea(new Dimension(50, 0)));
 
         this.setVisible(true);
+    }
+
+    public void setController(DashboardMainFrameController controller) {
+        this.controller = controller;
     }
 
 }

@@ -2,6 +2,8 @@ package Views;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 
 /**
@@ -12,6 +14,9 @@ import java.io.File;
 public class DashboardFileSelectPanel extends JPanel {
 
     private File homeDir;
+    private DashboardFilePreviewPanel impressionChoose;
+    private DashboardFilePreviewPanel clickChoose;
+    private DashboardFilePreviewPanel serverChoose;
 
     public DashboardFileSelectPanel(File homeDir) {
         this.homeDir = homeDir;
@@ -47,22 +52,24 @@ public class DashboardFileSelectPanel extends JPanel {
         //Create the panel for the three preview and choose panels
         JPanel chooseAndPreviewPanel = new JPanel();
         chooseAndPreviewPanel.setLayout(new GridLayout(3, 1));
-        DashboardFilePreviewPanel impressionChoose = new DashboardFilePreviewPanel(LogType.IMPRESSION, homeDir);
-        DashboardFilePreviewPanel clickChoose = new DashboardFilePreviewPanel(LogType.CLICK, homeDir);
-        DashboardFilePreviewPanel serverChoose = new DashboardFilePreviewPanel(LogType.SERVER, homeDir);
+        impressionChoose = new DashboardFilePreviewPanel(LogType.IMPRESSION, homeDir);
+        clickChoose = new DashboardFilePreviewPanel(LogType.CLICK, homeDir);
+        serverChoose = new DashboardFilePreviewPanel(LogType.SERVER, homeDir);
 
         chooseAndPreviewPanel.add(impressionChoose);
         chooseAndPreviewPanel.add(clickChoose);
         chooseAndPreviewPanel.add(serverChoose);
 
-        /*chooseAndPreviewPanel.add(impressionChoose);
-        chooseAndPreviewPanel.add(Box.createRigidArea(new Dimension(0, 50)));
-        chooseAndPreviewPanel.add(clickChoose);
-        chooseAndPreviewPanel.add(Box.createRigidArea(new Dimension(0, 50)));
-        chooseAndPreviewPanel.add(serverChoose);*/
-
         this.add(chooseAndPreviewPanel, BorderLayout.CENTER);
 
+    }
+
+    class ConfirmListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+        }
     }
 
 }
