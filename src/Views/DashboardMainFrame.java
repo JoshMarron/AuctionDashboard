@@ -2,6 +2,7 @@ package Views;
 
 import Controllers.DashboardMainFrameController;
 
+import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -32,7 +33,7 @@ public class DashboardMainFrame extends JFrame {
 
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
 
-        DashboardFileSelectPanel fileSelect = new DashboardFileSelectPanel(homeDir);
+        DashboardFileSelectPanel fileSelect = new DashboardFileSelectPanel(homeDir, this);
         fileSelect.init();
 
         DashboardMetricsPanel metrics = new DashboardMetricsPanel();
@@ -49,6 +50,10 @@ public class DashboardMainFrame extends JFrame {
 
     public void setController(DashboardMainFrameController controller) {
         this.controller = controller;
+    }
+
+    public void submitFiles(List<File> files) {
+        this.controller.processFiles(files);
     }
 
 }
