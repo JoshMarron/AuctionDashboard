@@ -2,8 +2,11 @@ package Controllers;
 
 import Views.DashboardMainFrame;
 
+import javax.swing.*;
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,6 +27,22 @@ public class DashboardMainFrameController {
 
     public void processFiles(List<File> files) {
         //TODO fill out this method, should send the files to the CSV parser and report progress to a progress bar
-        helpers.submit(() -> files.forEach((file) -> System.out.println(file.getName())));
+        helpers.submit(() -> files.forEach((file) -> {
+            System.out.println(file.getName());
+            returnData();
+        }));
+    }
+
+    public void displayMetrics(Map<String, Double> data) {
+        SwingUtilities.invokeLater(() -> frame.displayMetrics(data));
+    }
+
+    public void returnData() {
+        HashMap<String, Double> data = new HashMap<>();
+        data.put("Click Through Rate (CTR)", 1.00);
+        data.put("Total Campaign Cost", 1200424240.0);
+        data.put("Number of Impressions", 12535360.0);
+
+        this.displayMetrics(data);
     }
 }

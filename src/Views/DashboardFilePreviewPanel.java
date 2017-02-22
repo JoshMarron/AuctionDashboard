@@ -78,6 +78,16 @@ public class DashboardFilePreviewPanel extends JPanel {
                 isLogSelected = true;
 
                 selectedFile = chooser.getSelectedFile();
+                String extension = selectedFile.getName().split("\\.")[1];
+
+                if (!extension.equalsIgnoreCase("csv")) {
+                    JOptionPane.showMessageDialog(DashboardFilePreviewPanel.this,
+                            "File must be of type CSV",
+                            "Wrong Filetype",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 logFileName.setText(selectedFile.getName());
                 DashboardFilePreviewPanel.this.setPreview(selectedFile);
 
