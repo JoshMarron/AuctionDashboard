@@ -18,9 +18,12 @@ public class DashboardMetricsPanel extends JPanel {
     public void init() {
         this.setLayout(new BorderLayout());
         this.setMaximumSize(new Dimension(800, 900));
+        this.setBackground(DashboardMainFrame.BG_COLOR);
 
         JLabel title = new JLabel("Some Key Metrics");
+        title.setFont(new Font(title.getFont().getName(), title.getFont().getStyle(), 20));
         JPanel titlePanel = new JPanel();
+        titlePanel.setOpaque(false);
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
         titlePanel.add(Box.createHorizontalGlue());
         titlePanel.add(Box.createRigidArea(new Dimension(0, 70)));
@@ -36,9 +39,6 @@ public class DashboardMetricsPanel extends JPanel {
     }
 
     public void putMetricInTextList(String name, Double data) {
-        if (!metricsModel.isEmpty()) {
-            metricsModel.remove(0);
-        }
         String displayData = name + ": " + data;
         metricsModel.addElement(displayData);
     }
