@@ -73,13 +73,14 @@ public class DashboardFilePreviewPanel extends JPanel {
         public void actionPerformed(ActionEvent e) {
             int chooserVal = chooser.showOpenDialog(DashboardFilePreviewPanel.this);
 
-            // TODO make this method set the preview in the JTextPane
+            // If a file is chosen, set the preview, the chosen file, and the selected flag
             if (chooserVal == JFileChooser.APPROVE_OPTION) {
                 isLogSelected = true;
-                String fileWithoutPath = chooser.getSelectedFile().getName();
+
                 selectedFile = chooser.getSelectedFile();
+                logFileName.setText(selectedFile.getName());
                 DashboardFilePreviewPanel.this.setPreview(selectedFile);
-                logFileName.setText(fileWithoutPath);
+
                 repaint();
             }
         }
@@ -96,7 +97,7 @@ public class DashboardFilePreviewPanel extends JPanel {
     private void setPreview(File selected) {
 
         try (Stream<String> fileStream = Files.lines(Paths.get(selected.getPath()))) {
-            fileStream.limit(5).forEach((str) -> {preview.append(str + '\n');});
+            fileStream.limit(10).forEach((str) -> {preview.append(str + '\n');});
         } catch (IOException e) {
             e.printStackTrace();
         }
