@@ -46,16 +46,20 @@ public class DashboardFileSelectPanel extends JPanel {
 
         //Create the panel for the three preview and choose panels
         JPanel chooseAndPreviewPanel = new JPanel();
-        chooseAndPreviewPanel.setLayout(new BoxLayout(chooseAndPreviewPanel, BoxLayout.Y_AXIS));
+        chooseAndPreviewPanel.setLayout(new GridLayout(3, 1));
         DashboardFilePreviewPanel impressionChoose = new DashboardFilePreviewPanel(LogType.IMPRESSION, homeDir);
         DashboardFilePreviewPanel clickChoose = new DashboardFilePreviewPanel(LogType.CLICK, homeDir);
         DashboardFilePreviewPanel serverChoose = new DashboardFilePreviewPanel(LogType.SERVER, homeDir);
 
         chooseAndPreviewPanel.add(impressionChoose);
+        chooseAndPreviewPanel.add(clickChoose);
+        chooseAndPreviewPanel.add(serverChoose);
+
+        /*chooseAndPreviewPanel.add(impressionChoose);
         chooseAndPreviewPanel.add(Box.createRigidArea(new Dimension(0, 50)));
         chooseAndPreviewPanel.add(clickChoose);
         chooseAndPreviewPanel.add(Box.createRigidArea(new Dimension(0, 50)));
-        chooseAndPreviewPanel.add(serverChoose);
+        chooseAndPreviewPanel.add(serverChoose);*/
 
         this.add(chooseAndPreviewPanel, BorderLayout.CENTER);
 
