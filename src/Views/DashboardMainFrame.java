@@ -4,7 +4,6 @@ import Controllers.DashboardMainFrameController;
 
 import java.util.List;
 import javax.swing.*;
-import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.io.File;
 import java.util.Map;
@@ -31,19 +30,19 @@ public class DashboardMainFrame extends JFrame {
         this.setSize(1200, 900);
         this.setName("Ad Auction Dashboard");
 
+        //Try to use anti-aliasing on the font
         System.setProperty("awt.useSystemAAFontSettings","on");
         System.setProperty("swing.aatext", "true");
 
+        //Set the System Look and Feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error getting System Look and Feel, reverting to Java default",
+                    "Graphical Error",
+                    JOptionPane.ERROR_MESSAGE
+                    );
         }
 
         JPanel contentPane = new JPanel();

@@ -18,8 +18,8 @@ import java.util.stream.Stream;
 public class DashboardFileSelectPanel extends JPanel {
 
     private DashboardMainFrame parent;
-    private File homeDir;
-    private ArrayList<DashboardFilePreviewPanel> previewPanels;
+    private File homeDir;                                               //The directory the file chooser should open at
+    private ArrayList<DashboardFilePreviewPanel> previewPanels;         //The 3 preview panels should be collected
 
     public DashboardFileSelectPanel(File homeDir, DashboardMainFrame parent) {
         this.homeDir = homeDir;
@@ -27,6 +27,9 @@ public class DashboardFileSelectPanel extends JPanel {
         this.previewPanels = new ArrayList<>();
     }
 
+    /**
+     * Set up the FileSelectPanel
+     */
     public void init() {
         this.setMaximumSize(new Dimension(600, 900));
         this.setBackground(DashboardMainFrame.BG_COLOR);
@@ -36,8 +39,9 @@ public class DashboardFileSelectPanel extends JPanel {
         JLabel title = new JLabel("Choose your log files");
         title.setFont(DashboardMainFrame.GLOB_FONT);
         title.setFont(new Font(title.getFont().getName(), title.getFont().getStyle(), 20));
-
         title.setHorizontalAlignment(SwingConstants.CENTER);
+
+        //Panel to allow for nicely centering the title
         JPanel titlePanel = new JPanel();
         titlePanel.setOpaque(false);
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
@@ -55,6 +59,7 @@ public class DashboardFileSelectPanel extends JPanel {
         confirm.setFont(DashboardMainFrame.GLOB_FONT);
         confirm.addActionListener(new ConfirmListener());
 
+        //Panel to allow for nicely centering the button - will be able to add more later
         buttonPanel.add(Box.createRigidArea(new Dimension(100, 100)));
         buttonPanel.add(Box.createHorizontalGlue());
         buttonPanel.add(confirm);
@@ -81,11 +86,16 @@ public class DashboardFileSelectPanel extends JPanel {
 
     }
 
+    /**
+     * Allows the confirm button to submit the files to the controller.
+     */
     class ConfirmListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
 
+            //Filter the panels list based on whether a file has been selected within it
+            //Get the files and put them in a list to pass to the controller
             Stream<DashboardFilePreviewPanel> panels = previewPanels.stream().filter(DashboardFilePreviewPanel::isLogSelected);
             List<File> files = panels.map(DashboardFilePreviewPanel::getSelectedFile).collect(Collectors.toList());
 
