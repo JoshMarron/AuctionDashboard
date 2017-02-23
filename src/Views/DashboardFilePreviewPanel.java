@@ -2,7 +2,6 @@ package Views;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,9 +18,9 @@ import java.util.stream.Stream;
 public class DashboardFilePreviewPanel extends JPanel {
 
     private File homeDir;
-    private LogType logType; //Impression, click or server
+    private LogType logType;            //Impression, click or server
     private JFileChooser chooser;
-    private boolean isLogSelected; //True if a file has been selected
+    private boolean isLogSelected;      //True if a file has been selected
     private JLabel logFileName;
     private JTextArea preview;
     private File selectedFile;
@@ -33,17 +32,27 @@ public class DashboardFilePreviewPanel extends JPanel {
         this.init();
     }
 
-    public void init() {
+    /**
+     * Set up the FilePreviewPanel
+     */
+    private void init() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setBackground(DashboardMainFrame.BG_COLOR);
 
+        //Set up the panel which contains the button and the final name
         JPanel fileChoosePanel = new JPanel();
         fileChoosePanel.setLayout(new BoxLayout(fileChoosePanel, BoxLayout.X_AXIS));
+        fileChoosePanel.setOpaque(false);
         fileChoosePanel.setBackground(DashboardMainFrame.BG_COLOR);
         JLabel logName = new JLabel(this.logType.toString() + ":");
+        logName.setFont(DashboardMainFrame.GLOB_FONT);
+
         logFileName = new JLabel("None chosen");
+        logFileName.setFont(DashboardMainFrame.GLOB_FONT);
+
         JButton logChooseButton = new JButton("Choose " + this.logType.toString() + "...");
-        logChooseButton.addActionListener(new chooseButtonListener());
+        logChooseButton.addActionListener(new ChooseButtonListener());
+        logChooseButton.setFont(DashboardMainFrame.GLOB_FONT);
 
         fileChoosePanel.add(logName);
         fileChoosePanel.add(Box.createRigidArea(new Dimension(20, 0)));
@@ -51,6 +60,7 @@ public class DashboardFilePreviewPanel extends JPanel {
         fileChoosePanel.add(Box.createRigidArea(new Dimension(20, 0)));
         fileChoosePanel.add(logChooseButton);
 
+        //Create the panel which holds the preview in a text area
         JPanel previewTextPanel = new JPanel();
         previewTextPanel.setLayout(new BorderLayout());
         preview = new JTextArea();
@@ -69,7 +79,11 @@ public class DashboardFilePreviewPanel extends JPanel {
 
     }
 
-    class chooseButtonListener implements ActionListener {
+    /**
+     * Listener which is attached to the choose button and opens up the file chooser.
+     * Performs a sanity check on the extension of the file to check the user definitely chooses a CSV file
+     */
+    class ChooseButtonListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -82,6 +96,7 @@ public class DashboardFilePreviewPanel extends JPanel {
                 selectedFile = chooser.getSelectedFile();
                 String extension = selectedFile.getName().split("\\.")[1];
 
+                //Check the extension of the file is .csv
                 if (!extension.equalsIgnoreCase("csv")) {
                     JOptionPane.showMessageDialog(DashboardFilePreviewPanel.this,
                             "File must be of type CSV",
@@ -109,7 +124,7 @@ public class DashboardFilePreviewPanel extends JPanel {
     private void setPreview(File selected) {
 
         try (Stream<String> fileStream = Files.lines(Paths.get(selected.getPath()))) {
-            fileStream.limit(10).forEach((str) -> {preview.append(str + '\n');});
+            fileStream.limit(10).forEach((str) -> preview.append(str + '\n'));
         } catch (IOException e) {
             e.printStackTrace();
         }
