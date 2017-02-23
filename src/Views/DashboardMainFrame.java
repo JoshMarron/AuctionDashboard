@@ -16,6 +16,7 @@ import java.util.Map;
 public class DashboardMainFrame extends JFrame {
 
     public static final Color BG_COLOR = new Color(184, 200, 209);
+    public static final Font GLOB_FONT = new Font("Tahoma", Font.BOLD, 14);
 
     private File homeDir;
     private DashboardMainFrameController controller;
@@ -32,7 +33,18 @@ public class DashboardMainFrame extends JFrame {
 
         System.setProperty("awt.useSystemAAFontSettings","on");
         System.setProperty("swing.aatext", "true");
-        this.setUIFont(new FontUIResource("Tahoma", Font.BOLD, 14));
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
         JPanel contentPane = new JPanel();
         this.setContentPane(contentPane);
@@ -63,18 +75,7 @@ public class DashboardMainFrame extends JFrame {
         this.controller.processFiles(files);
     }
 
-
     public void displayMetrics(Map<String, Double> data) {
         data.forEach((name, value) -> metricsPanel.putMetricInTextList(name, value));
-    }
-
-    public void setUIFont (FontUIResource f){
-        java.util.Enumeration keys = UIManager.getDefaults().keys();
-        while (keys.hasMoreElements()) {
-            Object key = keys.nextElement();
-            Object value = UIManager.get(key);
-            if (value != null && value instanceof FontUIResource)
-                UIManager.put(key, f);
-        }
     }
 }

@@ -21,6 +21,7 @@ public class DashboardMetricsPanel extends JPanel {
         this.setBackground(DashboardMainFrame.BG_COLOR);
 
         JLabel title = new JLabel("Some Key Metrics");
+        title.setFont(DashboardMainFrame.GLOB_FONT);
         title.setFont(new Font(title.getFont().getName(), title.getFont().getStyle(), 20));
         JPanel titlePanel = new JPanel();
         titlePanel.setOpaque(false);

@@ -28,13 +28,15 @@ public class DashboardFileSelectPanel extends JPanel {
     }
 
     public void init() {
-        this.setMaximumSize(new Dimension(500, 900));
+        this.setMaximumSize(new Dimension(600, 900));
         this.setBackground(DashboardMainFrame.BG_COLOR);
         this.setLayout(new BorderLayout());
 
         //Create title label and panel for it to go on
         JLabel title = new JLabel("Choose your log files");
+        title.setFont(DashboardMainFrame.GLOB_FONT);
         title.setFont(new Font(title.getFont().getName(), title.getFont().getStyle(), 20));
+
         title.setHorizontalAlignment(SwingConstants.CENTER);
         JPanel titlePanel = new JPanel();
         titlePanel.setOpaque(false);
@@ -50,6 +52,7 @@ public class DashboardFileSelectPanel extends JPanel {
         buttonPanel.setOpaque(false);
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         JButton confirm = new JButton("Confirm");
+        confirm.setFont(DashboardMainFrame.GLOB_FONT);
         confirm.addActionListener(new ConfirmListener());
 
         buttonPanel.add(Box.createRigidArea(new Dimension(100, 100)));
@@ -89,7 +92,6 @@ public class DashboardFileSelectPanel extends JPanel {
             if (!files.isEmpty()) {
                 parent.submitFiles(files);
             }
-
             else {
                 JOptionPane.showMessageDialog(DashboardFileSelectPanel.this,
                         "You must add at least one type of log.",
