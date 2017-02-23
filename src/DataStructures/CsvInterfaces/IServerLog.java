@@ -5,7 +5,7 @@ import java.time.Instant;
 /**
  * Created by rhys on 21/02/17.
  */
-public interface IServerLog extends CsvTable {
+public interface IServerLog {
 
     Long getID();
 
