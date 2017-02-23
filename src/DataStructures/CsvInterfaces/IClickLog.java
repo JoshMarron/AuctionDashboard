@@ -5,7 +5,7 @@ import java.time.Instant;
 /**
  * Created by rhys on 21/02/17.
  */
-public interface IClickLog {
+public interface IClickLog extends CsvTable {
     Instant getDate();
 
     Long getID();
