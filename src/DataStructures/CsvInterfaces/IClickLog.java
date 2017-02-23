@@ -11,5 +11,4 @@ public interface IClickLog {
     Long getID();
 
     Double getClick_Cost();
-
 }
