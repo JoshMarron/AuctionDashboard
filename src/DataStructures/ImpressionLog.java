@@ -11,7 +11,8 @@ import java.time.*;
  * Created by rhys on 26/02/17.
  */
 public class ImpressionLog implements IImpressionLog {
-    Instant Date;
+    String rawDate;
+    Long secondsEpoch;
     Long ID;
     Gender gender;
     int AgeMin;
@@ -43,15 +44,16 @@ public class ImpressionLog implements IImpressionLog {
     }
 
     @Override
-    public Instant getDate() {
-        return this.Date;
+    public String getDate() {
+        return this.rawDate;
     }
 
     public ImpressionLog setDate(String x) {
         LocalDate localDate = LocalDate.parse(x.split(" ")[0]);
         LocalDateTime localDateTime = localDate.atTime(LocalTime.parse(x.split(" ")[1]));
         Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
-        Date = instant;
+        rawDate = x;
+        secondsEpoch = instant.getEpochSecond();
         return this;
     }
 
