@@ -150,18 +150,5 @@ public class ImpressionLog implements IImpressionLog {
         return this.Impression_Cost;
     }
 
-    @Override
-    public String toString() {
-        return "ImpressionLog{" +
-                "rawDate='" + rawDate + '\'' +
-                ", secondsEpoch=" + secondsEpoch +
-                ", ID=" + ID +
-                ", gender=" + gender +
-                ", AgeMin=" + AgeMin +
-                ", AgeMax=" + AgeMax +
-                ", income=" + income +
-                ", Context='" + Context + '\'' +
-                ", Impression_Cost=" + Impression_Cost +
-                '}';
-    }
+
 }

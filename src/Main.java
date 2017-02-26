@@ -1,7 +1,7 @@
 import Controllers.DashboardMainFrameController;
+import DataStructures.CsvInterfaces.Factory;
 import DataStructures.CsvInterfaces.IServerLog;
 import DataStructures.CsvPaserFactory;
-import DataStructures.ServerLog;
 import Views.DashboardMainFrame;
 
 import javax.swing.*;
@@ -10,13 +10,13 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
-        CsvPaserFactory factory = new CsvPaserFactory();
+        Factory factory = new CsvPaserFactory();
         try {
             String path = "server_log.csv";
-            factory.open(ServerLog.class, path);
+            factory.open(IServerLog.class, path);
             IServerLog c = (IServerLog) factory.next();
 
-            System.out.println(c);
+            //System.out.println(c.toString());
             factory.close();
         } catch (IOException e) {
             e.printStackTrace();

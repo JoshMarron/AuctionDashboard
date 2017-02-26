@@ -7,6 +7,8 @@ public interface IServerLog {
 
     Long getID();
 
+    IServerLog setID(String x);
+
     String getEntryDate();
 
     String getExitDate();
@@ -14,4 +16,13 @@ public interface IServerLog {
     Integer getPagesViewed();
 
     Boolean getConversion();
+
+    IServerLog setConversion(String x);
+
+    IServerLog setEntry_Date(String x);
+
+    IServerLog setExit_Date(String x);
+
+    IServerLog setPages_Viewed(String x);
+
 }
