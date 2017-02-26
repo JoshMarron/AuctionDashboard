@@ -44,8 +44,8 @@ public class ServerLog implements IServerLog {
         return ID;
     }
 
-    public ServerLog setID(Long ID) {
-        this.ID = ID;
+    public ServerLog setID(String ID) {
+        this.ID = Long.parseLong(ID);
         return this;
     }
 
@@ -103,5 +103,18 @@ public class ServerLog implements IServerLog {
                 break;
         }
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "ServerLog{" +
+                "Entry_Date='" + Entry_Date + '\'' +
+                ", secondsEpochEntry_Date=" + secondsEpochEntry_Date +
+                ", ID=" + ID +
+                ", Exit_Date='" + Exit_Date + '\'' +
+                ", Pages_Viewed=" + Pages_Viewed +
+                ", Conversion=" + Conversion +
+                ", secondsEpochExit_Date=" + secondsEpochExit_Date +
+                '}';
     }
 }
