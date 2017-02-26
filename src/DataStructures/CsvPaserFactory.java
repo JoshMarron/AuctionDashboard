@@ -1,13 +1,11 @@
 package DataStructures;
 
 import DataStructures.CsvInterfaces.Factory;
-import com.google.gson.Gson;
-import com.opencsv.CSVReader;
+import org.supercsv.io.CsvBeanReader;
+import org.supercsv.prefs.CsvPreference;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -15,32 +13,36 @@ import java.util.stream.Collectors;
  * Created by rhys on 23/02/17.
  */
 public class CsvPaserFactory implements Factory {
-    private String jsonFormatted = "";
-    private CSVReader reader = null;
-    private Type structure;
+    private CsvBeanReader beanReader = null;
+    private String[] headers = null;
 
-    public CsvPaserFactory open(Type clsStructure, String fileName) throws IOException {
-        this.structure = clsStructure;
-        reader = new CSVReader(new FileReader(fileName));
-        String[] headers = reader.readNext();
-        ArrayList<String> h = new ArrayList<>(Arrays.asList(headers));
-        jsonFormatted = "{" + h.stream().map(s -> s.replace(" ", "_") + ": \"%s\"").collect(Collectors.joining(", ")) + "}";
+    public CsvPaserFactory open(Class clsStructure, String fileName) throws IOException {
+
+        FileReader FR = new FileReader("click_log.csv");
+
+
+        this.beanReader = new CsvBeanReader(FR, CsvPreference.STANDARD_PREFERENCE);
+
+        //remove all spaces and replace them with under scores in the headers
+        this.headers = Arrays.stream(beanReader.getHeader(true))
+                .map(s -> s.replace(" ", "_"))
+                .collect(Collectors.toList())
+                .toArray(new String[]{});
+
+
         return this;
     }
 
     public CsvPaserFactory close() throws IOException {
-        if (reader != null) {
-            reader.close();
+        if (beanReader != null) {
+            beanReader.close();
         }
         return this;
     }
 
     public Object next() throws IOException {
-        if (reader != null) {
-            String s = String.format(jsonFormatted, reader.readNext());
-            System.out.println(s);
-            Gson g = new Gson();
-            return g.fromJson(s, structure);
+        if (beanReader != null) {
+            return beanReader.read(ClickLog.class, headers);
         }
         return null;
     }

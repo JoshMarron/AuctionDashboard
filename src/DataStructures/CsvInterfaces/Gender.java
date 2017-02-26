@@ -3,7 +3,7 @@ package DataStructures.CsvInterfaces;
 /**
  * Created by rhys on 21/02/17.
  */
-enum Gender {
+public enum Gender {
     Male,
     Female
 }
