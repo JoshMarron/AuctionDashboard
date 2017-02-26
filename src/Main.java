@@ -1,7 +1,7 @@
 import Controllers.DashboardMainFrameController;
-import DataStructures.ClickLog;
-import DataStructures.CsvInterfaces.IClickLog;
+import DataStructures.CsvInterfaces.IImpressionLog;
 import DataStructures.CsvPaserFactory;
+import DataStructures.ImpressionLog;
 import Views.DashboardMainFrame;
 
 import javax.swing.*;
@@ -12,9 +12,9 @@ public class Main {
     public static void main(String[] args) {
         CsvPaserFactory factory = new CsvPaserFactory();
         try {
-            String path = "/home/rhys/SegProj/AuctionDashboard/click_log.csv";
-            factory.open(ClickLog.class, path);
-            IClickLog c = (IClickLog) factory.next();
+            String path = "impression_log.csv";
+            factory.open(ImpressionLog.class, path);
+            IImpressionLog c = (IImpressionLog) factory.next();
 
             System.out.println(c);
             factory.close();

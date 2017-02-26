@@ -15,10 +15,11 @@ import java.util.stream.Collectors;
 public class CsvPaserFactory implements Factory {
     private CsvBeanReader beanReader = null;
     private String[] headers = null;
+    private Class clsStructure;
 
     public CsvPaserFactory open(Class clsStructure, String fileName) throws IOException {
-
-        FileReader FR = new FileReader("click_log.csv");
+        this.clsStructure = clsStructure;
+        FileReader FR = new FileReader(fileName);
 
 
         this.beanReader = new CsvBeanReader(FR, CsvPreference.STANDARD_PREFERENCE);
@@ -42,7 +43,7 @@ public class CsvPaserFactory implements Factory {
 
     public Object next() throws IOException {
         if (beanReader != null) {
-            return beanReader.read(ClickLog.class, headers);
+            return beanReader.read(clsStructure, headers);
         }
         return null;
     }

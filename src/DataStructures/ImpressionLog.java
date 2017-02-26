@@ -73,7 +73,23 @@ public class ImpressionLog implements IImpressionLog {
     }
 
     public ImpressionLog setGender(String x) {
-
+        switch (x.toLowerCase()) {
+            case "male":
+                this.gender = Gender.Male;
+                break;
+            case "m":
+                this.gender = Gender.Male;
+                break;
+            case "female":
+                this.gender = Gender.Female;
+                break;
+            case "f":
+                this.gender = Gender.Female;
+                break;
+            default:
+                this.gender = Gender.valueOf(x);
+                break;
+        }
         return this;
     }
 
@@ -93,7 +109,29 @@ public class ImpressionLog implements IImpressionLog {
     }
 
     public ImpressionLog setIncome(String x) {
-
+        switch (x.toLowerCase()) {
+            case "high":
+                this.income = Income.High;
+                break;
+            case "h":
+                this.income = Income.High;
+                break;
+            case "medium":
+                this.income = Income.Medium;
+                break;
+            case "m":
+                this.income = Income.Medium;
+                break;
+            case "low":
+                this.income = Income.Low;
+                break;
+            case "l":
+                this.income = Income.Low;
+                break;
+            default:
+                this.income = Income.valueOf(x);
+                break;
+        }
         return this;
     }
 
@@ -110,5 +148,20 @@ public class ImpressionLog implements IImpressionLog {
     @Override
     public Double getImpressionCost() {
         return this.Impression_Cost;
+    }
+
+    @Override
+    public String toString() {
+        return "ImpressionLog{" +
+                "rawDate='" + rawDate + '\'' +
+                ", secondsEpoch=" + secondsEpoch +
+                ", ID=" + ID +
+                ", gender=" + gender +
+                ", AgeMin=" + AgeMin +
+                ", AgeMax=" + AgeMax +
+                ", income=" + income +
+                ", Context='" + Context + '\'' +
+                ", Impression_Cost=" + Impression_Cost +
+                '}';
     }
 }
