@@ -44,7 +44,7 @@ public class DashboardFilePreviewPanel extends JPanel {
         fileChoosePanel.setLayout(new BoxLayout(fileChoosePanel, BoxLayout.X_AXIS));
         fileChoosePanel.setOpaque(false);
         fileChoosePanel.setBackground(DashboardMainFrame.BG_COLOR);
-        JLabel logName = new JLabel(this.logType.toString() + ":");
+        JLabel logName = new JLabel(this.logType.toString() + ":"); 
         logName.setFont(DashboardMainFrame.GLOB_FONT);
 
         logFileName = new JLabel("None chosen");
