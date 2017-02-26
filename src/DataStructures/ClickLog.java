@@ -39,15 +39,6 @@ public class ClickLog implements IClickLog {
     }
 
     @Override
-    public String toString() {
-        return "ClickLog{" +
-                "Date=" + rawDate +
-                ", ID=" + ID +
-                ", Click_Cost=" + Click_Cost +
-                '}';
-    }
-
-    @Override
     public Double getClick_Cost() {
         return Click_Cost;
     }

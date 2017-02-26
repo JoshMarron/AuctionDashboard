@@ -105,16 +105,5 @@ public class ServerLog implements IServerLog {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return "ServerLog{" +
-                "Entry_Date='" + Entry_Date + '\'' +
-                ", secondsEpochEntry_Date=" + secondsEpochEntry_Date +
-                ", ID=" + ID +
-                ", Exit_Date='" + Exit_Date + '\'' +
-                ", Pages_Viewed=" + Pages_Viewed +
-                ", Conversion=" + Conversion +
-                ", secondsEpochExit_Date=" + secondsEpochExit_Date +
-                '}';
-    }
+
 }
