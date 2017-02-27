@@ -1,14 +1,19 @@
 package DataStructures.CsvInterfaces;
 
-import java.time.Instant;
-
 /**
  * Created by rhys on 21/02/17.
  */
 public interface IClickLog {
-    Instant getDate();
+    String getDate();
+
+    IClickLog setDate(String x);
 
     Long getID();
 
+    IClickLog setID(String x);
+
     Double getClick_Cost();
+
+    IClickLog setClick_Cost(String x);
+
 }
