@@ -4,7 +4,6 @@ import Controllers.DashboardMainFrameController;
 
 import java.util.List;
 import javax.swing.*;
-import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.io.File;
 import java.util.Map;
@@ -16,6 +15,7 @@ import java.util.Map;
 public class DashboardMainFrame extends JFrame {
 
     public static final Color BG_COLOR = new Color(184, 200, 209);
+    public static final Font GLOB_FONT = new Font("Tahoma", Font.BOLD, 14);
 
     private File homeDir;
     private DashboardMainFrameController controller;
@@ -30,9 +30,20 @@ public class DashboardMainFrame extends JFrame {
         this.setSize(1200, 900);
         this.setName("Ad Auction Dashboard");
 
+        //Try to use anti-aliasing on the font
         System.setProperty("awt.useSystemAAFontSettings","on");
         System.setProperty("swing.aatext", "true");
-        this.setUIFont(new FontUIResource("Tahoma", Font.BOLD, 14));
+
+        //Set the System Look and Feel
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error getting System Look and Feel, reverting to Java default",
+                    "Graphical Error",
+                    JOptionPane.ERROR_MESSAGE
+                    );
+        }
 
         JPanel contentPane = new JPanel();
         this.setContentPane(contentPane);
@@ -63,18 +74,7 @@ public class DashboardMainFrame extends JFrame {
         this.controller.processFiles(files);
     }
 
-
     public void displayMetrics(Map<String, Double> data) {
         data.forEach((name, value) -> metricsPanel.putMetricInTextList(name, value));
-    }
-
-    public void setUIFont (FontUIResource f){
-        java.util.Enumeration keys = UIManager.getDefaults().keys();
-        while (keys.hasMoreElements()) {
-            Object key = keys.nextElement();
-            Object value = UIManager.get(key);
-            if (value != null && value instanceof FontUIResource)
-                UIManager.put(key, f);
-        }
     }
 }
