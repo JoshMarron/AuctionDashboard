@@ -15,7 +15,7 @@ public class DatabaseModel {
 	
 	public DatabaseModel() {
 		
-		filename = "db/model.db";
+		filename = "/db/model.db";
 		url = "jdbc:sqlite:" + filename;
 	}
 	
@@ -36,34 +36,35 @@ public class DatabaseModel {
 		File dir = new File("db");
 		File file = new File("db/model.db");
 		
-		if (dir.exists()) {
-			System.out.println("Directory exists");
-			
-			if (file.exists()) {
-				System.out.println("Databse exists");
-			} else {
-				System.out.println("Database doesn't exist");
-				System.out.println("Creating database...");
-				
-				try {
-					Connection conn = connect();
-					
-					if (conn != null) {
-						Class.forName("org.sqlite.JDBC");
-						DatabaseMetaData meta = conn.getMetaData();
-						System.out.println("Driver name is " + meta.getDriverName());
-						System.out.println("Database successfully created!");
-					}
-				} catch (SQLException | ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
-		} else {
+		if (!dir.exists()) {
 			System.out.println("Directory doesn't exist");
 			dir.mkdir();
 			System.out.println("Creating DIR");
-			init(); //Attempts to initialise itself again
+		} else {
+			System.out.println("Directory exists");
 		}
+		
+		if (!file.exists()) {
+			System.out.println("Database doesn't exist");
+			System.out.println("Creating database...");
+			
+			try {
+				Connection conn = connect();
+				
+				if (conn != null) {
+					Class.forName("org.sqlite.JDBC");
+					DatabaseMetaData meta = conn.getMetaData();
+					System.out.println("Driver name is " + meta.getDriverName());
+					System.out.println("Database successfully created!");
+				}
+			} catch (SQLException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("Database exists");
+		}
+		
+		System.out.println("Database created and ready to use");
 	}
 	
 	/**
@@ -82,21 +83,21 @@ public class DatabaseModel {
 		
 		String sqlClick = "" +
 				"CREATE TABLE IF NOT EXISTS click (\n" +
-				" user_id INTEGER FOREIGN KEY, \n" +
+				" user_id INTEGER, \n" +
 				" date STRING TEXT NOT NULL, \n" +
 				" cost INTEGER NOT NULL \n" +
 				");";
 		
 		String sqlSiteImpression = "" +
 				"CREATE TABLE IF NOT EXISTS site_impression (\n" +
-				" user_id INTEGER FOREIGN KEY, \n" +
+				" user_id INTEGER, \n" +
 				" context STRING NOT NULL, \n" +
 				" impression_cost INTEGER NOT NULL \n" +
 				");";
 		
 		String sqlServerLog = "" +
 				"CREATE TABLE IF NOT EXISTS server_log (\n" +
-				" user_id INTEGER FOREIGN KEY, \n" +
+				" user_id INTEGER, \n" +
 				" entry_date TEXT NOT NULL, \n" +
 				" exit_date TEXT NOT NULL, \n" +
 				" pages_viewed INTEGER NOT NULL, \n" +
@@ -115,6 +116,7 @@ public class DatabaseModel {
 			
 			System.out.println("Creating server log table");
 			stmt.execute(sqlServerLog);
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -25,7 +25,8 @@ hs_err_pid*
 .idea/
 .csv
 .iml
-AuctionDashboard.iml
 
 /src/Model/DBTest.java
 /db/model.db
+/.idea/misc.xml
+/.idea/modules.xml
