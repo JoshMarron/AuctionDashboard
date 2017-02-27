@@ -23,7 +23,7 @@ public class ClickLog implements IClickLog {
     public ClickLog setDate(String date) {
         LocalDate localDate = LocalDate.parse(date.split(" ")[0]);
         LocalDateTime localDateTime = localDate.atTime(LocalTime.parse(date.split(" ")[1]));
-        Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
+        Instant instant = localDateTime.toInstant(ZoneOffset.UTC); //TODO Unused variable
         rawDate = date;
         return this;
     }

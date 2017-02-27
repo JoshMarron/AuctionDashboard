@@ -16,6 +16,7 @@ public class ServerLog implements IServerLog {
     private boolean Conversion;
     private long secondsEpochExit_Date;
 
+    //TODO Duplicate code, needs refactoring
     public ServerLog setEntry_Date(String entry_Date) {
         LocalDate localDate = LocalDate.parse(entry_Date.split(" ")[0]);
         LocalDateTime localDateTime = localDate.atTime(LocalTime.parse(entry_Date.split(" ")[1]));

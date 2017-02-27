@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+//TODO: add documentation on how to use this class
 /**
  * Created by rhys on 23/02/17.
  */
