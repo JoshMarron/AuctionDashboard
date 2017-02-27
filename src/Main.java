@@ -15,8 +15,6 @@ public class Main {
             String path = "server_log.csv";
             factory.open(IServerLog.class, path);
             IServerLog c = (IServerLog) factory.next();
-
-            //System.out.println(c.toString());
             factory.close();
         } catch (IOException e) {
             e.printStackTrace();
