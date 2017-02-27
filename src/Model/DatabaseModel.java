@@ -1,13 +1,12 @@
 package Model;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * Created by Philip on 26/02/2017.
+ *
+ * Do not run this file unless JDBC-sqlite driver is configured
  */
 public class DatabaseModel {
 	
@@ -63,7 +62,61 @@ public class DatabaseModel {
 			System.out.println("Directory doesn't exist");
 			dir.mkdir();
 			System.out.println("Creating DIR");
-			init(); //Attempts to iniliase itself again
+			init(); //Attempts to initialise itself again
+		}
+	}
+	
+	/**
+	 * Initialises the tables in the database (see schema for details). Is called by the init() function
+	 */
+	public void initTables() {
+		System.out.println("Creating database tables");
+		
+		String sqlUser = "" +
+				"CREATE TABLE IF NOT EXISTS user (\n" +
+				" user_id INTEGER PRIMARY KEY, \n" +
+				" age TEXT NOT NULL, \n" +
+				" gender TEXT NOT NULL, \n" +
+				" income TEXT NOT NULL \n" +
+				");";
+		
+		String sqlClick = "" +
+				"CREATE TABLE IF NOT EXISTS click (\n" +
+				" user_id INTEGER FOREIGN KEY, \n" +
+				" date STRING TEXT NOT NULL, \n" +
+				" cost INTEGER NOT NULL \n" +
+				");";
+		
+		String sqlSiteImpression = "" +
+				"CREATE TABLE IF NOT EXISTS site_impression (\n" +
+				" user_id INTEGER FOREIGN KEY, \n" +
+				" context STRING NOT NULL, \n" +
+				" impression_cost INTEGER NOT NULL \n" +
+				");";
+		
+		String sqlServerLog = "" +
+				"CREATE TABLE IF NOT EXISTS server_log (\n" +
+				" user_id INTEGER FOREIGN KEY, \n" +
+				" entry_date TEXT NOT NULL, \n" +
+				" exit_date TEXT NOT NULL, \n" +
+				" pages_viewed INTEGER NOT NULL, \n" +
+				" conversion INTEGER NOT NULL \n" + // use 0 and 1 for true and false
+				");";
+		
+		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+			System.out.println("Creating user table");
+			stmt.execute(sqlUser);
+			
+			System.out.println("Creating click table");
+			stmt.execute(sqlClick);
+			
+			System.out.println("Creating site impressions table");
+			stmt.execute(sqlSiteImpression);
+			
+			System.out.println("Creating server log table");
+			stmt.execute(sqlServerLog);
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 }
