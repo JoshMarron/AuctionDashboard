@@ -1,5 +1,7 @@
 package Model;
 
+import javax.swing.plaf.nimbus.State;
+import javax.xml.transform.Result;
 import java.io.File;
 import java.sql.*;
 
@@ -71,7 +73,6 @@ public class DatabaseModel {
 	 * Initialises the tables in the database (see schema for details). Is called by the init() function
 	 */
 	public void initTables() {
-		System.out.println("Creating database tables");
 		
 		String sqlUser = "" +
 				"CREATE TABLE IF NOT EXISTS user (\n" +
@@ -105,20 +106,44 @@ public class DatabaseModel {
 				");";
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-			System.out.println("Creating user table");
 			stmt.execute(sqlUser);
 			
-			System.out.println("Creating click table");
 			stmt.execute(sqlClick);
 			
-			System.out.println("Creating site impressions table");
 			stmt.execute(sqlSiteImpression);
 			
-			System.out.println("Creating server log table");
 			stmt.execute(sqlServerLog);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void insertData(TableType table) {
+		
+	}
+	
+	/**
+	 * Selects all data from one table and returns it
+	 *
+	 * @param table TableType from which the data is being accessed
+	 * @return ResultSet of data, null if exception thrown
+	 */
+	public ResultSet selectAllTableData(TableType table) {
+		String sql = "SELECT * FROM " + table.toString();
+		
+		ResultSet resultSet = null;
+		
+		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+			resultSet = stmt.executeQuery(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return resultSet;
+	}
+	
+	public void printToConsole(ResultSet resultSet) {
+		
 	}
 }
