@@ -27,8 +27,8 @@ hs_err_pid*
 *.iml
 
 /src/Model/DBTest.java
-/db/model.db
 /.idea/misc.xml
 /.idea/modules.xml
 /AdvertisingDashboard.iml
 /AuctionDashboard.iml
+/db/model.db
