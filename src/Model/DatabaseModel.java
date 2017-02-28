@@ -1,5 +1,7 @@
 package Model;
 
+import Views.LogType;
+
 import javax.swing.plaf.nimbus.State;
 import javax.xml.transform.Result;
 import java.io.File;
@@ -119,7 +121,7 @@ public class DatabaseModel {
 		}
 	}
 	
-	public void insertData(TableType table) {
+	public void insertData(LogType logType) {
 		
 	}
 	

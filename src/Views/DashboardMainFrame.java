@@ -70,7 +70,7 @@ public class DashboardMainFrame extends JFrame {
         this.controller = controller;
     }
 
-    public void submitFiles(List<File> files) {
+    public void submitFiles(Map<LogType, File> files) {
         this.controller.processFiles(files);
     }
 

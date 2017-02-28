@@ -1,6 +1,9 @@
 package Controllers;
 
+import DataStructures.CSVParser;
+import Model.DatabaseModel;
 import Views.DashboardMainFrame;
+import Views.LogType;
 
 import javax.swing.*;
 import java.io.File;
@@ -17,20 +20,24 @@ import java.util.concurrent.Executors;
 public class DashboardMainFrameController {
     //TODO add reference to backend CSV parser + data access
     private DashboardMainFrame frame;
+    private DatabaseModel model;
 
     //TODO allow this to be set based on the device?
     private ExecutorService helpers = Executors.newFixedThreadPool(4);
 
-    public DashboardMainFrameController(DashboardMainFrame frame) {
+    public DashboardMainFrameController(DashboardMainFrame frame, DatabaseModel model) {
         this.frame = frame;
+        this.model = model;
     }
 
-    public void processFiles(List<File> files) {
-        //TODO fill out this method, should send the files to the CSV parser and report progress to a progress bar
-        helpers.submit(() -> files.forEach((file) -> {
-            System.out.println(file.getName());
-            returnData();
-        }));
+    public void processFiles(Map<LogType, File> files) {
+        files.forEach((type, file) -> {
+            helpers.submit(() ->
+            {
+                List<String[]> list = CSVParser.parseLog(file);
+                model.insertData(type, list);
+            });
+        });
     }
 
     public void displayMetrics(Map<String, Double> data) {

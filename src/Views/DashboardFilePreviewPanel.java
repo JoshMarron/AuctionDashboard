@@ -129,4 +129,8 @@ public class DashboardFilePreviewPanel extends JPanel {
             e.printStackTrace();
         }
     }
+
+    public LogType getLogType() {
+        return this.logType;
+    }
 }
