@@ -95,13 +95,12 @@ public class DashboardMainFrame extends JFrame {
 
     public void displayLoading() {
         this.loading = true;
-        JPanel loadingPanel = new JPanel();
+        JPanel loadingPanel = (JPanel) this.getGlassPane();
         loadingPanel.setLayout(new BorderLayout());
         ImageIcon icon = new ImageIcon("../../img/ripple.gif");
         JLabel loadingLabel = new JLabel(icon);
 
         loadingPanel.add(loadingLabel, BorderLayout.CENTER);
-        this.setGlassPane(loadingPanel);
         this.getGlassPane().setVisible(true);
         this.setEnabled(false);
         repaint();
