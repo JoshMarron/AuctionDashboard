@@ -10,12 +10,12 @@ import java.sql.*;
  *
  * Do not run this file unless JDBC-sqlite driver is configured
  */
-public class DatabaseModel {
+public class DatabaseManager {
 	
 	private String filename;
 	private String url;
 	
-	public DatabaseModel() {
+	public DatabaseManager() {
 		
 		filename = "db/model.db";
 		url = "jdbc:sqlite:" + filename;
@@ -107,19 +107,15 @@ public class DatabaseModel {
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			stmt.execute(sqlUser);
-			
 			stmt.execute(sqlClick);
-			
 			stmt.execute(sqlSiteImpression);
-			
 			stmt.execute(sqlServerLog);
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void insertData(TableType table) {
+	public void insertData(LogType logType) {
 		
 	}
 	

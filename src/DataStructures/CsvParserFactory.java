@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 /**
  * Created by rhys on 23/02/17.
  */
-public class CsvPaserFactory implements Factory {
+public class CsvParserFactory implements Factory {
     private CsvBeanReader beanReader = null;
     private String[] headers = null;
     private Class clsStructure;
     private FileReader FR;
 
-    public CsvPaserFactory open(Class clsStructure, String fileName) throws IOException {
+    public CsvParserFactory open(Class clsStructure, String fileName) throws IOException {
         this.clsStructure = clsStructure;
         FR = new FileReader(fileName);
 
@@ -37,7 +37,7 @@ public class CsvPaserFactory implements Factory {
         return this;
     }
 
-    public CsvPaserFactory close() throws IOException {
+    public CsvParserFactory close() throws IOException {
         if (beanReader != null) {
             beanReader.close();
         }

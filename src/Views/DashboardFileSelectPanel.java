@@ -1,5 +1,7 @@
 package Views;
 
+import Model.LogType;
+
 import java.util.List;
 import javax.swing.*;
 import java.awt.*;
@@ -72,7 +74,7 @@ public class DashboardFileSelectPanel extends JPanel {
         chooseAndPreviewPanel.setLayout(new GridLayout(3, 1));
         DashboardFilePreviewPanel impressionChoose = new DashboardFilePreviewPanel(LogType.IMPRESSION, homeDir);
         DashboardFilePreviewPanel clickChoose = new DashboardFilePreviewPanel(LogType.CLICK, homeDir);
-        DashboardFilePreviewPanel serverChoose = new DashboardFilePreviewPanel(LogType.SERVER, homeDir);
+        DashboardFilePreviewPanel serverChoose = new DashboardFilePreviewPanel(LogType.SERVER_LOG, homeDir);
 
         previewPanels.add(impressionChoose);
         previewPanels.add(clickChoose);

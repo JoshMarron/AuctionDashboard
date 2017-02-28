@@ -1,12 +1,12 @@
-package Views;
+package Model;
 
 /**
  * Created by marro on 21/02/2017.
  */
 public enum LogType {
-    IMPRESSION ("Impression"),
-    CLICK ("Click"),
-    SERVER ("Server");
+    IMPRESSION ("impression"),
+    CLICK ("click"),
+    SERVER_LOG("server_log");
 
     private final String name;
 
