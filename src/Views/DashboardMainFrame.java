@@ -3,7 +3,6 @@ package Views;
 import Controllers.DashboardMainFrameController;
 
 import Model.LogType;
-import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -21,9 +20,11 @@ public class DashboardMainFrame extends JFrame {
     private File homeDir;
     private DashboardMainFrameController controller;
     private DashboardMetricsPanel metricsPanel;
+    private boolean loading;
 
     public DashboardMainFrame(File homeDir) {
         this.homeDir = homeDir;
+        loading = false;
     }
 
     public void init() {
@@ -46,7 +47,20 @@ public class DashboardMainFrame extends JFrame {
                     );
         }
 
-        JPanel contentPane = new JPanel();
+        JPanel contentPane = new JPanel() {
+            @Override
+            public void paint(Graphics g) {
+                super.paint(g);
+                Graphics2D g2 = (Graphics2D) g;
+
+                if (loading) {
+                    System.out.println("Called");
+                    g2.setColor(new Color(181, 184, 188, 160));
+                    g2.fillRect(0, 0, this.getWidth(), this.getHeight());
+                    System.out.println();
+                }
+            }
+        };
         this.setContentPane(contentPane);
         contentPane.setBackground(BG_COLOR);
 
@@ -77,5 +91,26 @@ public class DashboardMainFrame extends JFrame {
 
     public void displayMetrics(Map<String, Double> data) {
         data.forEach((name, value) -> metricsPanel.putMetricInTextList(name, value));
+    }
+
+    public void displayLoading() {
+        this.loading = true;
+        JPanel loadingPanel = new JPanel();
+        loadingPanel.setLayout(new BorderLayout());
+        ImageIcon icon = new ImageIcon("../../img/ripple.gif");
+        JLabel loadingLabel = new JLabel(icon);
+
+        loadingPanel.add(loadingLabel, BorderLayout.CENTER);
+        this.setGlassPane(loadingPanel);
+        this.getGlassPane().setVisible(true);
+        this.setEnabled(false);
+        repaint();
+    }
+
+    public void finishedLoading() {
+        this.loading = false;
+        this.getGlassPane().setVisible(false);
+        this.setEnabled(true);
+        repaint();
     }
 }
