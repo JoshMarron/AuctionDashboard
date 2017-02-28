@@ -109,7 +109,7 @@ public class DatabaseManager {
 				" entry_date TEXT NOT NULL, \n" +
 				" exit_date TEXT NOT NULL, \n" +
 				" pages_viewed INTEGER NOT NULL, \n" +
-				" conversion INTEGER NOT NULL \n" + // use 0 and 1 for true and false
+				" conversion TEXT NOT NULL \n" + // TODO change this to a string
 				");";
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
@@ -200,7 +200,7 @@ public class DatabaseManager {
 						pstmt.setString(2, row[0]);
 						pstmt.setString(3, row[2]);
 						pstmt.setInt(4, Integer.parseInt(row[3]));
-						pstmt.setInt(5, Integer.parseInt(row[4]));
+						pstmt.setString(5, row[4]);
 						pstmt.executeUpdate();
 						pstmt.close();
 					}
