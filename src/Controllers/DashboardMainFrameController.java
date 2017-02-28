@@ -6,7 +6,6 @@ import Model.TableModels.Impression;
 import Model.TableType;
 import Views.DashboardMainFrame;
 import Model.LogType;
-
 import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -81,7 +80,7 @@ public class DashboardMainFrameController {
 
         List<Impression> impressionList = model.getAllImpressions();
 
-        results.put("Total number of Impressions", (double) impressionList.size());
+        results.put("Total number of Impressions", (double) MetricUtils.getImpressionCount(impressionList));
         return results;
 
     }
