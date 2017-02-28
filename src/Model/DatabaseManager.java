@@ -87,7 +87,7 @@ public class DatabaseManager {
 				"CREATE TABLE IF NOT EXISTS click (\n" +
 				" user_id INTEGER, \n" +
 				" date STRING TEXT NOT NULL, \n" +
-				" cost INTEGER NOT NULL \n" +
+				" cost REAL NOT NULL \n" +
 				");";
 		
 		String sqlSiteImpression = "" +
@@ -118,6 +118,24 @@ public class DatabaseManager {
 	
 	public void insertData(LogType logType, List<String[]> list) {
 		System.out.println("I've been called with a list of size " + list.size() + " and of type " + logType.toString());
+		
+		int acc = 0;
+		
+		for (String[] row : list) {
+			System.out.println("acc: " + acc++);
+			System.out.println(row[0] + ", " + row[1] + ", " + row[2]);
+			String sql = "INSERT INTO click(user_id, date, cost) VALUES (?, ?, ?)";
+			
+			try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+				pstmt.setLong(1, Long.parseLong(row[1]));
+				pstmt.setString(2, row[0]);
+				pstmt.setDouble(3, Double.parseDouble(row[2]));
+				pstmt.executeUpdate();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		System.out.println("Database insertion complete");
 	}
 	
 	/**
