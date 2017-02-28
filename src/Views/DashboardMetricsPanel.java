@@ -39,13 +39,8 @@ public class DashboardMetricsPanel extends JPanel {
         metricsModel = new DefaultListModel<>();
         JList<String> metrics = new JList<>(metricsModel);
 
-
-        ImageIcon icon = new ImageIcon("C:\\Users\\marro\\IdeaProjects\\AuctionDashboard\\img\\ripple.gif");
-        JLabel loadingLabel = new JLabel(icon);
-
         this.add(titlePanel, BorderLayout.NORTH);
-        //this.add(metrics, BorderLayout.CENTER);
-        this.add(loadingLabel, BorderLayout.CENTER);
+        this.add(metrics, BorderLayout.CENTER);
         this.add(Box.createRigidArea(new Dimension(0, 100)), BorderLayout.SOUTH);
     }
 
