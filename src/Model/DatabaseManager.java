@@ -1,9 +1,10 @@
 package Model;
 
-import javax.swing.plaf.nimbus.State;
-import javax.xml.transform.Result;
+import Model.TableModels.Impression;
+
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,7 +21,6 @@ public class DatabaseManager {
 		
 		filename = "db/model3.db";
 		url = "jdbc:sqlite:" + filename;
-		System.out.println(url);
 	}
 	
 	/**
@@ -93,7 +93,8 @@ public class DatabaseManager {
 				" click_date TEXT NOT NULL, \n" +
 				" cost REAL NOT NULL \n" +
 				");";
-		
+
+		//TODO IMPRESSION COST IS A FLOAT NOT AN INT
 		String sqlSiteImpression = "" +
 				"CREATE TABLE site_impression (\n" +
 				" site_impression_id INTEGER PRIMARY KEY, \n" +
@@ -226,6 +227,35 @@ public class DatabaseManager {
 		}
 		
 		return resultSet;
+	}
+
+	//TODO Sorry Phil, I edited your class, but this way is the only way that works because the ResultSet expires
+	//TODO when the connection closes, we need others for Clicks, Users and Server Logs
+	public List<Impression> getAllImpressions() {
+		List<Impression> impressions = new ArrayList<>();
+		String sql = "SELECT * FROM " + TableType.SITE_IMPRESSION.toString();
+
+		ResultSet resultSet = null;
+
+		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+			resultSet = stmt.executeQuery(sql);
+
+			while (resultSet.next()) {
+				long impressionID = resultSet.getLong(1);
+				long userID = resultSet.getLong(2);
+				String context = resultSet.getString(3);
+				double impressionCost = (double) resultSet.getInt(4);
+
+				Impression i = new Impression(impressionID, userID, context, impressionCost);
+				impressions.add(i);
+
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return impressions;
 	}
 	
 	/**

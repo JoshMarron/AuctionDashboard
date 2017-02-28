@@ -4,6 +4,7 @@ import Controllers.DashboardMainFrameController;
 
 import Model.LogType;
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.io.File;
 import java.util.Map;
@@ -56,7 +57,6 @@ public class DashboardMainFrame extends JFrame {
                 if (loading) {
                     g2.setColor(new Color(181, 184, 188, 160));
                     g2.fillRect(0, 0, this.getWidth(), this.getHeight());
-                    System.out.println();
                 }
             }
         };
@@ -97,11 +97,25 @@ public class DashboardMainFrame extends JFrame {
         JPanel loadingPanel = (JPanel) this.getGlassPane();
         loadingPanel.setLayout(new BorderLayout());
 
-        ImageIcon icon = new ImageIcon("img/gears.gif");
-        icon.setImage(icon.getImage().getScaledInstance(200, 200, Image.SCALE_DEFAULT));
+        ImageIcon icon = new ImageIcon("img/goodripple.gif");
+        icon.setImage(icon.getImage().getScaledInstance(300, 300, Image.SCALE_DEFAULT));
         JLabel loadingLabel = new JLabel(icon);
 
+        JLabel textLoadingLabel = new JLabel("Loading...");
+        textLoadingLabel.setFont(new Font(GLOB_FONT.getName(), GLOB_FONT.getStyle(), 40));
+        textLoadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        textLoadingLabel.setVerticalAlignment(SwingConstants.CENTER);
+
+        JPanel textLoadingPanel = new JPanel();
+        textLoadingPanel.setLayout(new BoxLayout(textLoadingPanel, BoxLayout.X_AXIS));
+        textLoadingPanel.add(Box.createRigidArea(new Dimension(0, 100)));
+        textLoadingPanel.add(Box.createHorizontalGlue());
+        textLoadingPanel.add(textLoadingLabel);
+        textLoadingPanel.add(Box.createHorizontalGlue());
+        textLoadingPanel.setOpaque(false);
+
         loadingPanel.add(loadingLabel, BorderLayout.CENTER);
+        loadingPanel.add(textLoadingPanel, BorderLayout.SOUTH);
         this.getGlassPane().setVisible(true);
         this.getContentPane().setEnabled(false);
         repaint();

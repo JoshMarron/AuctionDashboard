@@ -15,7 +15,6 @@ public class Main {
         DashboardMainFrameController controller = new DashboardMainFrameController(frame, model);
         //TODO resolve the circular dependency with the listener pattern
         frame.setController(controller);
-
         SwingUtilities.invokeLater(frame::init);
     }
 }

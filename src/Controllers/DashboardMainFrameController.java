@@ -2,6 +2,8 @@ package Controllers;
 
 import DataStructures.CSVParser;
 import Model.DatabaseManager;
+import Model.TableModels.Impression;
+import Model.TableType;
 import Views.DashboardMainFrame;
 import Model.LogType;
 
@@ -37,7 +39,7 @@ public class DashboardMainFrameController {
 
     public void processFiles(Map<LogType, File> files) {
         files.forEach((type, file) -> {
-            frame.displayLoading();
+            SwingUtilities.invokeLater(frame::displayLoading);
             Future<?> f = helpers.submit(() ->
             {
                 List<String[]> list = CSVParser.parseLog(file);
@@ -61,7 +63,11 @@ public class DashboardMainFrameController {
             }
 
             if (finished) {
-                frame.finishedLoading();
+                Map<String, Double> results = this.calculateKeyMetrics(files);
+                SwingUtilities.invokeLater(() -> {
+                    frame.finishedLoading();
+                    frame.displayMetrics(results);
+                });
             }
         }).start();
     }
@@ -70,12 +76,13 @@ public class DashboardMainFrameController {
         SwingUtilities.invokeLater(() -> frame.displayMetrics(data));
     }
 
-    public void returnData() {
-        HashMap<String, Double> data = new HashMap<>();
-        data.put("Click Through Rate (CTR)", 1.00);
-        data.put("Total Campaign Cost", 1200424240.0);
-        data.put("Number of Impressions", 12535360.0);
+    public Map<String, Double> calculateKeyMetrics(Map<LogType, File> files) {
+        Map<String, Double> results = new HashMap<>();
 
-        this.displayMetrics(data);
+        List<Impression> impressionList = model.getAllImpressions();
+
+        results.put("Total number of Impressions", (double) impressionList.size());
+        return results;
+
     }
 }
