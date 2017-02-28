@@ -32,3 +32,6 @@ hs_err_pid*
 /AdvertisingDashboard.iml
 /AuctionDashboard.iml
 /db/model.db
+/db/model3.db
+db/
+out/

@@ -80,7 +80,7 @@ public class DatabaseManager {
 		
 		String sqlUser = "" +
 				"CREATE TABLE user (\n" +
-				" user_id INTEGER PRIMARY KEY, \n" +
+				" user_id INTEGER PRIMARY KEY ON CONFLICT IGNORE, \n" +
 				" age TEXT NOT NULL, \n" +
 				" gender TEXT NOT NULL, \n" +
 				" income TEXT NOT NULL \n" +
