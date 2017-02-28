@@ -2,6 +2,7 @@ import Controllers.DashboardMainFrameController;
 import DataStructures.CsvInterfaces.Factory;
 import DataStructures.CsvInterfaces.IServerLog;
 import DataStructures.CsvPaserFactory;
+import DataStructures.ServerLog;
 import Views.DashboardMainFrame;
 
 import javax.swing.*;
@@ -13,8 +14,11 @@ public class Main {
         Factory factory = new CsvPaserFactory();
         try {
             String path = "server_log.csv";
-            factory.open(IServerLog.class, path);
-            IServerLog c = (IServerLog) factory.next();
+            factory.open(ServerLog.class, path);
+            ServerLog c;
+            while ((c = (ServerLog) factory.next()) != null){
+                  System.out.println(c.getEntryDate());
+            }
             factory.close();
         } catch (IOException e) {
             e.printStackTrace();

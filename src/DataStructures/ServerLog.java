@@ -27,6 +27,9 @@ public class ServerLog implements IServerLog {
     }
 
     public ServerLog setExit_Date(String exit_Date) {
+        if (exit_Date.equals("n/a")){
+            return null;
+        }
         LocalDate localDate = LocalDate.parse(exit_Date.split(" ")[0]);
         LocalDateTime localDateTime = localDate.atTime(LocalTime.parse(exit_Date.split(" ")[1]));
         Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
