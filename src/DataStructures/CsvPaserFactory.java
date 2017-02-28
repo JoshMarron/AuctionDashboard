@@ -4,6 +4,7 @@ import DataStructures.CsvInterfaces.Factory;
 import org.supercsv.io.CsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
+import java.io.EOFException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,10 +18,11 @@ public class CsvPaserFactory implements Factory {
     private CsvBeanReader beanReader = null;
     private String[] headers = null;
     private Class clsStructure;
+    private FileReader FR;
 
     public CsvPaserFactory open(Class clsStructure, String fileName) throws IOException {
         this.clsStructure = clsStructure;
-        FileReader FR = new FileReader(fileName);
+        FR = new FileReader(fileName);
 
 
         this.beanReader = new CsvBeanReader(FR, CsvPreference.STANDARD_PREFERENCE);
@@ -44,7 +46,12 @@ public class CsvPaserFactory implements Factory {
 
     public Object next() throws IOException {
         if (beanReader != null) {
-            return beanReader.read(clsStructure, headers);
+            try {
+                return beanReader.read(clsStructure, headers);
+            }
+            catch (EOFException e){
+                return null;
+            }
         }
         return null;
     }
