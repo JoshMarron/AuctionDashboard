@@ -117,41 +117,30 @@ public class DatabaseManager {
 			stmt.execute(sqlClick);
 			stmt.execute(sqlSiteImpression);
 			stmt.execute(sqlServerLog);
+			
+			Statement syncOff = conn.createStatement();
+			String sqlSyncOff = "PRAGMA synchronous=OFF";
+			syncOff.execute(sqlSyncOff);
+			syncOff.close();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Insert data into the database
+	 *
+	 * @param logType type of log file being inserted
+	 * @param list list of arrays of strings of data to be inserted
+	 */
 	public void insertData(LogType logType, List<String[]> list) {
-//		System.out.println("I've been called with a list of size " + list.size() + " and of type " + logType.toString());
-//		String sql = "INSERT INTO click(user_id, click_date, cost) VALUES (?, ?, ?)";
-		
-		/*
-		try {
-			Connection conn = connect();
-			conn.setAutoCommit(false);
-			for (String[] row : list) {
-				
-				PreparedStatement pstmt = conn.prepareStatement(sql);
-//				System.out.println("ACC: " + acc + " || " + row[0] + ", " + row[1] + ", " + row[2]);
-				pstmt.setLong(1, Long.parseLong(row[1]));
-				pstmt.setString(2, row[0]);
-				pstmt.setDouble(3, Double.parseDouble(row[2]));
-				pstmt.executeUpdate();
-				pstmt.close();
-			}
-			conn.commit();
-			conn.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		*/
-		
-		try {
-			Connection conn = connect();
-			conn.setAutoCommit(false);
 
-			String sql = "";
+		try {
+			Connection conn = connect();
+			conn.setAutoCommit(false);
+			
+			String sql;
 			
 			switch (logType) {
 				case CLICK:
