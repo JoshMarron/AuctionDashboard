@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Created by Philip on 26/02/2017.
- *
+ * <p>
  * Do not run this file unless JDBC-sqlite driver is configured
  */
 public class DatabaseManager {
@@ -18,12 +18,14 @@ public class DatabaseManager {
 	
 	public DatabaseManager() {
 		
-		filename = "db/model.db";
+		filename = "/db/model3.db";
 		url = "jdbc:sqlite:" + filename;
+		System.out.println(url);
 	}
 	
 	/**
 	 * Attempts connection to the database file
+	 *
 	 * @return connection to the database file
 	 * @throws SQLException Upon failure of connection
 	 */
@@ -37,7 +39,7 @@ public class DatabaseManager {
 	 */
 	public void init() {
 		File dir = new File("db");
-		File file = new File("db/model.db");
+		File file = new File(filename);
 		
 		if (!dir.exists()) {
 			System.out.println("Directory doesn't exist");
@@ -60,6 +62,7 @@ public class DatabaseManager {
 					System.out.println("Driver name is " + meta.getDriverName());
 					System.out.println("Database successfully created!");
 				}
+				conn.close();
 			} catch (SQLException | ClassNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -76,7 +79,7 @@ public class DatabaseManager {
 	public void initTables() {
 		
 		String sqlUser = "" +
-				"CREATE TABLE IF NOT EXISTS user (\n" +
+				"CREATE TABLE user (\n" +
 				" user_id INTEGER PRIMARY KEY, \n" +
 				" age TEXT NOT NULL, \n" +
 				" gender TEXT NOT NULL, \n" +
@@ -84,21 +87,24 @@ public class DatabaseManager {
 				");";
 		
 		String sqlClick = "" +
-				"CREATE TABLE IF NOT EXISTS click (\n" +
-				" user_id INTEGER, \n" +
-				" date STRING TEXT NOT NULL, \n" +
+				"CREATE TABLE click (\n" +
+				" click_id INTEGER PRIMARY KEY, \n" +
+				" user_id INTEGER NOT NULL, \n" +
+				" click_date TEXT NOT NULL, \n" +
 				" cost REAL NOT NULL \n" +
 				");";
 		
 		String sqlSiteImpression = "" +
-				"CREATE TABLE IF NOT EXISTS site_impression (\n" +
-				" user_id INTEGER, \n" +
-				" context STRING NOT NULL, \n" +
+				"CREATE TABLE site_impression (\n" +
+				" site_impression_id INTEGER PRIMARY KEY, \n" +
+				" user_id INTEGER NOT NULL, \n" +
+				" context TEXT NOT NULL, \n" +
 				" impression_cost INTEGER NOT NULL \n" +
 				");";
 		
 		String sqlServerLog = "" +
-				"CREATE TABLE IF NOT EXISTS server_log (\n" +
+				"CREATE TABLE server_log (\n" +
+				" server_log_id INTEGER PRIMARY KEY, \n" +
 				" user_id INTEGER, \n" +
 				" entry_date TEXT NOT NULL, \n" +
 				" exit_date TEXT NOT NULL, \n" +
@@ -117,24 +123,99 @@ public class DatabaseManager {
 	}
 	
 	public void insertData(LogType logType, List<String[]> list) {
-		System.out.println("I've been called with a list of size " + list.size() + " and of type " + logType.toString());
+//		System.out.println("I've been called with a list of size " + list.size() + " and of type " + logType.toString());
+//		String sql = "INSERT INTO click(user_id, click_date, cost) VALUES (?, ?, ?)";
 		
-		int acc = 0;
-		
-		for (String[] row : list) {
-			System.out.println("acc: " + acc++);
-			System.out.println(row[0] + ", " + row[1] + ", " + row[2]);
-			String sql = "INSERT INTO click(user_id, date, cost) VALUES (?, ?, ?)";
-			
-			try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		/*
+		try {
+			Connection conn = connect();
+			conn.setAutoCommit(false);
+			for (String[] row : list) {
+				
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+//				System.out.println("ACC: " + acc + " || " + row[0] + ", " + row[1] + ", " + row[2]);
 				pstmt.setLong(1, Long.parseLong(row[1]));
 				pstmt.setString(2, row[0]);
 				pstmt.setDouble(3, Double.parseDouble(row[2]));
 				pstmt.executeUpdate();
-			} catch (SQLException e) {
-				e.printStackTrace();
+				pstmt.close();
 			}
+			conn.commit();
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
+		*/
+		
+		try {
+			Connection conn = connect();
+			conn.setAutoCommit(false);
+
+			String sql = "";
+			
+			switch (logType) {
+				case CLICK:
+					sql = "INSERT INTO click(user_id, click_date, cost) VALUES (?, ?, ?)";
+					
+					for (String[] row : list) {
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setLong(1, Long.parseLong(row[1]));
+						pstmt.setString(2, row[0]);
+						pstmt.setDouble(3, Double.parseDouble(row[2]));
+						pstmt.executeUpdate();
+						pstmt.close();
+					}
+					break;
+				case IMPRESSION:
+					String sqlSiteImpression = "INSERT INTO site_impression(user_id, context, impression_cost) VALUES (?, ?, ?)";
+					String sqlUser = "INSERT INTO user(user_id, age, gender, income) VALUES (?,?,?,?)";
+					
+					// Date 0,ID 1,Gender 2, Age 3 ,Income 4,Context 5,Impression Cost 6
+					
+					for (String[] row : list) {
+						PreparedStatement pSiteImpression = conn.prepareStatement(sqlSiteImpression);
+						pSiteImpression.setLong(1, Long.parseLong(row[1]));
+						pSiteImpression.setString(2, row[5]);
+						pSiteImpression.setDouble(3, Double.parseDouble(row[6]));
+						pSiteImpression.executeUpdate();
+						pSiteImpression.close();
+						
+						PreparedStatement pUser = conn.prepareStatement(sqlUser);
+						pUser.setLong(1, Long.parseLong(row[1]));
+						pUser.setString(2, row[3]);
+						pUser.setString(3, row[2]);
+						pUser.setString(4, row[4]);
+						pUser.executeUpdate();
+						pUser.close();
+					}
+					break;
+				case SERVER_LOG:
+					sql = "INSERT INTO server_log(user_id, entry_date, exit_date, pages_viewed, conversion) VALUES (?,?,?,?,?)";
+					
+					// Entry Date 0,ID 1,Exit Date 2,Pages Viewed 3,Conversion 4
+					
+					for (String[] row : list) {
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setLong(1, Long.parseLong(row[1]));
+						pstmt.setString(2, row[0]);
+						pstmt.setString(3, row[2]);
+						pstmt.setInt(4, Integer.parseInt(row[3]));
+						pstmt.setInt(5, Integer.parseInt(row[4]));
+						pstmt.executeUpdate();
+						pstmt.close();
+					}
+					break;
+				default:
+					System.out.println("Not a valid input file");
+			}
+			
+			conn.commit();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 		System.out.println("Database insertion complete");
 	}
 	
@@ -160,6 +241,7 @@ public class DatabaseManager {
 	
 	/**
 	 * Simple class I used to test database queries in the console
+	 *
 	 * @param resultSet the ResultSet which is gathered from the SQL query
 	 */
 	public void printToConsole(ResultSet resultSet) {
