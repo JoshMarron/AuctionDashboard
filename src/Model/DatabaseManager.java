@@ -12,14 +12,14 @@ import java.sql.*;
  *
  * Do not run this file unless JDBC-sqlite driver is configured
  */
-public class DatabaseModel {
+public class DatabaseManager {
 	
 	private String filename;
 	private String url;
 	
-	public DatabaseModel() {
+	public DatabaseManager() {
 		
-		filename = "/db/model.db";
+		filename = "db/model.db";
 		url = "jdbc:sqlite:" + filename;
 	}
 	
@@ -109,13 +109,9 @@ public class DatabaseModel {
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			stmt.execute(sqlUser);
-			
 			stmt.execute(sqlClick);
-			
 			stmt.execute(sqlSiteImpression);
-			
 			stmt.execute(sqlServerLog);
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -145,7 +141,27 @@ public class DatabaseModel {
 		return resultSet;
 	}
 	
+	/**
+	 * Simple class I used to test database queries in the console
+	 * @param resultSet the ResultSet which is gathered from the SQL query
+	 */
 	public void printToConsole(ResultSet resultSet) {
+		try {
+			ResultSetMetaData resultData = resultSet.getMetaData();
+			System.out.println("Printing Result Set Data...");
+			int cols = resultData.getColumnCount();
+			
+			while (resultSet.next()) {
+				for (int i = 1; i <= cols; i++) {
+					if (i > 1) System.out.print("   ");
+					System.out.print(resultSet.getString(i) + " " + resultData.getColumnName(i));
+				}
+				System.out.println("");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 	}
 }
