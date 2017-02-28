@@ -97,12 +97,13 @@ public class DashboardMainFrame extends JFrame {
         JPanel loadingPanel = (JPanel) this.getGlassPane();
         loadingPanel.setLayout(new BorderLayout());
 
-        ImageIcon icon = new ImageIcon("C:\\Users\\marro\\IdeaProjects\\AuctionDashboard\\img\\ripple.gif");
+        ImageIcon icon = new ImageIcon("img/gears.gif");
+        icon.setImage(icon.getImage().getScaledInstance(200, 200, Image.SCALE_DEFAULT));
         JLabel loadingLabel = new JLabel(icon);
 
         loadingPanel.add(loadingLabel, BorderLayout.CENTER);
         this.getGlassPane().setVisible(true);
-        this.setEnabled(false);
+        this.getContentPane().setEnabled(false);
         repaint();
     }
 

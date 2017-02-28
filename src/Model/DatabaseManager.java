@@ -18,7 +18,7 @@ public class DatabaseManager {
 	
 	public DatabaseManager() {
 		
-		filename = "/db/model3.db";
+		filename = "db/model3.db";
 		url = "jdbc:sqlite:" + filename;
 		System.out.println(url);
 	}
