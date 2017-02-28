@@ -54,7 +54,6 @@ public class DashboardMainFrame extends JFrame {
                 Graphics2D g2 = (Graphics2D) g;
 
                 if (loading) {
-                    System.out.println("Called");
                     g2.setColor(new Color(181, 184, 188, 160));
                     g2.fillRect(0, 0, this.getWidth(), this.getHeight());
                     System.out.println();
@@ -97,7 +96,8 @@ public class DashboardMainFrame extends JFrame {
         this.loading = true;
         JPanel loadingPanel = (JPanel) this.getGlassPane();
         loadingPanel.setLayout(new BorderLayout());
-        ImageIcon icon = new ImageIcon("../../img/ripple.gif");
+
+        ImageIcon icon = new ImageIcon("C:\\Users\\marro\\IdeaProjects\\AuctionDashboard\\img\\ripple.gif");
         JLabel loadingLabel = new JLabel(icon);
 
         loadingPanel.add(loadingLabel, BorderLayout.CENTER);
