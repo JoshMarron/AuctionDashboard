@@ -1,9 +1,9 @@
 package Controllers;
 
 import DataStructures.CSVParser;
-import Model.DatabaseModel;
+import Model.DatabaseManager;
 import Views.DashboardMainFrame;
-import Views.LogType;
+import Model.LogType;
 
 import javax.swing.*;
 import java.io.File;
@@ -20,12 +20,12 @@ import java.util.concurrent.Executors;
 public class DashboardMainFrameController {
     //TODO add reference to backend CSV parser + data access
     private DashboardMainFrame frame;
-    private DatabaseModel model;
+    private DatabaseManager model;
 
     //TODO allow this to be set based on the device?
     private ExecutorService helpers = Executors.newFixedThreadPool(4);
 
-    public DashboardMainFrameController(DashboardMainFrame frame, DatabaseModel model) {
+    public DashboardMainFrameController(DashboardMainFrame frame, DatabaseManager model) {
         this.frame = frame;
         this.model = model;
     }

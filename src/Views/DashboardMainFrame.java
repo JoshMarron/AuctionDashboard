@@ -2,6 +2,7 @@ package Views;
 
 import Controllers.DashboardMainFrameController;
 
+import Model.LogType;
 import java.util.List;
 import javax.swing.*;
 import java.awt.*;

@@ -1,5 +1,5 @@
 import Controllers.DashboardMainFrameController;
-import Model.DatabaseModel;
+import Model.DatabaseManager;
 import Views.DashboardMainFrame;
 
 import javax.swing.*;
@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
 
         DashboardMainFrame frame = new DashboardMainFrame(new File(System.getProperty("user.home")));
-        DatabaseModel model = new DatabaseModel();
+        DatabaseManager model = new DatabaseManager();
         DashboardMainFrameController controller = new DashboardMainFrameController(frame, model);
         //TODO resolve the circular dependency with the listener pattern
         frame.setController(controller);

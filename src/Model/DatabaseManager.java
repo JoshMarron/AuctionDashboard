@@ -1,11 +1,10 @@
 package Model;
 
-import Views.LogType;
-
 import javax.swing.plaf.nimbus.State;
 import javax.xml.transform.Result;
 import java.io.File;
 import java.sql.*;
+import java.util.List;
 
 /**
  * Created by Philip on 26/02/2017.
@@ -117,8 +116,8 @@ public class DatabaseManager {
 		}
 	}
 	
-	public void insertData(LogType logType) {
-		
+	public void insertData(LogType logType, List<String[]> list) {
+		System.out.println("I've been called with a list of size " + list.size() + " and of type " + logType.toString());
 	}
 	
 	/**

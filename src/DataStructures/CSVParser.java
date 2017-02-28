@@ -1,6 +1,6 @@
 package DataStructures;
 import com.opencsv.CSVReader;
-import Views.LogType;
+import Model.LogType;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.enums.CSVReaderNullFieldIndicator;
 
