@@ -2,6 +2,8 @@ package Views;
 
 import javax.swing.*;
 import java.awt.*;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 /**
  * A MetricBoxPanel contains a single metric inside a bordered panel for easy display
@@ -42,7 +44,9 @@ public class MetricBoxPanel extends JPanel {
 
     public void setData(Number data) {
         this.data = data;
-        metricDataLabel.setText(this.data.toString());
+        DecimalFormat df = new DecimalFormat("#.#####");
+        df.setRoundingMode(RoundingMode.CEILING);
+        metricDataLabel.setText(df.format(this.data));
         repaint();
     }
 }
