@@ -49,8 +49,8 @@ public class TestMetricUtils {
 
     @Test
     public void testCalculateTotalCost(){
-        List<Double> list = Array.asList(5);
-        assertEquals("should be 51.689", 51.689, MetricUtils.calculateTotalCost(51.5, 0.064, 0.125), 0.00005);
+        List<Double> list = Array.asList(51.5, 0.064, 0.125);
+        assertEquals("should be 51.689", 51.689, MetricUtils.calculateTotalCost(list), 0.00005);
     }
 
 
