@@ -18,4 +18,8 @@ public enum LogType {
         return this.name + " Log";
     }
 
+    public String prettyPrint() {
+        return this.name.replace("_", " ") + " log";
+    }
+
 }

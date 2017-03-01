@@ -6,7 +6,7 @@ package Views;
 public enum MetricType {
     TOTAL_IMPRESSIONS ("Total Number of Impressions"),
     CTR ("Click Through Rate (CTR)"),
-    TOTAL_COST ("Total Cost");
+    TOTAL_COST ("Total Cost (in pence)");
 
     private final String name;
 

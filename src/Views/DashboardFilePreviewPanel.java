@@ -72,6 +72,7 @@ public class DashboardFilePreviewPanel extends JPanel {
 
         //Instantiate JFileChooser which will appear when buttons are clicked
         chooser = new JFileChooser(homeDir);
+        chooser.setDialogTitle("Choose " + this.logType.prettyPrint() + "...");
         FileNameExtensionFilter csvFilter = new FileNameExtensionFilter("CSV Files", "csv");
         chooser.setFileFilter(csvFilter);
 
