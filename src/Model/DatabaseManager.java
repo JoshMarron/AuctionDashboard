@@ -1,10 +1,12 @@
 package Model;
 
+import DataStructures.CsvInterfaces.Gender;
+import DataStructures.CsvInterfaces.Income;
 import Model.TableModels.Click;
 import Model.TableModels.Impression;
+import Model.TableModels.ServerVisit;
 import Model.TableModels.User;
 
-import javax.xml.transform.Result;
 import java.io.File;
 import java.sql.*;
 import java.time.Instant;
@@ -281,9 +283,7 @@ public class DatabaseManager {
 				long clickID = resultSet.getInt(1);
 				long userID = resultSet.getInt(2);
 				
-				String clickStringDate = resultSet.getString(3);
-				clickStringDate = clickStringDate.replace(" ", "T") + "Z";
-				Instant clickDate = Instant.parse(clickStringDate);
+				Instant clickDate = stringToInstant(resultSet.getString(3));
 				
 				double cost = resultSet.getDouble(4);
 				
@@ -298,6 +298,10 @@ public class DatabaseManager {
 		return clicks;
 	}
 	
+	/**
+	 * Selects all data from user database and returns it
+	 * @return List of all User information
+	 */
 	public List<User> getAllUsers() {
 		List<User> users = new ArrayList<>();
 		String sql = "SELECT * FROM " + TableType.USER.toString();
@@ -312,17 +316,50 @@ public class DatabaseManager {
 				String ageRange = resultSet.getString(2);
 				
 				String genderString = resultSet.getString(3);
-				
+				Gender gender = Gender.valueOf(genderString);
 				
 				String incomeString = resultSet.getString(4);
+				Income income = Income.valueOf(incomeString);
 				
-				
+				User u = new User(userID, ageRange, gender, income);
+				users.add(u);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
 		return users;
+	}
+	
+	/**
+	 * Gets all data from server_log database and returns it
+	 * @return List of all ServerVisit information
+	 */
+	public List<ServerVisit> getAllServerVisits() {
+		List<ServerVisit> serverVisits = new ArrayList<>();
+		String sql = "SELECT * FROM " + TableType.SERVER_LOG.toString();
+		
+		ResultSet resultSet;
+		
+		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+			resultSet = stmt.executeQuery(sql);
+			
+			while (resultSet.next()) {
+				long ServerID = resultSet.getLong(1);
+				long userID = resultSet.getLong(2);
+				Instant entryDate = stringToInstant(resultSet.getString(3));
+				Instant exitDate = stringToInstant(resultSet.getString(4));
+				int pagesViewed = resultSet.getInt(5);
+				boolean conversion = conversionToBoolean(resultSet.getString(6));
+				
+				ServerVisit sv = new ServerVisit(ServerID, userID, entryDate, exitDate, pagesViewed, conversion);
+				serverVisits.add(sv);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return serverVisits;
 	}
 	
 	/**
@@ -350,14 +387,50 @@ public class DatabaseManager {
 		
 	}
 	
-//	public boolean tableExists(Connection conn, TableType tableType) throws SQLException {
-//		boolean exists = false;
-//
-//		try (ResultSet rs = conn.getMetaData().getTables(null, null, tableName, null)) {
-//			while (rs.next()) {
-//				String tableName = rs.getString("TABLE_NAME");
-//
-//			}
-//		}
-//	}
+	/**
+	 * Simple conversion that takes a String date from the database and converts it to a Java Instant readable format
+	 * and returns it.
+	 *
+	 * @param dateToParse date from database in String format to parse
+	 * @return Java 8 Instant form of said date
+	 */
+	private Instant stringToInstant(String dateToParse) {
+		return Instant.parse(dateToParse.replace(" ", "T") + "Z");
+	}
+	
+	/**
+	 * Simple conversion taking a conversion String from the database and converts it to a boolean format
+	 *
+	 * @param conversion Conversion String
+	 * @return
+	 * @throws Exception
+	 */
+	private boolean conversionToBoolean(String conversion) throws Exception {
+		switch (conversion) {
+			case "Yes":
+			case "yes":
+				return true;
+			case "No":
+			case "no":
+				return false;
+			default:
+				throw new Exception("Conversion is not of type \"yes/no\"");
+		}
+	}
+	
+	public boolean tableExists(Connection conn, TableType tableType) throws SQLException {
+		boolean exists = false;
+
+		try (ResultSet rs = conn.getMetaData().getTables(null, null, tableName, null)) {
+			while (rs.next()) {
+				String tableName = rs.getString("TABLE_NAME");
+				
+				if (tableName != null && tableName.equals(tableType.toString())) {
+					
+				}
+			}
+		}
+		
+		return exists;
+	}
 }
