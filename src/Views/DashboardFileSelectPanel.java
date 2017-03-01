@@ -1,5 +1,7 @@
 package Views;
 
+import Model.LogType;
+
 import java.util.List;
 import javax.swing.*;
 import java.awt.*;
@@ -7,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -72,7 +75,7 @@ public class DashboardFileSelectPanel extends JPanel {
         chooseAndPreviewPanel.setLayout(new GridLayout(3, 1));
         DashboardFilePreviewPanel impressionChoose = new DashboardFilePreviewPanel(LogType.IMPRESSION, homeDir);
         DashboardFilePreviewPanel clickChoose = new DashboardFilePreviewPanel(LogType.CLICK, homeDir);
-        DashboardFilePreviewPanel serverChoose = new DashboardFilePreviewPanel(LogType.SERVER, homeDir);
+        DashboardFilePreviewPanel serverChoose = new DashboardFilePreviewPanel(LogType.SERVER_LOG, homeDir);
 
         previewPanels.add(impressionChoose);
         previewPanels.add(clickChoose);
@@ -97,7 +100,7 @@ public class DashboardFileSelectPanel extends JPanel {
             //Filter the panels list based on whether a file has been selected within it
             //Get the files and put them in a list to pass to the controller
             Stream<DashboardFilePreviewPanel> panels = previewPanels.stream().filter(DashboardFilePreviewPanel::isLogSelected);
-            List<File> files = panels.map(DashboardFilePreviewPanel::getSelectedFile).collect(Collectors.toList());
+            Map<LogType, File> files = panels.collect(Collectors.toMap( DashboardFilePreviewPanel::getLogType,DashboardFilePreviewPanel::getSelectedFile));
 
             if (!files.isEmpty()) {
                 parent.submitFiles(files);

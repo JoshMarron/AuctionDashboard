@@ -1,5 +1,7 @@
 package Views;
 
+import Model.LogType;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
@@ -44,13 +46,13 @@ public class DashboardFilePreviewPanel extends JPanel {
         fileChoosePanel.setLayout(new BoxLayout(fileChoosePanel, BoxLayout.X_AXIS));
         fileChoosePanel.setOpaque(false);
         fileChoosePanel.setBackground(DashboardMainFrame.BG_COLOR);
-        JLabel logName = new JLabel(this.logType.toString() + ":"); 
+        JLabel logName = new JLabel(this.logType.prettyPrint() + ":");
         logName.setFont(DashboardMainFrame.GLOB_FONT);
 
         logFileName = new JLabel("None chosen");
         logFileName.setFont(DashboardMainFrame.GLOB_FONT);
 
-        JButton logChooseButton = new JButton("Choose " + this.logType.toString() + "...");
+        JButton logChooseButton = new JButton("Choose " + this.logType.prettyPrint() + "...");
         logChooseButton.addActionListener(new ChooseButtonListener());
         logChooseButton.setFont(DashboardMainFrame.GLOB_FONT);
 
@@ -70,6 +72,7 @@ public class DashboardFilePreviewPanel extends JPanel {
 
         //Instantiate JFileChooser which will appear when buttons are clicked
         chooser = new JFileChooser(homeDir);
+        chooser.setDialogTitle("Choose " + this.logType.prettyPrint() + "...");
         FileNameExtensionFilter csvFilter = new FileNameExtensionFilter("CSV Files", "csv");
         chooser.setFileFilter(csvFilter);
 
@@ -128,5 +131,9 @@ public class DashboardFilePreviewPanel extends JPanel {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public LogType getLogType() {
+        return this.logType;
     }
 }

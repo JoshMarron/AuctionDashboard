@@ -2,6 +2,8 @@ package Views;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * DashboardMetricsPanel is the GUI element responsible for displaying a list of metrics computed by the application.
@@ -9,10 +11,10 @@ import java.awt.*;
  */
 public class DashboardMetricsPanel extends JPanel {
 
-    private DefaultListModel<String> metricsModel;
+    private Map<MetricType, MetricBoxPanel> metricBoxes;
 
     public DashboardMetricsPanel() {
-
+        metricBoxes = new HashMap<>();
     }
 
     /**
@@ -35,9 +37,22 @@ public class DashboardMetricsPanel extends JPanel {
         titlePanel.add(title);
         titlePanel.add(Box.createHorizontalGlue());
 
-        //Set up the model for the JList, this allows us to easily modify the list
-        metricsModel = new DefaultListModel<>();
-        JList<String> metrics = new JList<>(metricsModel);
+        //Set up the grid which displays the metrics
+        JPanel metrics = new JPanel();
+        metrics.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        metrics.setLayout(new GridLayout(3, 1));
+
+        MetricBoxPanel totalImpressionsPanel = new MetricBoxPanel(MetricType.TOTAL_IMPRESSIONS);
+        MetricBoxPanel CTRPanel = new MetricBoxPanel(MetricType.CTR);
+        MetricBoxPanel totalCostPanel = new MetricBoxPanel(MetricType.TOTAL_COST);
+
+        metricBoxes.put(MetricType.TOTAL_IMPRESSIONS, totalImpressionsPanel);
+        metricBoxes.put(MetricType.CTR, CTRPanel);
+        metricBoxes.put(MetricType.TOTAL_COST, totalCostPanel);
+
+        metrics.add(totalImpressionsPanel);
+        metrics.add(CTRPanel);
+        metrics.add(totalCostPanel);
 
         this.add(titlePanel, BorderLayout.NORTH);
         this.add(metrics, BorderLayout.CENTER);
@@ -46,11 +61,10 @@ public class DashboardMetricsPanel extends JPanel {
 
     /**
      * Put a metric in the list of metrics
-     * @param name The name of the metric
+     * @param type The type of the metric from the MetricType enum
      * @param data The value of the metric
      */
-    public void putMetricInTextList(String name, Double data) {
-        String displayData = name + ": " + data;
-        metricsModel.addElement(displayData);
+    public void putMetricInPanel(MetricType type, Number data) {
+        metricBoxes.get(type).setData(data);
     }
 }

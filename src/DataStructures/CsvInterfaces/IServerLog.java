@@ -1,7 +1,5 @@
 package DataStructures.CsvInterfaces;
 
-import java.time.Instant;
-
 /**
  * Created by rhys on 21/02/17.
  */
@@ -9,11 +7,22 @@ public interface IServerLog {
 
     Long getID();
 
-    Instant getEntryDate();
+    IServerLog setID(String x);
 
-    Instant getExitDate();
+    String getEntryDate();
+
+    String getExitDate();
 
     Integer getPagesViewed();
 
     Boolean getConversion();
+
+    IServerLog setConversion(String x);
+
+    IServerLog setEntry_Date(String x);
+
+    IServerLog setExit_Date(String x);
+
+    IServerLog setPages_Viewed(String x);
+
 }
