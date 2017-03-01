@@ -13,9 +13,11 @@ public class MetricBoxPanel extends JPanel {
     private MetricType metricType;
     private Number data;
     private JLabel metricDataLabel;
+    private boolean isDataAvailable;
 
     public MetricBoxPanel(MetricType metricType) {
         this.metricType = metricType;
+        this.isDataAvailable = false;
         this.init();
     }
 
@@ -36,7 +38,8 @@ public class MetricBoxPanel extends JPanel {
 
         metricDataLabel = new JLabel();
         metricDataLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        metricDataLabel.setFont(DashboardMainFrame.GLOB_FONT.deriveFont(40F));
+        metricDataLabel.setText(this.metricType.getErrorMessage());
+        metricDataLabel.setFont(DashboardMainFrame.GLOB_FONT);
 
         this.add(metricNamePanel, BorderLayout.NORTH);
         this.add(metricDataLabel, BorderLayout.CENTER);
@@ -58,5 +61,9 @@ public class MetricBoxPanel extends JPanel {
         }
 
         repaint();
+    }
+
+    public void setDataAvailable(boolean isDataAvailable) {
+        this.isDataAvailable = isDataAvailable;
     }
 }

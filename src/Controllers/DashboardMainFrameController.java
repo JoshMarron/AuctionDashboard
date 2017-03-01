@@ -85,12 +85,19 @@ public class DashboardMainFrameController {
         List<Click> clickList = model.getAllClicks();
         List<Double> clickCosts = clickList.stream().map(Click::getCost).collect(Collectors.toList());
 
-        int impressionCount = MetricUtils.getImpressionCount(impressionList);
-        int clickCount = clickList.size();
+        if (files.containsKey(LogType.IMPRESSION)) {
+            int impressionCount = MetricUtils.getImpressionCount(impressionList);
+            results.put(MetricType.TOTAL_IMPRESSIONS, impressionCount);
+        }
+        if (files.containsKey(LogType.CLICK)) {
+            results.put(MetricType.TOTAL_COST, MetricUtils.calculateTotalCost(clickCosts));
+        }
+        if (files.containsKey(LogType.CLICK) && files.containsKey(LogType.IMPRESSION)) {
+            int clickCount = clickList.size();
+            int impressionCount = MetricUtils.getImpressionCount(impressionList);
+            results.put(MetricType.CTR, MetricUtils.calculateCTR(clickCount, impressionCount));
+        }
 
-        results.put(MetricType.TOTAL_IMPRESSIONS, impressionCount);
-        results.put(MetricType.TOTAL_COST, MetricUtils.calculateTotalCost(clickCosts));
-        results.put(MetricType.CTR, MetricUtils.calculateCTR(clickCount, impressionCount));
         return results;
 
     }

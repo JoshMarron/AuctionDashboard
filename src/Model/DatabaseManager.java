@@ -85,53 +85,6 @@ public class DatabaseManager {
 	 */
 	public void initTables() {
 
-		String sqlDropUser = "" +
-				"DROP TABLE IF EXISTS user";
-
-		String sqlUser = "" +
-				"CREATE TABLE user (\n" +
-				" user_id INTEGER PRIMARY KEY ON CONFLICT IGNORE, \n" +
-				" age TEXT NOT NULL, \n" +
-				" gender TEXT NOT NULL, \n" +
-				" income TEXT NOT NULL \n" +
-				");";
-
-		String sqlDropClick = "" +
-				"DROP TABLE IF EXISTS click";
-
-		String sqlClick = "" +
-				"CREATE TABLE click (\n" +
-				" click_id INTEGER PRIMARY KEY, \n" +
-				" user_id INTEGER NOT NULL, \n" +
-				" click_date TEXT NOT NULL, \n" +
-				" cost REAL NOT NULL \n" +
-				");";
-
-		String sqlDropSiteImpression = "" +
-				"DROP TABLE IF EXISTS site_impression";
-
-		String sqlSiteImpression = "" +
-				"CREATE TABLE site_impression (\n" +
-				" site_impression_id INTEGER PRIMARY KEY, \n" +
-				" user_id INTEGER NOT NULL, \n" +
-				" context TEXT NOT NULL, \n" +
-				" impression_cost REAL NOT NULL, \n" +
-				" impression_date STRING NOT NULL" +
-				");";
-
-		String sqlDropServerLog = "" +
-				"DROP TABLE IF EXISTS server_log;";
-
-		String sqlServerLog = "" +
-				"CREATE TABLE server_log (\n" +
-				" server_log_id INTEGER PRIMARY KEY, \n" +
-				" user_id INTEGER, \n" +
-				" entry_date TEXT NOT NULL, \n" +
-				" exit_date TEXT NOT NULL, \n" +
-				" pages_viewed INTEGER NOT NULL, \n" +
-				" conversion TEXT NOT NULL \n" + // TODO change this to a string
-				");";
-		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			stmt.execute(DatabaseStatements.DROP_USER.getStatement());
 			stmt.execute(DatabaseStatements.CREATE_USER.getStatement());
