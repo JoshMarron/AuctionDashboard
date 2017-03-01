@@ -3,9 +3,9 @@ package Model.TableModels;
 import java.time.Instant;
 
 /**
- * The Server class models an entry in the Server table after it comes out of the database
+ * The ServerVisit class models an entry in the ServerVisit table after it comes out of the database
  */
-public class Server {
+public class ServerVisit {
 
     private long ServerLogID;
     private long userID;
@@ -14,8 +14,8 @@ public class Server {
     private int pagesViewed;
     private boolean conversion;
 
-    public Server(long ServerLogID, long userID, Instant entryDate,
-                  Instant exitDate, int pagesViewed, boolean conversion) {
+    public ServerVisit(long ServerLogID, long userID, Instant entryDate,
+                       Instant exitDate, int pagesViewed, boolean conversion) {
         this.ServerLogID = ServerLogID;
         this.userID = userID;
         this.entryDate = entryDate;

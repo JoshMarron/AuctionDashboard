@@ -2,10 +2,12 @@ package DataStructures.CsvInterfaces;
 
 /**
  * Created by rhys on 21/02/17.
+ *
+ * Categorisation of the genders in the database
  */
 public enum Gender {
-    MALE("male"),
-    FEMALE("female");
+    MALE("Male"),
+    FEMALE("Female");
     
     private final String genderText;
     

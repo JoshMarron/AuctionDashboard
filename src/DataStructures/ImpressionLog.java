@@ -111,22 +111,22 @@ public class ImpressionLog implements IImpressionLog {
     public ImpressionLog setIncome(String x) {
         switch (x.toLowerCase()) {
             case "high":
-                this.income = Income.High;
+                this.income = Income.HIGH;
                 break;
             case "h":
-                this.income = Income.High;
+                this.income = Income.HIGH;
                 break;
             case "medium":
-                this.income = Income.Medium;
+                this.income = Income.MEDIUM;
                 break;
             case "m":
-                this.income = Income.Medium;
+                this.income = Income.MEDIUM;
                 break;
             case "low":
-                this.income = Income.Low;
+                this.income = Income.LOW;
                 break;
             case "l":
-                this.income = Income.Low;
+                this.income = Income.LOW;
                 break;
             default:
                 this.income = Income.valueOf(x);
