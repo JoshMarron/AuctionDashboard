@@ -31,7 +31,7 @@ public class DashboardMainFrame extends JFrame {
     public void init() {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setSize(1200, 900);
-        this.setName("Ad Auction Dashboard");
+        this.setTitle("Catalysis");
 
         //Try to use anti-aliasing on the font
         System.setProperty("awt.useSystemAAFontSettings","on");
