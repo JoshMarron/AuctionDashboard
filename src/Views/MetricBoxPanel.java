@@ -44,9 +44,17 @@ public class MetricBoxPanel extends JPanel {
 
     public void setData(Number data) {
         this.data = data;
-        DecimalFormat df = new DecimalFormat("#.#####");
-        df.setRoundingMode(RoundingMode.CEILING);
-        metricDataLabel.setText(df.format(this.data));
+
+        if (data.equals(0)) {
+            metricDataLabel.setText("Cannot display this metric with current information.");
+        }
+
+        else {
+            DecimalFormat df = new DecimalFormat("#.#####");
+            df.setRoundingMode(RoundingMode.CEILING);
+            metricDataLabel.setText(df.format(this.data));
+        }
+
         repaint();
     }
 }
