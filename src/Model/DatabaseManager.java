@@ -87,7 +87,7 @@ public class DatabaseManager {
 
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			stmt.execute(DatabaseStatements.DROP_USER.getStatement());
-			stmt.execute(DatabaseStatements.CREATE_USER.getStatement());
+            stmt.execute(DatabaseStatements.CREATE_USER.getStatement());
 			stmt.execute(DatabaseStatements.DROP_CLICK.getStatement());
 			stmt.execute(DatabaseStatements.CREATE_CLICK.getStatement());
 			stmt.execute(DatabaseStatements.DROP_SITE_IMPRESSION.getStatement());

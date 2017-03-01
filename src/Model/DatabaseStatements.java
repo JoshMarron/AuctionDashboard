@@ -22,14 +22,16 @@ public enum DatabaseStatements {
             " user_id INTEGER NOT NULL, \n" +
             " context TEXT NOT NULL, \n" +
             " impression_cost REAL NOT NULL, \n" +
-            " impression_date STRING NOT NULL" +
+            " impression_date STRING NOT NULL," +
+            " FOREIGN KEY (user_id) REFERENCES user(user_id) " +
             ");"),
     CREATE_CLICK ("" +
             "CREATE TABLE click (\n" +
             " click_id INTEGER PRIMARY KEY, \n" +
             " user_id INTEGER NOT NULL, \n" +
             " click_date TEXT NOT NULL, \n" +
-            " cost REAL NOT NULL \n" +
+            " cost REAL NOT NULL \n," +
+            " FOREIGN KEY (user_id) REFERENCES user(user_id)" +
             ");"),
     CREATE_SERVER_LOG ("" +
             "CREATE TABLE server_log (\n" +
@@ -38,7 +40,8 @@ public enum DatabaseStatements {
             " entry_date TEXT NOT NULL, \n" +
             " exit_date TEXT NOT NULL, \n" +
             " pages_viewed INTEGER NOT NULL, \n" +
-            " conversion TEXT NOT NULL \n" +
+            " conversion TEXT NOT NULL, \n" +
+            " FOREIGN KEY (user_id) REFERENCES user(user_id)" +
             ");");
 
     private String statement;
