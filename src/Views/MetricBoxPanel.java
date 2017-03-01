@@ -34,7 +34,7 @@ public class MetricBoxPanel extends JPanel {
 
         metricDataLabel = new JLabel();
         metricDataLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        metricDataLabel.setFont(DashboardMainFrame.GLOB_FONT.deriveFont(60F));
+        metricDataLabel.setFont(DashboardMainFrame.GLOB_FONT.deriveFont(40F));
 
         this.add(metricNamePanel, BorderLayout.NORTH);
         this.add(metricDataLabel, BorderLayout.CENTER);

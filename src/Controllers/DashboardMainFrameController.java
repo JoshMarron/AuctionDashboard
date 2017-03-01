@@ -2,6 +2,7 @@ package Controllers;
 
 import DataStructures.CSVParser;
 import Model.DatabaseManager;
+import Model.TableModels.Click;
 import Model.TableModels.Impression;
 import Views.DashboardMainFrame;
 import Model.LogType;
@@ -9,6 +10,7 @@ import Views.MetricType;
 
 import javax.swing.*;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 /**
  * DashboardMainFrameController is in charge of relaying events from the GUI to the backend
@@ -80,8 +83,11 @@ public class DashboardMainFrameController {
         Map<MetricType, Number> results = new HashMap<>();
 
         List<Impression> impressionList = model.getAllImpressions();
+        List<Click> clickList = model.getAllClicks();
+        List<Double> clickCosts = clickList.stream().map(Click::getCost).collect(Collectors.toList());
 
         results.put(MetricType.TOTAL_IMPRESSIONS, MetricUtils.getImpressionCount(impressionList));
+        results.put(MetricType.TOTAL_COST, MetricUtils.calculateTotalCost(clickCosts));
         return results;
 
     }
