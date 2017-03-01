@@ -83,7 +83,10 @@ public class DatabaseManager {
 	 * Initialises the tables in the database (see schema for details). Is called by the init() function
 	 */
 	public void initTables() {
-		
+
+		String sqlDropUser = "" +
+				"DROP TABLE IF EXISTS user";
+
 		String sqlUser = "" +
 				"CREATE TABLE user (\n" +
 				" user_id INTEGER PRIMARY KEY ON CONFLICT IGNORE, \n" +
@@ -91,7 +94,10 @@ public class DatabaseManager {
 				" gender TEXT NOT NULL, \n" +
 				" income TEXT NOT NULL \n" +
 				");";
-		
+
+		String sqlDropClick = "" +
+				"DROP TABLE IF EXISTS click";
+
 		String sqlClick = "" +
 				"CREATE TABLE click (\n" +
 				" click_id INTEGER PRIMARY KEY, \n" +
@@ -99,7 +105,10 @@ public class DatabaseManager {
 				" click_date TEXT NOT NULL, \n" +
 				" cost REAL NOT NULL \n" +
 				");";
-		
+
+		String sqlDropSiteImpression = "" +
+				"DROP TABLE IF EXISTS site_impression";
+
 		String sqlSiteImpression = "" +
 				"CREATE TABLE site_impression (\n" +
 				" site_impression_id INTEGER PRIMARY KEY, \n" +
@@ -108,7 +117,10 @@ public class DatabaseManager {
 				" impression_cost REAL NOT NULL, \n" +
 				" impression_date STRING NOT NULL" +
 				");";
-		
+
+		String sqlDropServerLog = "" +
+				"DROP TABLE IF EXISTS server_log;";
+
 		String sqlServerLog = "" +
 				"CREATE TABLE server_log (\n" +
 				" server_log_id INTEGER PRIMARY KEY, \n" +
@@ -120,10 +132,14 @@ public class DatabaseManager {
 				");";
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-//			if (!tableExists(conn, TableType.USER)) stmt.execute(sqlUser);
-//			if (!tableExists(conn, TableType.CLICK)) stmt.execute(sqlClick);
-//			if (!tableExists(conn, TableType.SITE_IMPRESSION)) stmt.execute(sqlSiteImpression);
-//			if (!tableExists(conn, TableType.SERVER_LOG)) stmt.execute(sqlServerLog);
+			stmt.execute(sqlDropUser);
+			stmt.execute(sqlUser);
+			stmt.execute(sqlDropClick);
+			stmt.execute(sqlClick);
+			stmt.execute(sqlDropSiteImpression);
+			stmt.execute(sqlSiteImpression);
+			stmt.execute(sqlDropServerLog);
+			stmt.execute(sqlServerLog);
 			
 			Statement syncOff = conn.createStatement();
 			String sqlSyncOff = "PRAGMA synchronous=OFF";
@@ -151,7 +167,7 @@ public class DatabaseManager {
 			
 			switch (logType) {
 				case CLICK:
-					sql = "DELETE FROM click; VACUUM; INSERT INTO click(user_id, click_date, cost) VALUES (?, ?, ?)";
+					sql = "INSERT INTO click(user_id, click_date, cost) VALUES (?, ?, ?)";
 					
 					for (String[] row : list) {
 						PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -163,8 +179,8 @@ public class DatabaseManager {
 					}
 					break;
 				case IMPRESSION:
-					String sqlSiteImpression = "DELETE FROM site_impression; VACUUM; INSERT INTO site_impression(user_id, context, impression_cost) VALUES (?, ?, ?)";
-					String sqlUser = "DELETE FROM user; VACUUM; INSERT INTO user(user_id, age, gender, income) VALUES (?,?,?,?)";
+					String sqlSiteImpression = "INSERT INTO site_impression(user_id, context, impression_cost) VALUES (?, ?, ?)";
+					String sqlUser = "INSERT INTO user(user_id, age, gender, income) VALUES (?,?,?,?)";
 					
 					// Date 0,ID 1,Gender 2, Age 3 ,Income 4,Context 5,Impression Cost 6
 					
@@ -187,7 +203,7 @@ public class DatabaseManager {
 					}
 					break;
 				case SERVER_LOG:
-					sql = "DELETE FROM server_log; VACUUM; INSERT INTO server_log(user_id, entry_date, exit_date, pages_viewed, conversion) VALUES (?,?,?,?,?)";
+					sql = "INSERT INTO server_log(user_id, entry_date, exit_date, pages_viewed, conversion) VALUES (?,?,?,?,?)";
 					
 					// Entry Date 0,ID 1,Exit Date 2,Pages Viewed 3,Conversion 4
 					
@@ -423,22 +439,4 @@ public class DatabaseManager {
 				throw new Exception("Conversion is not of type \"yes/no\"");
 		}
 	}
-	
-	/**
-	 * Simple method to test whether a given table already exists
-	 * @param conn Connection to test connection through
-	 * @param tableType TableType to test for
-	 * @return true if exists, false otherwise
-	 * @throws SQLException
-	 */
-//	public boolean tableExists(Connection conn, TableType tableType) throws SQLException {
-//		try (ResultSet rs = conn.getMetaData().getTables(null, null, tableType.toString(), null)) {
-//			while (rs.next()) {
-//				String tableName = rs.getString("TABLE_NAME");
-//				if (tableName != null && tableName.equals(tableType.toString())) return true;
-//			}
-//		}
-//
-//		return false;
-//	}
 }
