@@ -4,7 +4,7 @@ import Controllers.DashboardMainFrameController;
 
 import Model.LogType;
 import javax.swing.*;
-import javax.swing.border.Border;
+//import org.apache.batik.swing.JSVGCanvas;
 import java.awt.*;
 import java.io.File;
 import java.util.Map;
@@ -15,13 +15,14 @@ import java.util.Map;
  */
 public class DashboardMainFrame extends JFrame {
 
-    public static final Color BG_COLOR = new Color(184, 200, 209);
+    public static final Color BG_COLOR = new Color(146, 171, 185);
     public static final Font GLOB_FONT = new Font("Tahoma", Font.BOLD, 14);
 
     private File homeDir;
     private DashboardMainFrameController controller;
     private DashboardMetricsPanel metricsPanel;
     private boolean loading;
+    private ImageIcon icon;
 
     public DashboardMainFrame(File homeDir) {
         this.homeDir = homeDir;
@@ -77,29 +78,22 @@ public class DashboardMainFrame extends JFrame {
         this.add(metricsPanel);
         this.add(Box.createRigidArea(new Dimension(50, 0)));
 
+        this.initGlassPane();
+
         this.setVisible(true);
     }
 
-    public void setController(DashboardMainFrameController controller) {
-        this.controller = controller;
-    }
-
-    public void submitFiles(Map<LogType, File> files) {
-        this.controller.processFiles(files);
-    }
-
-    public void displayMetrics(Map<String, Double> data) {
-        data.forEach((name, value) -> metricsPanel.putMetricInTextList(name, value));
-    }
-
-    public void displayLoading() {
-        this.loading = true;
+    public void initGlassPane() {
         JPanel loadingPanel = (JPanel) this.getGlassPane();
         loadingPanel.setLayout(new BorderLayout());
 
-        ImageIcon icon = new ImageIcon("img/goodripple.gif");
+        /*icon = new ImageIcon("img/animal.gif");
         icon.setImage(icon.getImage().getScaledInstance(300, 300, Image.SCALE_DEFAULT));
-        JLabel loadingLabel = new JLabel(icon);
+        JLabel loadingLabel = new JLabel(icon);*/
+
+        //JSVGCanvas svgCanvas = new JSVGCanvas();
+        //svgCanvas.setURI("img/pie.svg");
+        //svgCanvas.setBackground(new Color(0, 0, 0, 0));
 
         JLabel textLoadingLabel = new JLabel("Loading...");
         textLoadingLabel.setFont(new Font(GLOB_FONT.getName(), GLOB_FONT.getStyle(), 40));
@@ -114,8 +108,24 @@ public class DashboardMainFrame extends JFrame {
         textLoadingPanel.add(Box.createHorizontalGlue());
         textLoadingPanel.setOpaque(false);
 
-        loadingPanel.add(loadingLabel, BorderLayout.CENTER);
+        //loadingPanel.add(svgCanvas, BorderLayout.CENTER);
         loadingPanel.add(textLoadingPanel, BorderLayout.SOUTH);
+    }
+
+    public void setController(DashboardMainFrameController controller) {
+        this.controller = controller;
+    }
+
+    public void submitFiles(Map<LogType, File> files) {
+        this.controller.processFiles(files);
+    }
+
+    public void displayMetrics(Map<MetricType, Number> data) {
+        data.forEach((type, value) -> metricsPanel.putMetricInPanel(type, value));
+    }
+
+    public void displayLoading() {
+        this.loading = true;
         this.getGlassPane().setVisible(true);
         this.getContentPane().setEnabled(false);
         repaint();

@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by marro on 28/02/2017.
+ * CSVParser takes a CSV file and parses it to a list of String arrays which can be passed to the DatabaseManager.
+ * This class requires OpenCSV to run.
  */
 public class CSVParser {
 

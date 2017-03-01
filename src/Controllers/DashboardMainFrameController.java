@@ -3,9 +3,10 @@ package Controllers;
 import DataStructures.CSVParser;
 import Model.DatabaseManager;
 import Model.TableModels.Impression;
-import Model.TableType;
 import Views.DashboardMainFrame;
 import Model.LogType;
+import Views.MetricType;
+
 import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class DashboardMainFrameController {
             }
 
             if (finished) {
-                Map<String, Double> results = this.calculateKeyMetrics(files);
+                Map<MetricType, Number> results = this.calculateKeyMetrics(files);
                 SwingUtilities.invokeLater(() -> {
                     frame.finishedLoading();
                     frame.displayMetrics(results);
@@ -71,16 +72,16 @@ public class DashboardMainFrameController {
         }).start();
     }
 
-    public void displayMetrics(Map<String, Double> data) {
+    public void displayMetrics(Map<MetricType, Number> data) {
         SwingUtilities.invokeLater(() -> frame.displayMetrics(data));
     }
 
-    public Map<String, Double> calculateKeyMetrics(Map<LogType, File> files) {
-        Map<String, Double> results = new HashMap<>();
+    public Map<MetricType, Number> calculateKeyMetrics(Map<LogType, File> files) {
+        Map<MetricType, Number> results = new HashMap<>();
 
         List<Impression> impressionList = model.getAllImpressions();
 
-        results.put("Total number of Impressions", (double) MetricUtils.getImpressionCount(impressionList));
+        results.put(MetricType.TOTAL_IMPRESSIONS, MetricUtils.getImpressionCount(impressionList));
         return results;
 
     }
