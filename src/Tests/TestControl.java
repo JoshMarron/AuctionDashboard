@@ -3,15 +3,13 @@ package Tests;
 import Controllers.*;
 
 import org.junit.Test;
-import org.junit.runner.notification.RunListener;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  * Created by mati on 23/02/2017.
  */
-public class TestControl {
+public class TestMetricUtils {
 
 //    @Test
 //    public void testNormal1CalculateCTR(){
@@ -47,12 +45,16 @@ public class TestControl {
     }
 
 
-//    @Test
-//    public void testCalculateTotalCost(){
-//
-//    }
-//
-//
+
+
+    @Test
+    public void testCalculateTotalCost(){
+        List<Double> list = Array.asList(5);
+        assertEquals("should be 51.689", 51.689, MetricUtils.calculateTotalCost(51.5, 0.064, 0.125), 0.00005);
+    }
+
+
+
 //    @Test
 //    public void testGetImpressionCount(){
 //

@@ -11,12 +11,11 @@ public class MetricUtils {
         return ((double) noOfClicks / (double) noOfImpressions);
     }
 
-    public static double calculateTotalCost(ArrayList<Double> clickCost){
+    public static double calculateTotalCost(List<Double> clickCost){
         return clickCost.stream().mapToDouble(Double::doubleValue).sum(); //Returns the sum of all numbers in the list
     }
 
     public static int getImpressionCount(List<Impression> impressions){
-
         return impressions.size();
     }
 }
