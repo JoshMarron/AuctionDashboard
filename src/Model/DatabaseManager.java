@@ -99,14 +99,14 @@ public class DatabaseManager {
 				" click_date TEXT NOT NULL, \n" +
 				" cost REAL NOT NULL \n" +
 				");";
-
-		//TODO IMPRESSION COST IS A FLOAT NOT AN INT
+		
 		String sqlSiteImpression = "" +
 				"CREATE TABLE site_impression (\n" +
 				" site_impression_id INTEGER PRIMARY KEY, \n" +
 				" user_id INTEGER NOT NULL, \n" +
 				" context TEXT NOT NULL, \n" +
-				" impression_cost REAL NOT NULL \n" +
+				" impression_cost REAL NOT NULL, \n" +
+				" impression_date STRING NOT NULL" +
 				");";
 		
 		String sqlServerLog = "" +
@@ -120,10 +120,10 @@ public class DatabaseManager {
 				");";
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-			stmt.execute(sqlUser);
-			stmt.execute(sqlClick);
-			stmt.execute(sqlSiteImpression);
-			stmt.execute(sqlServerLog);
+			if (!tableExists(conn, TableType.USER)) stmt.execute(sqlUser);
+			if (!tableExists(conn, TableType.CLICK)) stmt.execute(sqlClick);
+			if (!tableExists(conn, TableType.SITE_IMPRESSION)) stmt.execute(sqlSiteImpression);
+			if (!tableExists(conn, TableType.SERVER_LOG)) stmt.execute(sqlServerLog);
 			
 			Statement syncOff = conn.createStatement();
 			String sqlSyncOff = "PRAGMA synchronous=OFF";
@@ -151,7 +151,7 @@ public class DatabaseManager {
 			
 			switch (logType) {
 				case CLICK:
-					sql = "INSERT INTO click(user_id, click_date, cost) VALUES (?, ?, ?)";
+					sql = "DELETE FROM click; VACUUM; INSERT INTO click(user_id, click_date, cost) VALUES (?, ?, ?)";
 					
 					for (String[] row : list) {
 						PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -163,16 +163,21 @@ public class DatabaseManager {
 					}
 					break;
 				case IMPRESSION:
-					String sqlSiteImpression = "INSERT INTO site_impression(user_id, context, impression_cost) VALUES (?, ?, ?)";
-					String sqlUser = "INSERT INTO user(user_id, age, gender, income) VALUES (?,?,?,?)";
+					String sqlSiteImpression = "DELETE FROM site_impression; VACUUM; INSERT INTO site_impression(user_id, context, impression_cost) VALUES (?, ?, ?)";
+					String sqlUser = "DELETE FROM user; VACUUM; INSERT INTO user(user_id, age, gender, income) VALUES (?,?,?,?)";
 					
 					// Date 0,ID 1,Gender 2, Age 3 ,Income 4,Context 5,Impression Cost 6
 					
 					for (String[] row : list) {
 						PreparedStatement pSiteImpression = conn.prepareStatement(sqlSiteImpression);
-						pSiteImpression.setLong(1, Long.parseLong(row[1]));
+						try {
+							pSiteImpression.setLong(1, Long.parseLong(row[1]));
+						} catch (ArrayIndexOutOfBoundsException e) {
+							System.out.println(row[0] + row[1] + row[2] + row[3] + row[4]+ row[5] + row[6]);
+						}
 						pSiteImpression.setString(2, row[5]);
 						pSiteImpression.setDouble(3, Double.parseDouble(row[6]));
+						pSiteImpression.setString(4, row[0]);
 						pSiteImpression.executeUpdate();
 						pSiteImpression.close();
 						
@@ -186,7 +191,7 @@ public class DatabaseManager {
 					}
 					break;
 				case SERVER_LOG:
-					sql = "INSERT INTO server_log(user_id, entry_date, exit_date, pages_viewed, conversion) VALUES (?,?,?,?,?)";
+					sql = "DELETE FROM server_log; VACUUM; INSERT INTO server_log(user_id, entry_date, exit_date, pages_viewed, conversion) VALUES (?,?,?,?,?)";
 					
 					// Entry Date 0,ID 1,Exit Date 2,Pages Viewed 3,Conversion 4
 					
@@ -350,7 +355,12 @@ public class DatabaseManager {
 				Instant entryDate = stringToInstant(resultSet.getString(3));
 				Instant exitDate = stringToInstant(resultSet.getString(4));
 				int pagesViewed = resultSet.getInt(5);
-				boolean conversion = conversionToBoolean(resultSet.getString(6));
+				boolean conversion = false;
+				try {
+					conversion = conversionToBoolean(resultSet.getString(6));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				
 				ServerVisit sv = new ServerVisit(ServerID, userID, entryDate, exitDate, pagesViewed, conversion);
 				serverVisits.add(sv);
@@ -418,19 +428,21 @@ public class DatabaseManager {
 		}
 	}
 	
+	/**
+	 * Simple method to test whether a given table already exists
+	 * @param conn Connection to test connection through
+	 * @param tableType TableType to test for
+	 * @return true if exists, false otherwise
+	 * @throws SQLException
+	 */
 	public boolean tableExists(Connection conn, TableType tableType) throws SQLException {
-		boolean exists = false;
-
-		try (ResultSet rs = conn.getMetaData().getTables(null, null, tableName, null)) {
+		try (ResultSet rs = conn.getMetaData().getTables(null, null, tableType.toString(), null)) {
 			while (rs.next()) {
 				String tableName = rs.getString("TABLE_NAME");
-				
-				if (tableName != null && tableName.equals(tableType.toString())) {
-					
-				}
+				if (tableName != null && tableName.equals(tableType.toString())) return true;
 			}
 		}
 		
-		return exists;
+		return false;
 	}
 }
