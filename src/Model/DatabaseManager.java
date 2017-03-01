@@ -120,10 +120,10 @@ public class DatabaseManager {
 				");";
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-			if (!tableExists(conn, TableType.USER)) stmt.execute(sqlUser);
-			if (!tableExists(conn, TableType.CLICK)) stmt.execute(sqlClick);
-			if (!tableExists(conn, TableType.SITE_IMPRESSION)) stmt.execute(sqlSiteImpression);
-			if (!tableExists(conn, TableType.SERVER_LOG)) stmt.execute(sqlServerLog);
+//			if (!tableExists(conn, TableType.USER)) stmt.execute(sqlUser);
+//			if (!tableExists(conn, TableType.CLICK)) stmt.execute(sqlClick);
+//			if (!tableExists(conn, TableType.SITE_IMPRESSION)) stmt.execute(sqlSiteImpression);
+//			if (!tableExists(conn, TableType.SERVER_LOG)) stmt.execute(sqlServerLog);
 			
 			Statement syncOff = conn.createStatement();
 			String sqlSyncOff = "PRAGMA synchronous=OFF";
@@ -170,11 +170,7 @@ public class DatabaseManager {
 					
 					for (String[] row : list) {
 						PreparedStatement pSiteImpression = conn.prepareStatement(sqlSiteImpression);
-						try {
-							pSiteImpression.setLong(1, Long.parseLong(row[1]));
-						} catch (ArrayIndexOutOfBoundsException e) {
-							System.out.println(row[0] + row[1] + row[2] + row[3] + row[4]+ row[5] + row[6]);
-						}
+						pSiteImpression.setLong(1, Long.parseLong(row[1]));
 						pSiteImpression.setString(2, row[5]);
 						pSiteImpression.setDouble(3, Double.parseDouble(row[6]));
 						pSiteImpression.setString(4, row[0]);
@@ -259,7 +255,7 @@ public class DatabaseManager {
 				String context = resultSet.getString(3);
 				double impressionCost = resultSet.getDouble(4);
 
-				Impression i = new Impression(impressionID, userID, context, impressionCost);
+				Impression i = new Impression(impressionID, null, userID, context, impressionCost);
 				impressions.add(i);
 
 			}
@@ -435,14 +431,14 @@ public class DatabaseManager {
 	 * @return true if exists, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean tableExists(Connection conn, TableType tableType) throws SQLException {
-		try (ResultSet rs = conn.getMetaData().getTables(null, null, tableType.toString(), null)) {
-			while (rs.next()) {
-				String tableName = rs.getString("TABLE_NAME");
-				if (tableName != null && tableName.equals(tableType.toString())) return true;
-			}
-		}
-		
-		return false;
-	}
+//	public boolean tableExists(Connection conn, TableType tableType) throws SQLException {
+//		try (ResultSet rs = conn.getMetaData().getTables(null, null, tableType.toString(), null)) {
+//			while (rs.next()) {
+//				String tableName = rs.getString("TABLE_NAME");
+//				if (tableName != null && tableName.equals(tableType.toString())) return true;
+//			}
+//		}
+//
+//		return false;
+//	}
 }
