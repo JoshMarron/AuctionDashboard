@@ -1,9 +1,16 @@
 package Model;
 
+import DataStructures.CsvInterfaces.Gender;
+import DataStructures.CsvInterfaces.Income;
+import Model.TableModels.Click;
 import Model.TableModels.Impression;
+import Model.TableModels.ServerVisit;
+import Model.TableModels.User;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,47 +84,16 @@ public class DatabaseManager {
 	 * Initialises the tables in the database (see schema for details). Is called by the init() function
 	 */
 	public void initTables() {
-		
-		String sqlUser = "" +
-				"CREATE TABLE user (\n" +
-				" user_id INTEGER PRIMARY KEY ON CONFLICT IGNORE, \n" +
-				" age TEXT NOT NULL, \n" +
-				" gender TEXT NOT NULL, \n" +
-				" income TEXT NOT NULL \n" +
-				");";
-		
-		String sqlClick = "" +
-				"CREATE TABLE click (\n" +
-				" click_id INTEGER PRIMARY KEY, \n" +
-				" user_id INTEGER NOT NULL, \n" +
-				" click_date TEXT NOT NULL, \n" +
-				" cost REAL NOT NULL \n" +
-				");";
 
-		//TODO IMPRESSION COST IS A FLOAT NOT AN INT
-		String sqlSiteImpression = "" +
-				"CREATE TABLE site_impression (\n" +
-				" site_impression_id INTEGER PRIMARY KEY, \n" +
-				" user_id INTEGER NOT NULL, \n" +
-				" context TEXT NOT NULL, \n" +
-				" impression_cost INTEGER NOT NULL \n" +
-				");";
-		
-		String sqlServerLog = "" +
-				"CREATE TABLE server_log (\n" +
-				" server_log_id INTEGER PRIMARY KEY, \n" +
-				" user_id INTEGER, \n" +
-				" entry_date TEXT NOT NULL, \n" +
-				" exit_date TEXT NOT NULL, \n" +
-				" pages_viewed INTEGER NOT NULL, \n" +
-				" conversion TEXT NOT NULL \n" + // TODO change this to a string
-				");";
-		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-			stmt.execute(sqlUser);
-			stmt.execute(sqlClick);
-			stmt.execute(sqlSiteImpression);
-			stmt.execute(sqlServerLog);
+			stmt.execute(DatabaseStatements.DROP_USER.getStatement());
+            stmt.execute(DatabaseStatements.CREATE_USER.getStatement());
+			stmt.execute(DatabaseStatements.DROP_CLICK.getStatement());
+			stmt.execute(DatabaseStatements.CREATE_CLICK.getStatement());
+			stmt.execute(DatabaseStatements.DROP_SITE_IMPRESSION.getStatement());
+			stmt.execute(DatabaseStatements.CREATE_SITE_IMPRESSION.getStatement());
+			stmt.execute(DatabaseStatements.DROP_SERVER_LOG.getStatement());
+			stmt.execute(DatabaseStatements.CREATE_SERVER_LOG.getStatement());
 			
 			Statement syncOff = conn.createStatement();
 			String sqlSyncOff = "PRAGMA synchronous=OFF";
@@ -145,6 +121,7 @@ public class DatabaseManager {
 			
 			switch (logType) {
 				case CLICK:
+				    wipeTable(logType);
 					sql = "INSERT INTO click(user_id, click_date, cost) VALUES (?, ?, ?)";
 					
 					for (String[] row : list) {
@@ -157,7 +134,8 @@ public class DatabaseManager {
 					}
 					break;
 				case IMPRESSION:
-					String sqlSiteImpression = "INSERT INTO site_impression(user_id, context, impression_cost) VALUES (?, ?, ?)";
+				    wipeTable(logType);
+					String sqlSiteImpression = "INSERT INTO site_impression(user_id, context, impression_cost, impression_date) VALUES (?, ?, ?, ?)";
 					String sqlUser = "INSERT INTO user(user_id, age, gender, income) VALUES (?,?,?,?)";
 					
 					// Date 0,ID 1,Gender 2, Age 3 ,Income 4,Context 5,Impression Cost 6
@@ -167,6 +145,7 @@ public class DatabaseManager {
 						pSiteImpression.setLong(1, Long.parseLong(row[1]));
 						pSiteImpression.setString(2, row[5]);
 						pSiteImpression.setDouble(3, Double.parseDouble(row[6]));
+						pSiteImpression.setString(4, row[0]);
 						pSiteImpression.executeUpdate();
 						pSiteImpression.close();
 						
@@ -180,6 +159,7 @@ public class DatabaseManager {
 					}
 					break;
 				case SERVER_LOG:
+				    wipeTable(logType);
 					sql = "INSERT INTO server_log(user_id, entry_date, exit_date, pages_viewed, conversion) VALUES (?,?,?,?,?)";
 					
 					// Entry Date 0,ID 1,Exit Date 2,Pages Viewed 3,Conversion 4
@@ -228,9 +208,11 @@ public class DatabaseManager {
 		
 		return resultSet;
 	}
-
-	//TODO Sorry Phil, I edited your class, but this way is the only way that works because the ResultSet expires
-	//TODO when the connection closes, we need others for Clicks, Users and Server Logs
+	
+	/**
+	 * Get all the data from the impressions table
+	 * @return List of Impression data
+	 */
 	public List<Impression> getAllImpressions() {
 		List<Impression> impressions = new ArrayList<>();
 		String sql = "SELECT * FROM " + TableType.SITE_IMPRESSION.toString();
@@ -244,9 +226,10 @@ public class DatabaseManager {
 				long impressionID = resultSet.getLong(1);
 				long userID = resultSet.getLong(2);
 				String context = resultSet.getString(3);
-				double impressionCost = (double) resultSet.getInt(4);
+				double impressionCost = resultSet.getDouble(4);
+				Instant impressionDate = this.stringToInstant(resultSet.getString(5));
 
-				Impression i = new Impression(impressionID, userID, context, impressionCost);
+				Impression i = new Impression(impressionID, userID, context, impressionCost, impressionDate);
 				impressions.add(i);
 
 			}
@@ -256,6 +239,107 @@ public class DatabaseManager {
 		}
 
 		return impressions;
+	}
+	
+	/**
+	 * Selects all data from click table and returns it
+	 * @return List of all Click data
+	 */
+	public List<Click> getAllClicks() {
+		List<Click> clicks = new ArrayList<>();
+		String sql = "SELECT * FROM " + TableType.CLICK.toString();
+		
+		ResultSet resultSet;
+		
+		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+			resultSet = stmt.executeQuery(sql);
+			
+			while (resultSet.next()) {
+				long clickID = resultSet.getInt(1);
+				long userID = resultSet.getInt(2);
+				
+				Instant clickDate = stringToInstant(resultSet.getString(3));
+				
+				double cost = resultSet.getDouble(4);
+				
+				Click c = new Click(clickID, userID, clickDate, cost);
+				clicks.add(c);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return clicks;
+	}
+	
+	/**
+	 * Selects all data from user database and returns it
+	 * @return List of all User information
+	 */
+	public List<User> getAllUsers() {
+		List<User> users = new ArrayList<>();
+		String sql = "SELECT * FROM " + TableType.USER.toString();
+		
+		ResultSet resultSet;
+		
+		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+			resultSet = stmt.executeQuery(sql);
+			
+			while (resultSet.next()) {
+				long userID = resultSet.getInt(1);
+				String ageRange = resultSet.getString(2);
+				
+				String genderString = resultSet.getString(3);
+				Gender gender = Gender.valueOf(genderString);
+				
+				String incomeString = resultSet.getString(4);
+				Income income = Income.valueOf(incomeString);
+				
+				User u = new User(userID, ageRange, gender, income);
+				users.add(u);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return users;
+	}
+	
+	/**
+	 * Gets all data from server_log database and returns it
+	 * @return List of all ServerVisit information
+	 */
+	public List<ServerVisit> getAllServerVisits() {
+		List<ServerVisit> serverVisits = new ArrayList<>();
+		String sql = "SELECT * FROM " + TableType.SERVER_LOG.toString();
+		
+		ResultSet resultSet;
+		
+		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+			resultSet = stmt.executeQuery(sql);
+			
+			while (resultSet.next()) {
+				long ServerID = resultSet.getLong(1);
+				long userID = resultSet.getLong(2);
+				Instant entryDate = stringToInstant(resultSet.getString(3));
+				Instant exitDate = stringToInstant(resultSet.getString(4));
+				int pagesViewed = resultSet.getInt(5);
+				boolean conversion = false;
+				try {
+					conversion = conversionToBoolean(resultSet.getString(6));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				ServerVisit sv = new ServerVisit(ServerID, userID, entryDate, exitDate, pagesViewed, conversion);
+				serverVisits.add(sv);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return serverVisits;
 	}
 	
 	/**
@@ -282,4 +366,61 @@ public class DatabaseManager {
 		}
 		
 	}
+	
+	/**
+	 * Simple conversion that takes a String date from the database and converts it to a Java Instant readable format
+	 * and returns it.
+	 *
+	 * @param dateToParse date from database in String format to parse
+	 * @return Java 8 Instant form of said date
+	 */
+	private Instant stringToInstant(String dateToParse) {
+		return Instant.parse(dateToParse.replace(" ", "T") + "Z");
+	}
+	
+	/**
+	 * Simple conversion taking a conversion String from the database and converts it to a boolean format
+	 *
+	 * @param conversion Conversion String
+	 * @return
+	 * @throws Exception
+	 */
+	private boolean conversionToBoolean(String conversion) throws Exception {
+		switch (conversion) {
+			case "Yes":
+			case "yes":
+				return true;
+			case "No":
+			case "no":
+				return false;
+			default:
+				throw new Exception("Conversion is not of type \"yes/no\"");
+		}
+	}
+
+	private void wipeTable(LogType logType) {
+
+	    try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+
+            switch (logType) {
+                case CLICK:
+                    stmt.execute(DatabaseStatements.DROP_CLICK.getStatement());
+                    stmt.execute(DatabaseStatements.CREATE_CLICK.getStatement());
+                    break;
+                case IMPRESSION:
+                    stmt.execute(DatabaseStatements.DROP_USER.getStatement());
+                    stmt.execute(DatabaseStatements.CREATE_USER.getStatement());
+                    stmt.execute(DatabaseStatements.DROP_SITE_IMPRESSION.getStatement());
+                    stmt.execute(DatabaseStatements.CREATE_SITE_IMPRESSION.getStatement());
+                    break;
+                case SERVER_LOG:
+                    stmt.execute(DatabaseStatements.DROP_SERVER_LOG.getStatement());
+                    stmt.execute(DatabaseStatements.CREATE_SERVER_LOG.getStatement());
+                    break;
+            }
+        } catch (SQLException e) {
+	        e.printStackTrace();
+        }
+
+    }
 }

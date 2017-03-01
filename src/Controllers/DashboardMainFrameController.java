@@ -2,6 +2,7 @@ package Controllers;
 
 import DataStructures.CSVParser;
 import Model.DatabaseManager;
+import Model.TableModels.Click;
 import Model.TableModels.Impression;
 import Views.DashboardMainFrame;
 import Model.LogType;
@@ -17,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 /**
  * DashboardMainFrameController is in charge of relaying events from the GUI to the backend
@@ -76,12 +78,26 @@ public class DashboardMainFrameController {
         SwingUtilities.invokeLater(() -> frame.displayMetrics(data));
     }
 
-    public Map<MetricType, Number> calculateKeyMetrics(Map<LogType, File> files) {
+    private Map<MetricType, Number> calculateKeyMetrics(Map<LogType, File> files) {
         Map<MetricType, Number> results = new HashMap<>();
 
         List<Impression> impressionList = model.getAllImpressions();
+        List<Click> clickList = model.getAllClicks();
+        List<Double> clickCosts = clickList.stream().map(Click::getCost).collect(Collectors.toList());
 
-        results.put(MetricType.TOTAL_IMPRESSIONS, MetricUtils.getImpressionCount(impressionList));
+        if (files.containsKey(LogType.IMPRESSION)) {
+            int impressionCount = MetricUtils.getImpressionCount(impressionList);
+            results.put(MetricType.TOTAL_IMPRESSIONS, impressionCount);
+        }
+        if (files.containsKey(LogType.CLICK)) {
+            results.put(MetricType.TOTAL_COST, MetricUtils.calculateTotalCost(clickCosts));
+        }
+        if (files.containsKey(LogType.CLICK) && files.containsKey(LogType.IMPRESSION)) {
+            int clickCount = clickList.size();
+            int impressionCount = MetricUtils.getImpressionCount(impressionList);
+            results.put(MetricType.CTR, MetricUtils.calculateCTR(clickCount, impressionCount));
+        }
+
         return results;
 
     }

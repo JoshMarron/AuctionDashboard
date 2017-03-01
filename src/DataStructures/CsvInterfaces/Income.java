@@ -4,7 +4,18 @@ package DataStructures.CsvInterfaces;
  * Created by rhys on 21/02/17.
  */
 public enum Income {
-    High,
-    Medium,
-    Low
+    HIGH("High"),
+    MEDIUM("Medium"),
+    LOW("Low");
+    
+    private final String incomeString;
+    
+    private Income(final String text) {
+        incomeString = text;
+    }
+    
+    @Override
+    public String toString() {
+        return incomeString;
+    }
 }

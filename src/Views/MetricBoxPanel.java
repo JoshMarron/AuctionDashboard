@@ -2,6 +2,8 @@ package Views;
 
 import javax.swing.*;
 import java.awt.*;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 /**
  * A MetricBoxPanel contains a single metric inside a bordered panel for easy display
@@ -11,9 +13,11 @@ public class MetricBoxPanel extends JPanel {
     private MetricType metricType;
     private Number data;
     private JLabel metricDataLabel;
+    private boolean isDataAvailable;
 
     public MetricBoxPanel(MetricType metricType) {
         this.metricType = metricType;
+        this.isDataAvailable = false;
         this.init();
     }
 
@@ -34,7 +38,8 @@ public class MetricBoxPanel extends JPanel {
 
         metricDataLabel = new JLabel();
         metricDataLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        metricDataLabel.setFont(DashboardMainFrame.GLOB_FONT.deriveFont(60F));
+        metricDataLabel.setText(this.metricType.getErrorMessage());
+        metricDataLabel.setFont(DashboardMainFrame.GLOB_FONT);
 
         this.add(metricNamePanel, BorderLayout.NORTH);
         this.add(metricDataLabel, BorderLayout.CENTER);
@@ -42,7 +47,23 @@ public class MetricBoxPanel extends JPanel {
 
     public void setData(Number data) {
         this.data = data;
-        metricDataLabel.setText(this.data.toString());
+
+        if (data.equals(0)) {
+            metricDataLabel.setFont(DashboardMainFrame.GLOB_FONT);
+            metricDataLabel.setText(this.metricType.getErrorMessage());
+        }
+
+        else {
+            DecimalFormat df = new DecimalFormat("#.#####");
+            df.setRoundingMode(RoundingMode.CEILING);
+            metricDataLabel.setFont(DashboardMainFrame.GLOB_FONT.deriveFont(50F));
+            metricDataLabel.setText(df.format(this.data));
+        }
+
         repaint();
+    }
+
+    public void setDataAvailable(boolean isDataAvailable) {
+        this.isDataAvailable = isDataAvailable;
     }
 }
