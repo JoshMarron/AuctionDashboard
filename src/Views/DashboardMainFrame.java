@@ -4,7 +4,6 @@ import Controllers.DashboardMainFrameController;
 
 import Model.LogType;
 import javax.swing.*;
-//import org.apache.batik.swing.JSVGCanvas;
 import java.awt.*;
 import java.io.File;
 import java.util.Map;
@@ -87,13 +86,9 @@ public class DashboardMainFrame extends JFrame {
         JPanel loadingPanel = (JPanel) this.getGlassPane();
         loadingPanel.setLayout(new BorderLayout());
 
-        /*icon = new ImageIcon("img/animal.gif");
+        icon = new ImageIcon("img/animal.gif");
         icon.setImage(icon.getImage().getScaledInstance(300, 300, Image.SCALE_DEFAULT));
-        JLabel loadingLabel = new JLabel(icon);*/
-
-        //JSVGCanvas svgCanvas = new JSVGCanvas();
-        //svgCanvas.setURI("img/pie.svg");
-        //svgCanvas.setBackground(new Color(0, 0, 0, 0));
+        JLabel loadingLabel = new JLabel(icon);
 
         JLabel textLoadingLabel = new JLabel("Loading...");
         textLoadingLabel.setFont(new Font(GLOB_FONT.getName(), GLOB_FONT.getStyle(), 40));
@@ -108,7 +103,7 @@ public class DashboardMainFrame extends JFrame {
         textLoadingPanel.add(Box.createHorizontalGlue());
         textLoadingPanel.setOpaque(false);
 
-        //loadingPanel.add(svgCanvas, BorderLayout.CENTER);
+        loadingPanel.add(loadingLabel, BorderLayout.CENTER);
         loadingPanel.add(textLoadingPanel, BorderLayout.SOUTH);
     }
 
