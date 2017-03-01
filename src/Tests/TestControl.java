@@ -43,7 +43,7 @@ public class TestControl {
     }
     @Test
     public void testErroneousCalculateCTR(){
-            assertEquals("should be infite",true,  Float.isInfinite(MetricUtils.calculateCTR(100, 0)));
+            assertEquals("should be infite",true,  Double.isInfinite(MetricUtils.calculateCTR(100, 0)));
     }
 
 
