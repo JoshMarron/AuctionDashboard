@@ -7,6 +7,7 @@ import Model.TableModels.Impression;
 import Model.TableModels.ServerVisit;
 import Model.TableModels.User;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.sql.*;
 import java.time.Instant;
@@ -132,14 +133,14 @@ public class DatabaseManager {
 				");";
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-			stmt.execute(sqlDropUser);
-			stmt.execute(sqlUser);
-			stmt.execute(sqlDropClick);
-			stmt.execute(sqlClick);
-			stmt.execute(sqlDropSiteImpression);
-			stmt.execute(sqlSiteImpression);
-			stmt.execute(sqlDropServerLog);
-			stmt.execute(sqlServerLog);
+			stmt.execute(DatabaseStatements.DROP_USER.getStatement());
+			stmt.execute(DatabaseStatements.CREATE_USER.getStatement());
+			stmt.execute(DatabaseStatements.DROP_CLICK.getStatement());
+			stmt.execute(DatabaseStatements.CREATE_CLICK.getStatement());
+			stmt.execute(DatabaseStatements.DROP_SITE_IMPRESSION.getStatement());
+			stmt.execute(DatabaseStatements.CREATE_SITE_IMPRESSION.getStatement());
+			stmt.execute(DatabaseStatements.DROP_SERVER_LOG.getStatement());
+			stmt.execute(DatabaseStatements.CREATE_SERVER_LOG.getStatement());
 			
 			Statement syncOff = conn.createStatement();
 			String sqlSyncOff = "PRAGMA synchronous=OFF";
@@ -167,6 +168,7 @@ public class DatabaseManager {
 			
 			switch (logType) {
 				case CLICK:
+				    wipeTable(logType);
 					sql = "INSERT INTO click(user_id, click_date, cost) VALUES (?, ?, ?)";
 					
 					for (String[] row : list) {
@@ -179,7 +181,8 @@ public class DatabaseManager {
 					}
 					break;
 				case IMPRESSION:
-					String sqlSiteImpression = "INSERT INTO site_impression(user_id, context, impression_cost) VALUES (?, ?, ?)";
+				    wipeTable(logType);
+					String sqlSiteImpression = "INSERT INTO site_impression(user_id, context, impression_cost, impression_date) VALUES (?, ?, ?, ?)";
 					String sqlUser = "INSERT INTO user(user_id, age, gender, income) VALUES (?,?,?,?)";
 					
 					// Date 0,ID 1,Gender 2, Age 3 ,Income 4,Context 5,Impression Cost 6
@@ -203,6 +206,7 @@ public class DatabaseManager {
 					}
 					break;
 				case SERVER_LOG:
+				    wipeTable(logType);
 					sql = "INSERT INTO server_log(user_id, entry_date, exit_date, pages_viewed, conversion) VALUES (?,?,?,?,?)";
 					
 					// Entry Date 0,ID 1,Exit Date 2,Pages Viewed 3,Conversion 4
@@ -270,8 +274,9 @@ public class DatabaseManager {
 				long userID = resultSet.getLong(2);
 				String context = resultSet.getString(3);
 				double impressionCost = resultSet.getDouble(4);
+				Instant impressionDate = this.stringToInstant(resultSet.getString(5));
 
-				Impression i = new Impression(impressionID, null, userID, context, impressionCost);
+				Impression i = new Impression(impressionID, userID, context, impressionCost, impressionDate);
 				impressions.add(i);
 
 			}
@@ -439,4 +444,30 @@ public class DatabaseManager {
 				throw new Exception("Conversion is not of type \"yes/no\"");
 		}
 	}
+
+	private void wipeTable(LogType logType) {
+
+	    try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+
+            switch (logType) {
+                case CLICK:
+                    stmt.execute(DatabaseStatements.DROP_CLICK.getStatement());
+                    stmt.execute(DatabaseStatements.CREATE_CLICK.getStatement());
+                    break;
+                case IMPRESSION:
+                    stmt.execute(DatabaseStatements.DROP_USER.getStatement());
+                    stmt.execute(DatabaseStatements.CREATE_USER.getStatement());
+                    stmt.execute(DatabaseStatements.DROP_SITE_IMPRESSION.getStatement());
+                    stmt.execute(DatabaseStatements.CREATE_SITE_IMPRESSION.getStatement());
+                    break;
+                case SERVER_LOG:
+                    stmt.execute(DatabaseStatements.DROP_SERVER_LOG.getStatement());
+                    stmt.execute(DatabaseStatements.CREATE_SERVER_LOG.getStatement());
+                    break;
+            }
+        } catch (SQLException e) {
+	        e.printStackTrace();
+        }
+
+    }
 }

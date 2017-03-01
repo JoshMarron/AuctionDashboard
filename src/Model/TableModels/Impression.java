@@ -13,7 +13,7 @@ public class Impression {
     private String context;
     private double impressionCost;
 
-    public Impression(long siteImpressionID, Instant impressionDate, long userID, String context, double impressionCost) {
+    public Impression(long siteImpressionID, long userID, String context, double impressionCost, Instant impressionDate) {
         this.siteImpressionID = siteImpressionID;
         this.impressionDate = impressionDate;
         this.userID = userID;

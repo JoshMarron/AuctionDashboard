@@ -46,12 +46,14 @@ public class MetricBoxPanel extends JPanel {
         this.data = data;
 
         if (data.equals(0)) {
-            metricDataLabel.setText("Cannot display this metric with current information.");
+            metricDataLabel.setFont(DashboardMainFrame.GLOB_FONT);
+            metricDataLabel.setText(this.metricType.getErrorMessage());
         }
 
         else {
             DecimalFormat df = new DecimalFormat("#.#####");
             df.setRoundingMode(RoundingMode.CEILING);
+            metricDataLabel.setFont(DashboardMainFrame.GLOB_FONT.deriveFont(50F));
             metricDataLabel.setText(df.format(this.data));
         }
 
