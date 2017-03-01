@@ -25,6 +25,7 @@ hs_err_pid*
 .idea/
 .csv
 *.iml
+*.MF
 
 /src/Model/DBTest.java
 /.idea/misc.xml
