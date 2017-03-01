@@ -20,7 +20,17 @@ public class TestControl {
     }
 
     @Test
-    public void testCalculateCTR(){
+    public void testNormalCalculateCTR(){
+        assertEquals("should be 20.0", 20.0, MetricUtils.calculateCTR(100 , 5), 0.00005);
+
+    }
+    @Test
+    public void testBoundaryCalculateCTR(){
+        assertEquals("should be 20.0", 16.66667, MetricUtils.calculateCTR(100 , 6), 0.00005);
+
+    }
+    @Test
+    public void testBoundaryCalculateCTR(){
         assertEquals("should be 20.0", 20.0, MetricUtils.calculateCTR(100 , 5), 0.00005);
 
     }
