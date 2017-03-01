@@ -7,8 +7,8 @@ import java.util.List;
 
 public class MetricUtils {
 
-    public static double calculateCTR(double noOfClicks, double noOfImpressions){
-        return (noOfClicks/noOfImpressions);
+    public static double calculateCTR(int noOfClicks, int noOfImpressions){
+        return ( (double) noOfClicks/ (double) noOfImpressions);
     }
 
     public static double calculateTotalCost(List<Double> clickCost){

@@ -10,7 +10,6 @@ import Views.MetricType;
 
 import javax.swing.*;
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,15 +78,19 @@ public class DashboardMainFrameController {
         SwingUtilities.invokeLater(() -> frame.displayMetrics(data));
     }
 
-    public Map<MetricType, Number> calculateKeyMetrics(Map<LogType, File> files) {
+    private Map<MetricType, Number> calculateKeyMetrics(Map<LogType, File> files) {
         Map<MetricType, Number> results = new HashMap<>();
 
         List<Impression> impressionList = model.getAllImpressions();
         List<Click> clickList = model.getAllClicks();
         List<Double> clickCosts = clickList.stream().map(Click::getCost).collect(Collectors.toList());
 
-        results.put(MetricType.TOTAL_IMPRESSIONS, MetricUtils.getImpressionCount(impressionList));
+        int impressionCount = MetricUtils.getImpressionCount(impressionList);
+        int clickCount = clickList.size();
+
+        results.put(MetricType.TOTAL_IMPRESSIONS, impressionCount);
         results.put(MetricType.TOTAL_COST, MetricUtils.calculateTotalCost(clickCosts));
+        results.put(MetricType.CTR, MetricUtils.calculateCTR(clickCount, impressionCount));
         return results;
 
     }
