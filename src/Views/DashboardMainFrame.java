@@ -129,6 +129,11 @@ public class DashboardMainFrame extends JFrame {
     public void finishedLoading() {
         this.loading = false;
         this.getGlassPane().setVisible(false);
+
+        JOptionPane.showMessageDialog(this, "Data Loaded!",
+                "Success! Your data has been loaded into the database!", JOptionPane.INFORMATION_MESSAGE);
+
+
         this.setEnabled(true);
         repaint();
     }
