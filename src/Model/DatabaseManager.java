@@ -1,9 +1,13 @@
 package Model;
 
+import Model.TableModels.Click;
 import Model.TableModels.Impression;
+import Model.TableModels.User;
 
+import javax.xml.transform.Result;
 import java.io.File;
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,7 +104,7 @@ public class DatabaseManager {
 				" site_impression_id INTEGER PRIMARY KEY, \n" +
 				" user_id INTEGER NOT NULL, \n" +
 				" context TEXT NOT NULL, \n" +
-				" impression_cost INTEGER NOT NULL \n" +
+				" impression_cost REAL NOT NULL \n" +
 				");";
 		
 		String sqlServerLog = "" +
@@ -228,9 +232,11 @@ public class DatabaseManager {
 		
 		return resultSet;
 	}
-
-	//TODO Sorry Phil, I edited your class, but this way is the only way that works because the ResultSet expires
-	//TODO when the connection closes, we need others for Clicks, Users and Server Logs
+	
+	/**
+	 * Get all the data from the impressions table
+	 * @return List of Impression data
+	 */
 	public List<Impression> getAllImpressions() {
 		List<Impression> impressions = new ArrayList<>();
 		String sql = "SELECT * FROM " + TableType.SITE_IMPRESSION.toString();
@@ -244,7 +250,7 @@ public class DatabaseManager {
 				long impressionID = resultSet.getLong(1);
 				long userID = resultSet.getLong(2);
 				String context = resultSet.getString(3);
-				double impressionCost = (double) resultSet.getInt(4);
+				double impressionCost = resultSet.getDouble(4);
 
 				Impression i = new Impression(impressionID, userID, context, impressionCost);
 				impressions.add(i);
@@ -256,6 +262,67 @@ public class DatabaseManager {
 		}
 
 		return impressions;
+	}
+	
+	/**
+	 * Selects all data from click table and returns it
+	 * @return List of all Click data
+	 */
+	public List<Click> getAllClicks() {
+		List<Click> clicks = new ArrayList<>();
+		String sql = "SELECT * FROM " + TableType.CLICK.toString();
+		
+		ResultSet resultSet;
+		
+		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+			resultSet = stmt.executeQuery(sql);
+			
+			while (resultSet.next()) {
+				long clickID = resultSet.getInt(1);
+				long userID = resultSet.getInt(2);
+				
+				String clickStringDate = resultSet.getString(3);
+				clickStringDate = clickStringDate.replace(" ", "T") + "Z";
+				Instant clickDate = Instant.parse(clickStringDate);
+				
+				double cost = resultSet.getDouble(4);
+				
+				Click c = new Click(clickID, userID, clickDate, cost);
+				clicks.add(c);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return clicks;
+	}
+	
+	public List<User> getAllUsers() {
+		List<User> users = new ArrayList<>();
+		String sql = "SELECT * FROM " + TableType.USER.toString();
+		
+		ResultSet resultSet;
+		
+		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+			resultSet = stmt.executeQuery(sql);
+			
+			while (resultSet.next()) {
+				long userID = resultSet.getInt(1);
+				String ageRange = resultSet.getString(2);
+				
+				String genderString = resultSet.getString(3);
+				
+				
+				String incomeString = resultSet.getString(4);
+				
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return users;
 	}
 	
 	/**
@@ -282,4 +349,15 @@ public class DatabaseManager {
 		}
 		
 	}
+	
+//	public boolean tableExists(Connection conn, TableType tableType) throws SQLException {
+//		boolean exists = false;
+//
+//		try (ResultSet rs = conn.getMetaData().getTables(null, null, tableName, null)) {
+//			while (rs.next()) {
+//				String tableName = rs.getString("TABLE_NAME");
+//
+//			}
+//		}
+//	}
 }

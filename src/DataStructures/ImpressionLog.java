@@ -75,16 +75,16 @@ public class ImpressionLog implements IImpressionLog {
     public ImpressionLog setGender(String x) {
         switch (x.toLowerCase()) {
             case "male":
-                this.gender = Gender.Male;
+                this.gender = Gender.MALE;
                 break;
             case "m":
-                this.gender = Gender.Male;
+                this.gender = Gender.MALE;
                 break;
             case "female":
-                this.gender = Gender.Female;
+                this.gender = Gender.FEMALE;
                 break;
             case "f":
-                this.gender = Gender.Female;
+                this.gender = Gender.FEMALE;
                 break;
             default:
                 this.gender = Gender.valueOf(x);
