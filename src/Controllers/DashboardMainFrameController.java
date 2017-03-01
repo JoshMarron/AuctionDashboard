@@ -1,14 +1,22 @@
 package Controllers;
 
+import DataStructures.CSVParser;
+import Model.DatabaseManager;
+import Model.TableModels.Impression;
 import Views.DashboardMainFrame;
+import Model.LogType;
+import Views.MetricType;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * DashboardMainFrameController is in charge of relaying events from the GUI to the backend
@@ -17,32 +25,64 @@ import java.util.concurrent.Executors;
 public class DashboardMainFrameController {
     //TODO add reference to backend CSV parser + data access
     private DashboardMainFrame frame;
+    private DatabaseManager model;
+    private List<Future<?>> futures;
 
     //TODO allow this to be set based on the device?
     private ExecutorService helpers = Executors.newFixedThreadPool(4);
 
-    public DashboardMainFrameController(DashboardMainFrame frame) {
+    public DashboardMainFrameController(DashboardMainFrame frame, DatabaseManager model) {
         this.frame = frame;
+        this.model = model;
+        this.futures = new ArrayList<>();
     }
 
-    public void processFiles(List<File> files) {
-        //TODO fill out this method, should send the files to the CSV parser and report progress to a progress bar
-        helpers.submit(() -> files.forEach((file) -> {
-            System.out.println(file.getName());
-            returnData();
-        }));
+    public void processFiles(Map<LogType, File> files) {
+        files.forEach((type, file) -> {
+            SwingUtilities.invokeLater(frame::displayLoading);
+            Future<?> f = helpers.submit(() ->
+            {
+                List<String[]> list = CSVParser.parseLog(file);
+                model.insertData(type, list);
+            });
+            futures.add(f);
+        });
+
+        new Thread(() -> {
+            for (Future<?> f: futures) {
+                try {
+                    f.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            boolean finished = true;
+            for (Future<?> f: futures) {
+                finished &= f.isDone();
+            }
+
+            if (finished) {
+                Map<MetricType, Number> results = this.calculateKeyMetrics(files);
+                SwingUtilities.invokeLater(() -> {
+                    frame.finishedLoading();
+                    frame.displayMetrics(results);
+                });
+            }
+        }).start();
     }
 
-    public void displayMetrics(Map<String, Double> data) {
+    public void displayMetrics(Map<MetricType, Number> data) {
         SwingUtilities.invokeLater(() -> frame.displayMetrics(data));
     }
 
-    public void returnData() {
-        HashMap<String, Double> data = new HashMap<>();
-        data.put("Click Through Rate (CTR)", 1.00);
-        data.put("Total Campaign Cost", 1200424240.0);
-        data.put("Number of Impressions", 12535360.0);
+    public Map<MetricType, Number> calculateKeyMetrics(Map<LogType, File> files) {
+        Map<MetricType, Number> results = new HashMap<>();
 
-        this.displayMetrics(data);
+        List<Impression> impressionList = model.getAllImpressions();
+
+        results.put(MetricType.TOTAL_IMPRESSIONS, MetricUtils.getImpressionCount(impressionList));
+        return results;
+
     }
 }

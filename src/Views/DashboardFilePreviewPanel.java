@@ -1,5 +1,7 @@
 package Views;
 
+import Model.LogType;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
@@ -128,5 +130,9 @@ public class DashboardFilePreviewPanel extends JPanel {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public LogType getLogType() {
+        return this.logType;
     }
 }
