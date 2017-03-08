@@ -81,8 +81,8 @@ public class DashboardMainFrameController {
     private Map<MetricType, Number> calculateKeyMetrics(Map<LogType, File> files) {
         Map<MetricType, Number> results = new HashMap<>();
 
-        List<Impression> impressionList = model.getAllImpressions();
-        List<Click> clickList = model.getAllClicks();
+        List<Impression> impressionList = model.selectAllImpressions();
+        List<Click> clickList = model.selectAllClicks();
         List<Double> clickCosts = clickList.stream().map(Click::getCost).collect(Collectors.toList());
 
         if (files.containsKey(LogType.IMPRESSION)) {

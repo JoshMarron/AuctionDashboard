@@ -23,7 +23,7 @@ public class CSVParser {
         List<String[]> csvRows = null;
 
 
-        try(CSVReader reader = new CSVReaderBuilder(new FileReader(file.getPath()))
+        try (CSVReader reader = new CSVReaderBuilder(new FileReader(file.getPath()))
                 .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
                 .withSkipLines(1)
                 .build()) {

@@ -124,14 +124,17 @@ public class DatabaseManager {
 				    wipeTable(logType);
 					sql = "INSERT INTO click(user_id, click_date, cost) VALUES (?, ?, ?)";
 					
+					PreparedStatement pstmt = conn.prepareStatement(sql);
+					
 					for (String[] row : list) {
-						PreparedStatement pstmt = conn.prepareStatement(sql);
-						pstmt.setLong(1, Long.parseLong(row[1]));
+//						pstmt.setLong(1, Long.parseLong(row[1]));
+						pstmt.setString(1, row[1]);
 						pstmt.setString(2, row[0]);
-						pstmt.setDouble(3, Double.parseDouble(row[2]));
+//						pstmt.setDouble(3, Double.parseDouble(row[2]));
+						pstmt.setString(3, row[2]);
 						pstmt.executeUpdate();
-						pstmt.close();
 					}
+					pstmt.close();
 					break;
 				case IMPRESSION:
 				    wipeTable(logType);
@@ -140,23 +143,27 @@ public class DatabaseManager {
 					
 					// Date 0,ID 1,Gender 2, Age 3 ,Income 4,Context 5,Impression Cost 6
 					
+					PreparedStatement pSiteImpression = conn.prepareStatement(sqlSiteImpression);
+					PreparedStatement pUser = conn.prepareStatement(sqlUser);
+					
 					for (String[] row : list) {
-						PreparedStatement pSiteImpression = conn.prepareStatement(sqlSiteImpression);
-						pSiteImpression.setLong(1, Long.parseLong(row[1]));
+//						pSiteImpression.setLong(1, Long.parseLong(row[1]));
+						pSiteImpression.setString(1, row[1]);
 						pSiteImpression.setString(2, row[5]);
-						pSiteImpression.setDouble(3, Double.parseDouble(row[6]));
+//						pSiteImpression.setDouble(3, Double.parseDouble(row[6]));
+						pSiteImpression.setString(3, row[6]);
 						pSiteImpression.setString(4, row[0]);
 						pSiteImpression.executeUpdate();
-						pSiteImpression.close();
 						
-						PreparedStatement pUser = conn.prepareStatement(sqlUser);
-						pUser.setLong(1, Long.parseLong(row[1]));
+//						pUser.setLong(1, Long.parseLong(row[1]));
+						pUser.setString(1, row[1]);
 						pUser.setString(2, row[3]);
 						pUser.setString(3, row[2]);
 						pUser.setString(4, row[4]);
 						pUser.executeUpdate();
-						pUser.close();
 					}
+					pSiteImpression.close();
+					pUser.close();
 					break;
 				case SERVER_LOG:
 				    wipeTable(logType);
@@ -164,16 +171,19 @@ public class DatabaseManager {
 					
 					// Entry Date 0,ID 1,Exit Date 2,Pages Viewed 3,Conversion 4
 					
+					PreparedStatement pServerLog = conn.prepareStatement(sql);
+					
 					for (String[] row : list) {
-						PreparedStatement pstmt = conn.prepareStatement(sql);
-						pstmt.setLong(1, Long.parseLong(row[1]));
-						pstmt.setString(2, row[0]);
-						pstmt.setString(3, row[2]);
-						pstmt.setInt(4, Integer.parseInt(row[3]));
-						pstmt.setString(5, row[4]);
-						pstmt.executeUpdate();
-						pstmt.close();
+//						pstmt.setLong(1, Long.parseLong(row[1]));
+						pServerLog.setString(1, row[1]);
+						pServerLog.setString(2, row[0]);
+						pServerLog.setString(3, row[2]);
+//						pstmt.setInt(4, Integer.parseInt(row[3]));
+						pServerLog.setString(4, row[3]);
+						pServerLog.setString(5, row[4]);
+						pServerLog.executeUpdate();
 					}
+					pServerLog.close();
 					break;
 				default:
 					System.out.println("Not a valid input file");
@@ -190,30 +200,10 @@ public class DatabaseManager {
 	}
 	
 	/**
-	 * Selects all data from one table and returns it
-	 *
-	 * @param table TableType from which the data is being accessed
-	 * @return ResultSet of data, null if exception thrown
-	 */
-	public ResultSet selectAllTableData(TableType table) {
-		String sql = "SELECT * FROM " + table.toString();
-		
-		ResultSet resultSet = null;
-		
-		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-			resultSet = stmt.executeQuery(sql);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return resultSet;
-	}
-	
-	/**
 	 * Get all the data from the impressions table
 	 * @return List of Impression data
 	 */
-	public List<Impression> getAllImpressions() {
+	public List<Impression> selectAllImpressions() {
 		List<Impression> impressions = new ArrayList<>();
 		String sql = "SELECT * FROM " + TableType.SITE_IMPRESSION.toString();
 
@@ -245,7 +235,7 @@ public class DatabaseManager {
 	 * Selects all data from click table and returns it
 	 * @return List of all Click data
 	 */
-	public List<Click> getAllClicks() {
+	public List<Click> selectAllClicks() {
 		List<Click> clicks = new ArrayList<>();
 		String sql = "SELECT * FROM " + TableType.CLICK.toString();
 		
