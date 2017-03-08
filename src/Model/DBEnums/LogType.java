@@ -1,4 +1,4 @@
-package Model;
+package Model.DBEnums;
 
 /**
  * Enum to model the three types of log the program can receive

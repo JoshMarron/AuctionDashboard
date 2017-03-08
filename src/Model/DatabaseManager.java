@@ -2,12 +2,14 @@ package Model;
 
 import DataStructures.CsvInterfaces.Gender;
 import DataStructures.CsvInterfaces.Income;
+import Model.DBEnums.DatabaseStatements;
+import Model.DBEnums.LogType;
+import Model.DBEnums.TableType;
 import Model.TableModels.Click;
 import Model.TableModels.Impression;
 import Model.TableModels.ServerVisit;
 import Model.TableModels.User;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.sql.*;
 import java.time.Instant;
@@ -112,6 +114,7 @@ public class DatabaseManager {
 	 * @param list list of arrays of strings of data to be inserted
 	 */
 	public void insertData(LogType logType, List<String[]> list) {
+		long startTime = System.nanoTime();
 
 		try {
 			Connection conn = connect();
@@ -197,6 +200,8 @@ public class DatabaseManager {
 		}
 		
 		System.out.println("Database insertion complete");
+		long finalTime = System.nanoTime() - startTime;
+		System.out.println("Time taken for "+ logType + ": " + (finalTime/1000000) + "ms = " + (finalTime/1000000000) + "s");
 	}
 	
 	/**
@@ -211,15 +216,21 @@ public class DatabaseManager {
 
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			resultSet = stmt.executeQuery(sql);
-
+			long impressionID;
+			long userID;
+			String context;
+			double impressionCost;
+			Instant impressionDate;
+			Impression i;
+			
 			while (resultSet.next()) {
-				long impressionID = resultSet.getLong(1);
-				long userID = resultSet.getLong(2);
-				String context = resultSet.getString(3);
-				double impressionCost = resultSet.getDouble(4);
-				Instant impressionDate = this.stringToInstant(resultSet.getString(5));
-
-				Impression i = new Impression(impressionID, userID, context, impressionCost, impressionDate);
+				impressionID = resultSet.getLong(1);
+				userID = resultSet.getLong(2);
+				context = resultSet.getString(3);
+				impressionCost = resultSet.getDouble(4);
+				impressionDate = this.stringToInstant(resultSet.getString(5));
+				
+				i = new Impression(impressionID, userID, context, impressionCost, impressionDate);
 				impressions.add(i);
 
 			}
@@ -243,16 +254,21 @@ public class DatabaseManager {
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			resultSet = stmt.executeQuery(sql);
+			long clickID;
+			long userID;
+			Instant clickDate;
+			double cost;
+			Click c;
 			
 			while (resultSet.next()) {
-				long clickID = resultSet.getInt(1);
-				long userID = resultSet.getInt(2);
+				clickID = resultSet.getInt(1);
+				userID = resultSet.getInt(2);
 				
-				Instant clickDate = stringToInstant(resultSet.getString(3));
+				clickDate = stringToInstant(resultSet.getString(3));
 				
-				double cost = resultSet.getDouble(4);
+				cost = resultSet.getDouble(4);
 				
-				Click c = new Click(clickID, userID, clickDate, cost);
+				c = new Click(clickID, userID, clickDate, cost);
 				clicks.add(c);
 			}
 			
@@ -275,18 +291,21 @@ public class DatabaseManager {
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			resultSet = stmt.executeQuery(sql);
+			long userID;
+			String ageRange;
+			Gender gender;
+			Income income;
+			User u;
 			
 			while (resultSet.next()) {
-				long userID = resultSet.getInt(1);
-				String ageRange = resultSet.getString(2);
+				userID = resultSet.getInt(1);
+				ageRange = resultSet.getString(2);
 				
-				String genderString = resultSet.getString(3);
-				Gender gender = Gender.valueOf(genderString);
+				gender = Gender.valueOf(resultSet.getString(3));
 				
-				String incomeString = resultSet.getString(4);
-				Income income = Income.valueOf(incomeString);
+				income = Income.valueOf(resultSet.getString(4));
 				
-				User u = new User(userID, ageRange, gender, income);
+				u = new User(userID, ageRange, gender, income);
 				users.add(u);
 			}
 		} catch (SQLException e) {
@@ -308,21 +327,28 @@ public class DatabaseManager {
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			resultSet = stmt.executeQuery(sql);
+			long ServerID;
+			long userID;
+			Instant entryDate;
+			Instant exitDate;
+			int pagesViewed;
+			boolean conversion;
+			ServerVisit sv;
 			
 			while (resultSet.next()) {
-				long ServerID = resultSet.getLong(1);
-				long userID = resultSet.getLong(2);
-				Instant entryDate = stringToInstant(resultSet.getString(3));
-				Instant exitDate = stringToInstant(resultSet.getString(4));
-				int pagesViewed = resultSet.getInt(5);
-				boolean conversion = false;
+				ServerID = resultSet.getLong(1);
+				userID = resultSet.getLong(2);
+				entryDate = stringToInstant(resultSet.getString(3));
+				exitDate = stringToInstant(resultSet.getString(4));
+				pagesViewed = resultSet.getInt(5);
+				conversion = false;
 				try {
 					conversion = conversionToBoolean(resultSet.getString(6));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				
-				ServerVisit sv = new ServerVisit(ServerID, userID, entryDate, exitDate, pagesViewed, conversion);
+				sv = new ServerVisit(ServerID, userID, entryDate, exitDate, pagesViewed, conversion);
 				serverVisits.add(sv);
 			}
 		} catch (SQLException e) {
@@ -358,6 +384,31 @@ public class DatabaseManager {
 	}
 	
 	/**
+	 * Simple function to get simple number of unique clicks in the click table
+	 * @return
+	 */
+	public int getNoOfUniqueClicks() {
+		String sql = "" +
+				"SELECT count(user_id) FROM (" +
+				"   SELECT DISTINCT user_id FROM click" +
+				")";
+		
+		ResultSet resultSet;
+		
+		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+			resultSet = stmt.executeQuery(sql);
+			int num = resultSet.getInt(1);
+			resultSet.close();
+			return num;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+//	public int getNoOfUnique();
+	
+	/**
 	 * Simple conversion that takes a String date from the database and converts it to a Java Instant readable format
 	 * and returns it.
 	 *
@@ -387,7 +438,11 @@ public class DatabaseManager {
 				throw new Exception("Conversion is not of type \"yes/no\"");
 		}
 	}
-
+	
+	/**
+	 * Simple method to wipe all the tables if need be
+	 * @param logType the log to which the tables that need deleting are attached
+	 */
 	private void wipeTable(LogType logType) {
 
 	    try (Connection conn = connect(); Statement stmt = conn.createStatement()) {

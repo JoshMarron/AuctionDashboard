@@ -5,7 +5,7 @@ import Model.DatabaseManager;
 import Model.TableModels.Click;
 import Model.TableModels.Impression;
 import Views.DashboardMainFrame;
-import Model.LogType;
+import Model.DBEnums.LogType;
 import Views.MetricType;
 
 import javax.swing.*;

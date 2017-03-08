@@ -1,6 +1,6 @@
 package Views;
 
-import Model.LogType;
+import Model.DBEnums.LogType;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;

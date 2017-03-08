@@ -1,4 +1,4 @@
-package Model;
+package Model.DBEnums;
 
 /**
  * Created by marro on 01/03/2017.
