@@ -1,5 +1,6 @@
 package Controllers;
 
+import Model.TableModels.Click;
 import Model.TableModels.Impression;
 
 import java.util.ArrayList;
@@ -17,5 +18,11 @@ public class MetricUtils {
 
     public static int getImpressionCount(List<Impression> impressions){
         return impressions.size();
+    }
+
+    public static int getClickCount(List<Click> clicks){return clicks.size();}
+
+    public static double getCostPerClick(List<Double> clickCost, int noOfClicks){
+        return calculateTotalCost(clickCost)/noOfClicks;
     }
 }
