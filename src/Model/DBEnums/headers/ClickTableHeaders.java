@@ -1,9 +1,14 @@
-package Model.DBEnums;
+package Model.DBEnums.headers;
+
+import Model.DBEnums.TableType;
 
 /**
  * Created by Philip on 08/03/2017.
+ *
+ * Simple header defining class for the click table
  */
-public enum ClickTableHeaders {
+public enum ClickTableHeaders implements Header {
+	USER_ID("user_id"),
 	CLICK_ID("click_id"),
 	CLICK_DATE("click_date"),
 	COST("cost");
@@ -17,5 +22,10 @@ public enum ClickTableHeaders {
 	@Override
 	public String toString() {
 		return sqlText;
+	}
+	
+	@Override
+	public TableType getTable() {
+		return TableType.CLICK;
 	}
 }
