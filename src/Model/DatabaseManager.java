@@ -128,7 +128,6 @@ public class DatabaseManager {
 			
 			switch (logType) {
 				case CLICK:
-					wipeTable(logType);
 					sql = "INSERT INTO click(user_id, click_date, cost) VALUES (?, ?, ?)";
 					
 					PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -144,7 +143,6 @@ public class DatabaseManager {
 					pstmt.close();
 					break;
 				case IMPRESSION:
-					wipeTable(logType);
 					String sqlSiteImpression = "INSERT INTO site_impression(user_id, context, impression_cost, impression_date) VALUES (?, ?, ?, ?)";
 					String sqlUser = "INSERT INTO user(user_id, age, gender, income) VALUES (?,?,?,?)";
 					
@@ -173,7 +171,6 @@ public class DatabaseManager {
 					pUser.close();
 					break;
 				case SERVER_LOG:
-					wipeTable(logType);
 					sql = "INSERT INTO server_log(user_id, entry_date, exit_date, pages_viewed, conversion) VALUES (?,?,?,?,?)";
 					
 					// Entry Date 0,ID 1,Exit Date 2,Pages Viewed 3,Conversion 4
@@ -465,7 +462,9 @@ public class DatabaseManager {
 	 *
 	 * @param logType the log to which the tables that need deleting are attached
 	 */
-	private void wipeTable(LogType logType) {
+	//TODO This is gross but I'm making it public until we can talk about a better management system
+	//TODO Josh
+	public void wipeTable(LogType logType) {
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			

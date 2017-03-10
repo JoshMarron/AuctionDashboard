@@ -10,14 +10,14 @@ import Views.MetricType;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -28,15 +28,15 @@ public class DashboardMainFrameController {
     //TODO add reference to backend CSV parser + data access
     private DashboardMainFrame frame;
     private DatabaseManager model;
-    private List<Future<?>> futures;
+    private CopyOnWriteArrayList<Future<?>> futures;
 
     //TODO allow this to be set based on the device?
-    private ExecutorService helpers = Executors.newFixedThreadPool(4);
+    private ExecutorService helpers = Executors.newFixedThreadPool(8);
 
     public DashboardMainFrameController(DashboardMainFrame frame, DatabaseManager model) {
         this.frame = frame;
         this.model = model;
-        this.futures = new ArrayList<>();
+        this.futures = new CopyOnWriteArrayList<>();
     }
 
     public void processFiles(Map<LogType, File> files) {
@@ -44,8 +44,21 @@ public class DashboardMainFrameController {
             SwingUtilities.invokeLater(frame::displayLoading);
             Future<?> f = helpers.submit(() ->
             {
-                List<String[]> list = CSVParser.parseLog(file);
-                model.insertData(type, list);
+                int maxLength = 0;
+                try {
+                    maxLength = (int) Files.lines(Paths.get(file.getPath())).count();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                int step = 500000;
+                int start = 1;
+                model.wipeTable(type);
+                while (start < maxLength) {
+                    List<String[]> lines = CSVParser.parseLog(file, start, step);
+                    model.insertData(type, lines);
+                    start += step;
+                }
             });
             futures.add(f);
         });
