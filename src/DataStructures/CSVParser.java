@@ -23,7 +23,9 @@ public class CSVParser {
                 .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
                 .withSkipLines(1)
                 .build()) {
+            System.out.println(System.nanoTime());
             csvRows = reader.readAll();
+            System.out.println(System.nanoTime());
         } catch (IOException e) {
             e.printStackTrace();
         }

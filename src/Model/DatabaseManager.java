@@ -15,7 +15,9 @@ import java.io.File;
 import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Philip on 26/02/2017.
@@ -118,6 +120,7 @@ public class DatabaseManager {
 		long startTime = System.nanoTime();
 		
 		try {
+			System.out.println(System.nanoTime());
 			Connection conn = connect();
 			conn.setAutoCommit(false);
 			
@@ -195,7 +198,7 @@ public class DatabaseManager {
 			
 			conn.commit();
 			conn.close();
-			
+			System.out.println(System.nanoTime());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -410,6 +413,20 @@ public class DatabaseManager {
 			e.printStackTrace();
 		}
 		return -1;
+	}
+
+	public Map<Instant, Integer> getClickCountPerDay() {
+
+		HashMap<Instant, Integer> resultMap = new HashMap<>();
+
+		return resultMap;
+	}
+
+	public Map<Instant, Integer> getImpressionCountPerDay() {
+
+		HashMap<Instant, Integer> resultMap = new HashMap<>();
+
+		return resultMap;
 	}
 	
 	/**
