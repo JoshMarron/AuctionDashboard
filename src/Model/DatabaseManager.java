@@ -2,12 +2,15 @@ package Model;
 
 import DataStructures.CsvInterfaces.Gender;
 import DataStructures.CsvInterfaces.Income;
+import Model.DBEnums.DatabaseStatements;
+import Model.DBEnums.LogType;
+import Model.DBEnums.TableType;
+import Model.DBEnums.headers.Header;
 import Model.TableModels.Click;
 import Model.TableModels.Impression;
 import Model.TableModels.ServerVisit;
 import Model.TableModels.User;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.sql.*;
 import java.time.Instant;
@@ -84,10 +87,10 @@ public class DatabaseManager {
 	 * Initialises the tables in the database (see schema for details). Is called by the init() function
 	 */
 	public void initTables() {
-
+		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			stmt.execute(DatabaseStatements.DROP_USER.getStatement());
-            stmt.execute(DatabaseStatements.CREATE_USER.getStatement());
+			stmt.execute(DatabaseStatements.CREATE_USER.getStatement());
 			stmt.execute(DatabaseStatements.DROP_CLICK.getStatement());
 			stmt.execute(DatabaseStatements.CREATE_CLICK.getStatement());
 			stmt.execute(DatabaseStatements.DROP_SITE_IMPRESSION.getStatement());
@@ -109,10 +112,11 @@ public class DatabaseManager {
 	 * Insert data into the database
 	 *
 	 * @param logType type of log file being inserted
-	 * @param list list of arrays of strings of data to be inserted
+	 * @param list    list of arrays of strings of data to be inserted
 	 */
 	public void insertData(LogType logType, List<String[]> list) {
-
+		long startTime = System.nanoTime();
+		
 		try {
 			Connection conn = connect();
 			conn.setAutoCommit(false);
@@ -121,59 +125,69 @@ public class DatabaseManager {
 			
 			switch (logType) {
 				case CLICK:
-				    wipeTable(logType);
+					wipeTable(logType);
 					sql = "INSERT INTO click(user_id, click_date, cost) VALUES (?, ?, ?)";
 					
+					PreparedStatement pstmt = conn.prepareStatement(sql);
+					
 					for (String[] row : list) {
-						PreparedStatement pstmt = conn.prepareStatement(sql);
-						pstmt.setLong(1, Long.parseLong(row[1]));
+//						pstmt.setLong(1, Long.parseLong(row[1]));
+						pstmt.setString(1, row[1]);
 						pstmt.setString(2, row[0]);
-						pstmt.setDouble(3, Double.parseDouble(row[2]));
+//						pstmt.setDouble(3, Double.parseDouble(row[2]));
+						pstmt.setString(3, row[2]);
 						pstmt.executeUpdate();
-						pstmt.close();
 					}
+					pstmt.close();
 					break;
 				case IMPRESSION:
-				    wipeTable(logType);
+					wipeTable(logType);
 					String sqlSiteImpression = "INSERT INTO site_impression(user_id, context, impression_cost, impression_date) VALUES (?, ?, ?, ?)";
 					String sqlUser = "INSERT INTO user(user_id, age, gender, income) VALUES (?,?,?,?)";
 					
 					// Date 0,ID 1,Gender 2, Age 3 ,Income 4,Context 5,Impression Cost 6
 					
+					PreparedStatement pSiteImpression = conn.prepareStatement(sqlSiteImpression);
+					PreparedStatement pUser = conn.prepareStatement(sqlUser);
+					
 					for (String[] row : list) {
-						PreparedStatement pSiteImpression = conn.prepareStatement(sqlSiteImpression);
-						pSiteImpression.setLong(1, Long.parseLong(row[1]));
+//						pSiteImpression.setLong(1, Long.parseLong(row[1]));
+						pSiteImpression.setString(1, row[1]);
 						pSiteImpression.setString(2, row[5]);
-						pSiteImpression.setDouble(3, Double.parseDouble(row[6]));
+//						pSiteImpression.setDouble(3, Double.parseDouble(row[6]));
+						pSiteImpression.setString(3, row[6]);
 						pSiteImpression.setString(4, row[0]);
 						pSiteImpression.executeUpdate();
-						pSiteImpression.close();
-						
-						PreparedStatement pUser = conn.prepareStatement(sqlUser);
-						pUser.setLong(1, Long.parseLong(row[1]));
+
+//						pUser.setLong(1, Long.parseLong(row[1]));
+						pUser.setString(1, row[1]);
 						pUser.setString(2, row[3]);
 						pUser.setString(3, row[2]);
 						pUser.setString(4, row[4]);
 						pUser.executeUpdate();
-						pUser.close();
 					}
+					pSiteImpression.close();
+					pUser.close();
 					break;
 				case SERVER_LOG:
-				    wipeTable(logType);
+					wipeTable(logType);
 					sql = "INSERT INTO server_log(user_id, entry_date, exit_date, pages_viewed, conversion) VALUES (?,?,?,?,?)";
 					
 					// Entry Date 0,ID 1,Exit Date 2,Pages Viewed 3,Conversion 4
 					
+					PreparedStatement pServerLog = conn.prepareStatement(sql);
+					
 					for (String[] row : list) {
-						PreparedStatement pstmt = conn.prepareStatement(sql);
-						pstmt.setLong(1, Long.parseLong(row[1]));
-						pstmt.setString(2, row[0]);
-						pstmt.setString(3, row[2]);
-						pstmt.setInt(4, Integer.parseInt(row[3]));
-						pstmt.setString(5, row[4]);
-						pstmt.executeUpdate();
-						pstmt.close();
+//						pstmt.setLong(1, Long.parseLong(row[1]));
+						pServerLog.setString(1, row[1]);
+						pServerLog.setString(2, row[0]);
+						pServerLog.setString(3, row[2]);
+//						pstmt.setInt(4, Integer.parseInt(row[3]));
+						pServerLog.setString(4, row[3]);
+						pServerLog.setString(5, row[4]);
+						pServerLog.executeUpdate();
 					}
+					pServerLog.close();
 					break;
 				default:
 					System.out.println("Not a valid input file");
@@ -187,65 +201,55 @@ public class DatabaseManager {
 		}
 		
 		System.out.println("Database insertion complete");
-	}
-	
-	/**
-	 * Selects all data from one table and returns it
-	 *
-	 * @param table TableType from which the data is being accessed
-	 * @return ResultSet of data, null if exception thrown
-	 */
-	public ResultSet selectAllTableData(TableType table) {
-		String sql = "SELECT * FROM " + table.toString();
-		
-		ResultSet resultSet = null;
-		
-		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-			resultSet = stmt.executeQuery(sql);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return resultSet;
+		long finalTime = System.nanoTime() - startTime;
+		System.out.println("Time taken for " + logType + ": " + (finalTime / 1000000) + "ms = " + (finalTime / 1000000000) + "s");
 	}
 	
 	/**
 	 * Get all the data from the impressions table
+	 *
 	 * @return List of Impression data
 	 */
-	public List<Impression> getAllImpressions() {
+	public List<Impression> selectAllImpressions() {
 		List<Impression> impressions = new ArrayList<>();
 		String sql = "SELECT * FROM " + TableType.SITE_IMPRESSION.toString();
-
+		
 		ResultSet resultSet = null;
-
+		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			resultSet = stmt.executeQuery(sql);
-
+			long impressionID;
+			long userID;
+			String context;
+			double impressionCost;
+			Instant impressionDate;
+			Impression i;
+			
 			while (resultSet.next()) {
-				long impressionID = resultSet.getLong(1);
-				long userID = resultSet.getLong(2);
-				String context = resultSet.getString(3);
-				double impressionCost = resultSet.getDouble(4);
-				Instant impressionDate = this.stringToInstant(resultSet.getString(5));
-
-				Impression i = new Impression(impressionID, userID, context, impressionCost, impressionDate);
+				impressionID = resultSet.getLong(1);
+				userID = resultSet.getLong(2);
+				context = resultSet.getString(3);
+				impressionCost = resultSet.getDouble(4);
+				impressionDate = this.stringToInstant(resultSet.getString(5));
+				
+				i = new Impression(impressionID, userID, context, impressionCost, impressionDate);
 				impressions.add(i);
-
+				
 			}
-
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
+		
 		return impressions;
 	}
 	
 	/**
 	 * Selects all data from click table and returns it
+	 *
 	 * @return List of all Click data
 	 */
-	public List<Click> getAllClicks() {
+	public List<Click> selectAllClicks() {
 		List<Click> clicks = new ArrayList<>();
 		String sql = "SELECT * FROM " + TableType.CLICK.toString();
 		
@@ -253,16 +257,21 @@ public class DatabaseManager {
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			resultSet = stmt.executeQuery(sql);
+			long clickID;
+			long userID;
+			Instant clickDate;
+			double cost;
+			Click c;
 			
 			while (resultSet.next()) {
-				long clickID = resultSet.getInt(1);
-				long userID = resultSet.getInt(2);
+				clickID = resultSet.getInt(1);
+				userID = resultSet.getInt(2);
 				
-				Instant clickDate = stringToInstant(resultSet.getString(3));
+				clickDate = stringToInstant(resultSet.getString(3));
 				
-				double cost = resultSet.getDouble(4);
+				cost = resultSet.getDouble(4);
 				
-				Click c = new Click(clickID, userID, clickDate, cost);
+				c = new Click(clickID, userID, clickDate, cost);
 				clicks.add(c);
 			}
 			
@@ -275,6 +284,7 @@ public class DatabaseManager {
 	
 	/**
 	 * Selects all data from user database and returns it
+	 *
 	 * @return List of all User information
 	 */
 	public List<User> getAllUsers() {
@@ -285,18 +295,21 @@ public class DatabaseManager {
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			resultSet = stmt.executeQuery(sql);
+			long userID;
+			String ageRange;
+			Gender gender;
+			Income income;
+			User u;
 			
 			while (resultSet.next()) {
-				long userID = resultSet.getInt(1);
-				String ageRange = resultSet.getString(2);
+				userID = resultSet.getInt(1);
+				ageRange = resultSet.getString(2);
 				
-				String genderString = resultSet.getString(3);
-				Gender gender = Gender.valueOf(genderString);
+				gender = Gender.valueOf(resultSet.getString(3));
 				
-				String incomeString = resultSet.getString(4);
-				Income income = Income.valueOf(incomeString);
+				income = Income.valueOf(resultSet.getString(4));
 				
-				User u = new User(userID, ageRange, gender, income);
+				u = new User(userID, ageRange, gender, income);
 				users.add(u);
 			}
 		} catch (SQLException e) {
@@ -308,6 +321,7 @@ public class DatabaseManager {
 	
 	/**
 	 * Gets all data from server_log database and returns it
+	 *
 	 * @return List of all ServerVisit information
 	 */
 	public List<ServerVisit> getAllServerVisits() {
@@ -318,21 +332,28 @@ public class DatabaseManager {
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			resultSet = stmt.executeQuery(sql);
+			long ServerID;
+			long userID;
+			Instant entryDate;
+			Instant exitDate;
+			int pagesViewed;
+			boolean conversion;
+			ServerVisit sv;
 			
 			while (resultSet.next()) {
-				long ServerID = resultSet.getLong(1);
-				long userID = resultSet.getLong(2);
-				Instant entryDate = stringToInstant(resultSet.getString(3));
-				Instant exitDate = stringToInstant(resultSet.getString(4));
-				int pagesViewed = resultSet.getInt(5);
-				boolean conversion = false;
+				ServerID = resultSet.getLong(1);
+				userID = resultSet.getLong(2);
+				entryDate = stringToInstant(resultSet.getString(3));
+				exitDate = stringToInstant(resultSet.getString(4));
+				pagesViewed = resultSet.getInt(5);
+				conversion = false;
 				try {
 					conversion = conversionToBoolean(resultSet.getString(6));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				
-				ServerVisit sv = new ServerVisit(ServerID, userID, entryDate, exitDate, pagesViewed, conversion);
+				sv = new ServerVisit(ServerID, userID, entryDate, exitDate, pagesViewed, conversion);
 				serverVisits.add(sv);
 			}
 		} catch (SQLException e) {
@@ -368,6 +389,30 @@ public class DatabaseManager {
 	}
 	
 	/**
+	 * Simple function to get a unique number of Header from a TableType
+	 *
+	 * @param header distinct header
+	 * @param table  table for header
+	 * @return distinct header count for table
+	 */
+	public int getNoOfUnique(Header header) {
+		String sql = "" +
+				"SELECT count(" + header.toString() + ") FROM (" +
+				"   SELECT DISTINCT " + header.toString() + " FROM " + header.getTable().toString() +
+				")";
+		
+		ResultSet resultSet;
+		
+		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+			resultSet = stmt.executeQuery(sql);
+			return resultSet.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	/**
 	 * Simple conversion that takes a String date from the database and converts it to a Java Instant readable format
 	 * and returns it.
 	 *
@@ -397,30 +442,35 @@ public class DatabaseManager {
 				throw new Exception("Conversion is not of type \"yes/no\"");
 		}
 	}
-
+	
+	/**
+	 * Simple method to wipe all the tables if need be
+	 *
+	 * @param logType the log to which the tables that need deleting are attached
+	 */
 	private void wipeTable(LogType logType) {
-
-	    try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-
-            switch (logType) {
-                case CLICK:
-                    stmt.execute(DatabaseStatements.DROP_CLICK.getStatement());
-                    stmt.execute(DatabaseStatements.CREATE_CLICK.getStatement());
-                    break;
-                case IMPRESSION:
-                    stmt.execute(DatabaseStatements.DROP_USER.getStatement());
-                    stmt.execute(DatabaseStatements.CREATE_USER.getStatement());
-                    stmt.execute(DatabaseStatements.DROP_SITE_IMPRESSION.getStatement());
-                    stmt.execute(DatabaseStatements.CREATE_SITE_IMPRESSION.getStatement());
-                    break;
-                case SERVER_LOG:
-                    stmt.execute(DatabaseStatements.DROP_SERVER_LOG.getStatement());
-                    stmt.execute(DatabaseStatements.CREATE_SERVER_LOG.getStatement());
-                    break;
-            }
-        } catch (SQLException e) {
-	        e.printStackTrace();
-        }
-
-    }
+		
+		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+			
+			switch (logType) {
+				case CLICK:
+					stmt.execute(DatabaseStatements.DROP_CLICK.getStatement());
+					stmt.execute(DatabaseStatements.CREATE_CLICK.getStatement());
+					break;
+				case IMPRESSION:
+					stmt.execute(DatabaseStatements.DROP_USER.getStatement());
+					stmt.execute(DatabaseStatements.CREATE_USER.getStatement());
+					stmt.execute(DatabaseStatements.DROP_SITE_IMPRESSION.getStatement());
+					stmt.execute(DatabaseStatements.CREATE_SITE_IMPRESSION.getStatement());
+					break;
+				case SERVER_LOG:
+					stmt.execute(DatabaseStatements.DROP_SERVER_LOG.getStatement());
+					stmt.execute(DatabaseStatements.CREATE_SERVER_LOG.getStatement());
+					break;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
 }
