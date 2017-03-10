@@ -1,4 +1,8 @@
-package Views;
+package Views.Deprecated;
+
+import Views.DashboardMainFrame;
+import Views.MetricBoxPanel;
+import Views.MetricType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,6 +13,7 @@ import java.util.Map;
  * DashboardMetricsPanel is the GUI element responsible for displaying a list of metrics computed by the application.
  * This will only be a necessary component for Increment 1.
  */
+@Deprecated
 public class DashboardMetricsPanel extends JPanel {
 
     private Map<MetricType, MetricBoxPanel> metricBoxes;

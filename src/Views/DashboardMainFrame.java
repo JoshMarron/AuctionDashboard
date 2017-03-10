@@ -3,6 +3,9 @@ package Views;
 import Controllers.DashboardMainFrameController;
 
 import Model.DBEnums.LogType;
+import Views.Deprecated.DashboardMetricsPanel;
+import Views.ViewPresets.ColorSettings;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -38,7 +41,7 @@ public class DashboardMainFrame extends JFrame {
         System.setProperty("swing.aatext", "true");
 
         //Set the System Look and Feel
-        try {
+        /*try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
@@ -46,7 +49,7 @@ public class DashboardMainFrame extends JFrame {
                     "Graphical Error",
                     JOptionPane.ERROR_MESSAGE
                     );
-        }
+        }*/
 
         JPanel contentPane = new JPanel() {
             @Override
@@ -55,13 +58,14 @@ public class DashboardMainFrame extends JFrame {
                 Graphics2D g2 = (Graphics2D) g;
 
                 if (loading) {
-                    g2.setColor(new Color(181, 184, 188, 160));
+                    g2.setColor(ColorSettings.LOADING_COLOR.getColor());
                     g2.fillRect(0, 0, this.getWidth(), this.getHeight());
                 }
             }
         };
+
         this.setContentPane(contentPane);
-        contentPane.setBackground(BG_COLOR);
+        contentPane.setBackground(ColorSettings.BG_COLOR.getColor());
 
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
 

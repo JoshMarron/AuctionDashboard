@@ -1,6 +1,10 @@
 package Views;
 
 import Model.DBEnums.LogType;
+import Views.CustomComponents.CatButton;
+import Views.CustomComponents.CatLabel;
+import Views.Deprecated.DashboardFilePreviewPanel;
+import Views.ViewPresets.ColorSettings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,11 +38,11 @@ public class DashboardFileSelectPanel extends JPanel {
      */
     public void init() {
         this.setMaximumSize(new Dimension(600, 900));
-        this.setBackground(DashboardMainFrame.BG_COLOR);
+        this.setBackground(ColorSettings.BG_COLOR.getColor());
         this.setLayout(new BorderLayout());
 
         //Create title label and panel for it to go on
-        JLabel title = new JLabel("Choose your log files");
+        CatLabel title = new CatLabel("Choose your log files");
         title.setFont(DashboardMainFrame.GLOB_FONT);
         title.setFont(new Font(title.getFont().getName(), title.getFont().getStyle(), 20));
         title.setHorizontalAlignment(SwingConstants.CENTER);
@@ -57,7 +61,7 @@ public class DashboardFileSelectPanel extends JPanel {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        JButton confirm = new JButton("Confirm");
+        CatButton confirm = new CatButton("Confirm");
         confirm.setFont(DashboardMainFrame.GLOB_FONT);
         confirm.addActionListener(new ConfirmListener());
 

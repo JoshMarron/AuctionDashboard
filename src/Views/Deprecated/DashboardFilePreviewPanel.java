@@ -1,6 +1,7 @@
-package Views;
+package Views.Deprecated;
 
 import Model.DBEnums.LogType;
+import Views.DashboardMainFrame;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
  * DashboardFilePreviewPanel allows the user to select a file with a file chooser, see its name, and
  * view the first lines of the file to check they chose the right one
  */
+@Deprecated
 public class DashboardFilePreviewPanel extends JPanel {
 
     private File homeDir;

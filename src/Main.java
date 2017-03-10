@@ -10,8 +10,8 @@ public class Main {
 
         DashboardMainFrame frame = new DashboardMainFrame(new File(System.getProperty("user.home")));
         DatabaseManager model = new DatabaseManager();
-        model.init();
-        model.initTables();
+        //model.init();
+        //model.initTables();
         DashboardMainFrameController controller = new DashboardMainFrameController(frame, model);
         //TODO resolve the circular dependency with the listener pattern
         frame.setController(controller);

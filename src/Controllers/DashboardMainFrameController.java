@@ -31,7 +31,7 @@ public class DashboardMainFrameController {
     private CopyOnWriteArrayList<Future<?>> futures;
 
     //TODO allow this to be set based on the device?
-    private ExecutorService helpers = Executors.newFixedThreadPool(8);
+    private ExecutorService helpers = Executors.newFixedThreadPool(4);
 
     public DashboardMainFrameController(DashboardMainFrame frame, DatabaseManager model) {
         this.frame = frame;
