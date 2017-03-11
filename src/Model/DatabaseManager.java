@@ -3,6 +3,7 @@ package Model;
 import DataStructures.CsvInterfaces.Gender;
 import DataStructures.CsvInterfaces.Income;
 import Model.DBEnums.DatabaseStatements;
+import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Model.DBEnums.TableType;
 import Model.DBEnums.headers.Header;
@@ -11,6 +12,7 @@ import Model.TableModels.Impression;
 import Model.TableModels.ServerVisit;
 import Model.TableModels.User;
 
+import javax.xml.transform.Result;
 import java.io.File;
 import java.sql.*;
 import java.time.Instant;
@@ -117,7 +119,7 @@ public class DatabaseManager {
 	 * @param list    list of arrays of strings of data to be inserted
 	 */
 	public void insertData(LogType logType, List<String[]> list) {
-		long startTime = System.nanoTime();
+//		long startTime = System.nanoTime();
 		
 		try {
 			System.out.println(System.nanoTime());
@@ -201,8 +203,8 @@ public class DatabaseManager {
 		}
 		
 		System.out.println("Database insertion complete");
-		long finalTime = System.nanoTime() - startTime;
-		System.out.println("Time taken for " + logType + ": " + (finalTime / 1000000) + "ms = " + (finalTime / 1000000000) + "s");
+//		long finalTime = System.nanoTime() - startTime;
+//		System.out.println("Time taken for " + logType + ": " + (finalTime / 1000000) + "ms = " + (finalTime / 1000000000) + "s");
 	}
 	
 	/**
@@ -392,7 +394,6 @@ public class DatabaseManager {
 	 * Simple function to get a unique number of Header from a TableType
 	 *
 	 * @param header distinct header
-	 * @param table  table for header
 	 * @return distinct header count for table
 	 */
 	public int getNoOfUnique(Header header) {
@@ -411,15 +412,46 @@ public class DatabaseManager {
 		}
 		return -1;
 	}
-
-	public Map<Instant, Integer> getClickCountPerDay() {
-
-		HashMap<Instant, Integer> resultMap = new HashMap<>();
-
+	
+	/**
+	 * Takes a time period and returns map mapping each period of time period and a count for clicks in said period
+	 * @param dateEnum time period to get click count by
+	 * @return map mapping time each period of time to count of clicks in said period
+	 */
+	public Map<Instant, Integer> getClickCountPer(DateEnum dateEnum) {
+		Map<Instant, Integer> resultMap = new HashMap<>();
+		ResultSet resultSet;
+		String sql = null;
+		
+		switch (dateEnum) {
+			case DAYS:
+				sql = "SELECT click_date, count(click_id) FROM click GROUP BY date(click_date) ORDER BY click_date";
+				break;
+			case HOURS:
+				sql = "SELECT click_date, count(click_id) FROM click GROUP BY strftime('%H,%d',click_date) ORDER BY click_date";
+				break;
+			case WEEKS:
+				sql = "SELECT click_date, count(click_id) FROM click GROUP BY strftime('%W', click_date) ORDER BY click_date";
+				break;
+		}
+		
+		if (sql != null) {
+			try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+				resultSet = stmt.executeQuery(sql);
+				
+				while (resultSet.next()) {
+					resultMap.put(stringToInstant(resultSet.getString(1)), resultSet.getInt(2));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		return resultMap;
 	}
+	
 
-	public Map<Instant, Integer> getImpressionCountPerDay() {
+	public Map<Instant, Integer> getImpressionCount() {
 
 		HashMap<Instant, Integer> resultMap = new HashMap<>();
 
