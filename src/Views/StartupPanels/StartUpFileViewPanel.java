@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Created by marro on 11/03/2017.
+ * StartupFileViewPanel displays the files that have been chosen for each log type
  */
 public class StartUpFileViewPanel extends CatPanel {
 
