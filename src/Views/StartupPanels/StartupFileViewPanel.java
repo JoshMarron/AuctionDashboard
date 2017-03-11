@@ -7,16 +7,17 @@ import Views.ViewPresets.ColorSettings;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 /**
  * StartupFileViewPanel displays the files that have been chosen for each log type
  */
-public class StartUpFileViewPanel extends CatPanel {
+public class StartupFileViewPanel extends CatPanel {
 
     private LogType logtype;
     private CatLabel filename;
 
-    public StartUpFileViewPanel(LogType logtype) {
+    public StartupFileViewPanel(LogType logtype) {
         this.logtype = logtype;
         this.initPanel();
     }
@@ -38,5 +39,9 @@ public class StartUpFileViewPanel extends CatPanel {
 
         this.add(filename, BorderLayout.CENTER);
         this.add(titlePanel, BorderLayout.NORTH);
+    }
+
+    public void setFilename(File file) {
+        filename.setText(file.getName());
     }
 }

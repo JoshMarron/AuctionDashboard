@@ -9,7 +9,6 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * RecentProjectInfoPanel displays info for one recent project. It is clickable, allowing the user to load a recent project

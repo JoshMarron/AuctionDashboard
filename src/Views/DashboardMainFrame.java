@@ -87,34 +87,7 @@ public class DashboardMainFrame extends JFrame {
         this.add(metricsPanel);
         this.add(Box.createRigidArea(new Dimension(50, 0)));
 
-        this.initGlassPane();
-
         this.setVisible(true);
-    }
-
-    public void initGlassPane() {
-        JPanel loadingPanel = (JPanel) this.getGlassPane();
-        loadingPanel.setLayout(new BorderLayout());
-
-        icon = new ImageIcon("img/animal.gif");
-        icon.setImage(icon.getImage().getScaledInstance(300, 300, Image.SCALE_DEFAULT));
-        JLabel loadingLabel = new JLabel(icon);
-
-        JLabel textLoadingLabel = new JLabel("Loading...");
-        textLoadingLabel.setFont(new Font(GLOB_FONT.getName(), GLOB_FONT.getStyle(), 40));
-        textLoadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        textLoadingLabel.setVerticalAlignment(SwingConstants.CENTER);
-
-        JPanel textLoadingPanel = new JPanel();
-        textLoadingPanel.setLayout(new BoxLayout(textLoadingPanel, BoxLayout.X_AXIS));
-        textLoadingPanel.add(Box.createRigidArea(new Dimension(0, 100)));
-        textLoadingPanel.add(Box.createHorizontalGlue());
-        textLoadingPanel.add(textLoadingLabel);
-        textLoadingPanel.add(Box.createHorizontalGlue());
-        textLoadingPanel.setOpaque(false);
-
-        loadingPanel.add(loadingLabel, BorderLayout.CENTER);
-        loadingPanel.add(textLoadingPanel, BorderLayout.SOUTH);
     }
 
     public void setController(DashboardMainFrameController controller) {
@@ -129,22 +102,4 @@ public class DashboardMainFrame extends JFrame {
         data.forEach((type, value) -> metricsPanel.putMetricInPanel(type, value));
     }
 
-    public void displayLoading() {
-        this.loading = true;
-        this.getGlassPane().setVisible(true);
-        this.getContentPane().setEnabled(false);
-        repaint();
-    }
-
-    public void finishedLoading() {
-        this.loading = false;
-        this.getGlassPane().setVisible(false);
-
-        JOptionPane.showMessageDialog(this, "Data Loaded!",
-                "Success! Your data has been loaded into the database!", JOptionPane.INFORMATION_MESSAGE);
-
-
-        this.setEnabled(true);
-        repaint();
-    }
 }

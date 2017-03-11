@@ -51,6 +51,8 @@ public class StartupFileImportPanel extends CatPanel {
         buttonPanel.add(fileTypeLabel);
         buttonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
         buttonPanel.add(logTypeComboBox);
+
+        CatButton addFileButton = new CatButton("Add file");
         this.add(buttonPanel, BorderLayout.NORTH);
 
         previewText = new CatTextArea(200, 200);

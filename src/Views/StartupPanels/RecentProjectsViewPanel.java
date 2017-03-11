@@ -1,11 +1,10 @@
 package Views.StartupPanels;
 
-import Views.CustomComponents.CatLabel;
 import Views.CustomComponents.CatPanel;
+import Views.CustomComponents.CatTitlePanel;
 import Views.ViewPresets.ColorSettings;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.io.File;
 import java.util.List;
@@ -27,13 +26,7 @@ public class RecentProjectsViewPanel extends CatPanel {
         this.setLayout(new BorderLayout());
         this.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
 
-        CatPanel titlePanel = new CatPanel();
-        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
-        CatLabel recentProjectsTitleLabel = new CatLabel("Recent Projects");
-        titlePanel.add(Box.createRigidArea(new Dimension(0, 40)));
-        titlePanel.add(Box.createHorizontalGlue());
-        titlePanel.add(recentProjectsTitleLabel);
-        titlePanel.add(Box.createHorizontalGlue());
+        CatTitlePanel titlePanel = new CatTitlePanel("Recent Projects");
 
         CatPanel recentProjectBoxesPanel = new CatPanel();
         recentProjectBoxesPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));

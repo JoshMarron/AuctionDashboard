@@ -18,7 +18,7 @@ public class Main {
         //frame.setController(controller);
         //SwingUtilities.invokeLater(frame::init);
 
-        DashboardStartupFrame startupFrame = new DashboardStartupFrame(new File(System.getProperty("user.home")));
+        DashboardStartupFrame startupFrame = new DashboardStartupFrame(new File(System.getProperty("user.home")), null);
         SwingUtilities.invokeLater(startupFrame::initStartup);
     }
 }
