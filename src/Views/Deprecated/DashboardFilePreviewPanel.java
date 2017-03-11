@@ -1,6 +1,9 @@
 package Views.Deprecated;
 
 import Model.DBEnums.LogType;
+import Views.CustomComponents.CatComboBox;
+import Views.CustomComponents.CatFileChooser;
+import Views.CustomComponents.CatTextArea;
 import Views.DashboardMainFrame;
 
 import javax.swing.*;
@@ -23,10 +26,10 @@ public class DashboardFilePreviewPanel extends JPanel {
 
     private File homeDir;
     private LogType logType;            //Impression, click or server
-    private JFileChooser chooser;
+    private CatFileChooser chooser;
     private boolean isLogSelected;      //True if a file has been selected
     private JLabel logFileName;
-    private JTextArea preview;
+    private CatTextArea preview;
     private File selectedFile;
 
     public DashboardFilePreviewPanel(LogType logType, File homeDir) {
@@ -58,25 +61,26 @@ public class DashboardFilePreviewPanel extends JPanel {
         logChooseButton.addActionListener(new ChooseButtonListener());
         logChooseButton.setFont(DashboardMainFrame.GLOB_FONT);
 
+        CatComboBox<String> combo = new CatComboBox<>();
+        combo.addItem("Hello");
+        combo.addItem("Goodbye");
+
         fileChoosePanel.add(logName);
         fileChoosePanel.add(Box.createRigidArea(new Dimension(20, 0)));
         fileChoosePanel.add(logFileName);
         fileChoosePanel.add(Box.createRigidArea(new Dimension(20, 0)));
-        fileChoosePanel.add(logChooseButton);
+        fileChoosePanel.add(combo);
 
         //Create the panel which holds the preview in a text area
         JPanel previewTextPanel = new JPanel();
         previewTextPanel.setLayout(new BorderLayout());
-        preview = new JTextArea();
+        preview = new CatTextArea(200, 200);
         preview.setEditable(false);
 
         previewTextPanel.add(preview, BorderLayout.CENTER);
 
         //Instantiate JFileChooser which will appear when buttons are clicked
-        chooser = new JFileChooser(homeDir);
-        chooser.setDialogTitle("Choose " + this.logType.prettyPrint() + "...");
-        FileNameExtensionFilter csvFilter = new FileNameExtensionFilter("CSV Files", "csv");
-        chooser.setFileFilter(csvFilter);
+        chooser = new CatFileChooser(homeDir);
 
         this.add(fileChoosePanel);
         this.add(Box.createRigidArea(new Dimension(0, 20)));

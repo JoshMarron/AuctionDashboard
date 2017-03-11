@@ -7,7 +7,8 @@ import java.awt.*;
  */
 public enum FontSettings {
 
-    GLOB_FONT (new Font("Tahoma", Font.BOLD, 14));
+    GLOB_FONT (new Font("Tahoma", Font.BOLD, 14)),
+    TEXT_AREA_FONT (new Font("Tahoma", Font.BOLD, 12));
 
     private Font font;
 

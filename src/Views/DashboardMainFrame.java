@@ -7,6 +7,7 @@ import Views.Deprecated.DashboardMetricsPanel;
 import Views.ViewPresets.ColorSettings;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.io.File;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class DashboardMainFrame extends JFrame {
         System.setProperty("swing.aatext", "true");
 
         //Set the System Look and Feel
-        /*try {
+        try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
@@ -49,7 +50,12 @@ public class DashboardMainFrame extends JFrame {
                     "Graphical Error",
                     JOptionPane.ERROR_MESSAGE
                     );
-        }*/
+        }
+
+        UIManager.put("ComboBox.background", new ColorUIResource(ColorSettings.TEXT_AREA_BG_COLOR.getColor()));
+        UIManager.put("ComboBox.foreground", new ColorUIResource(ColorSettings.TEXT_AREA_TEXT_COLOR.getColor()));
+        UIManager.put("ComboBox.selectionBackground", new ColorUIResource(ColorSettings.TEXT_AREA_BG_COLOR.getColor().brighter()));
+        UIManager.put("ComboBox.selectionForeground", new ColorUIResource(ColorSettings.TEXT_AREA_TEXT_COLOR.getColor()));
 
         JPanel contentPane = new JPanel() {
             @Override
