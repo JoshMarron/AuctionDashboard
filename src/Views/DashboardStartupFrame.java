@@ -1,6 +1,7 @@
 package Views;
 
 import Views.CustomComponents.CatPanel;
+import Views.StartupPanels.RecentProjectsViewPanel;
 import Views.StartupPanels.StartUpFileViewPanel;
 import Views.StartupPanels.StartupChosenFilesPanel;
 import Views.StartupPanels.StartupFileImportPanel;
@@ -32,19 +33,29 @@ public class DashboardStartupFrame extends JFrame {
             );
         }
 
-        this.setSize(new Dimension(800, 600));
-        this.setResizable(false);
+        this.setSize(new Dimension(1000, 600));
+        //this.setResizable(false);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         CatPanel contentPane = new CatPanel();
         contentPane.setLayout(new BorderLayout());
         this.setContentPane(contentPane);
 
-        StartupFileImportPanel importPanel = new StartupFileImportPanel(homedir);
-        contentPane.add(importPanel, BorderLayout.CENTER);
+        CatPanel centrePanel = new CatPanel();
+        centrePanel.setLayout(new BoxLayout(centrePanel, BoxLayout.X_AXIS));
 
+        StartupFileImportPanel importPanel = new StartupFileImportPanel(homedir);
         StartupChosenFilesPanel viewPanel = new StartupChosenFilesPanel();
-        contentPane.add(viewPanel, BorderLayout.CENTER);
+        RecentProjectsViewPanel recentProjects = new RecentProjectsViewPanel(null);
+
+        centrePanel.add(Box.createHorizontalGlue());
+        centrePanel.add(recentProjects);
+        centrePanel.add(Box.createHorizontalGlue());
+        centrePanel.add(importPanel);
+        centrePanel.add(viewPanel);
+        centrePanel.add(Box.createHorizontalGlue());
+
+        contentPane.add(centrePanel, BorderLayout.CENTER);
         this.setVisible(true);
     }
 }
