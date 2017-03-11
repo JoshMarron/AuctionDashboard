@@ -51,7 +51,6 @@ public class StartupFileImportPanel extends CatPanel {
         buttonPanel.add(fileTypeLabel);
         buttonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
         buttonPanel.add(logTypeComboBox);
-        buttonPanel.add(Box.createHorizontalGlue());
         this.add(buttonPanel, BorderLayout.NORTH);
 
         previewText = new CatTextArea(200, 200);
@@ -112,7 +111,7 @@ public class StartupFileImportPanel extends CatPanel {
         previewText.setText("");
 
         try (Stream<String> fileStream = Files.lines(Paths.get(file.getPath()))) {
-            fileStream.limit(10).forEach((str) -> previewText.append(str + '\n'));
+            fileStream.limit(10).forEach((str) -> previewText.append(str.substring(0, Math.min(45, str.length())) + "...\n"));
         } catch (IOException e) {
             this.handleFileError(file);
         }

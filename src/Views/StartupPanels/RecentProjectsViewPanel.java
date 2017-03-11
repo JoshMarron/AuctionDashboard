@@ -2,8 +2,10 @@ package Views.StartupPanels;
 
 import Views.CustomComponents.CatLabel;
 import Views.CustomComponents.CatPanel;
+import Views.ViewPresets.ColorSettings;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.io.File;
 import java.util.List;
@@ -23,6 +25,7 @@ public class RecentProjectsViewPanel extends CatPanel {
     private void initPanel() {
 
         this.setLayout(new BorderLayout());
+        this.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
 
         CatPanel titlePanel = new CatPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
@@ -33,6 +36,7 @@ public class RecentProjectsViewPanel extends CatPanel {
         titlePanel.add(Box.createHorizontalGlue());
 
         CatPanel recentProjectBoxesPanel = new CatPanel();
+        recentProjectBoxesPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         recentProjectBoxesPanel.setLayout(new BoxLayout(recentProjectBoxesPanel, BoxLayout.Y_AXIS));
 
         RecentProjectInfoPanel infoPanel = new RecentProjectInfoPanel(new File("db/model3.db"));

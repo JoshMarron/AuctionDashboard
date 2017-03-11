@@ -33,7 +33,7 @@ public class DashboardStartupFrame extends JFrame {
             );
         }
 
-        this.setSize(new Dimension(1000, 600));
+        this.setSize(new Dimension(1250, 600));
         //this.setResizable(false);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -42,18 +42,32 @@ public class DashboardStartupFrame extends JFrame {
         this.setContentPane(contentPane);
 
         CatPanel centrePanel = new CatPanel();
-        centrePanel.setLayout(new BoxLayout(centrePanel, BoxLayout.X_AXIS));
+        centrePanel.setLayout(new GridBagLayout());
 
         StartupFileImportPanel importPanel = new StartupFileImportPanel(homedir);
-        StartupChosenFilesPanel viewPanel = new StartupChosenFilesPanel();
-        RecentProjectsViewPanel recentProjects = new RecentProjectsViewPanel(null);
+        GridBagConstraints importPanelConstraints = new GridBagConstraints();
+        importPanelConstraints.gridx = 1;
+        importPanelConstraints.weightx = 10;
+        importPanelConstraints.weighty = 1;
+        importPanelConstraints.fill = GridBagConstraints.BOTH;
 
-        centrePanel.add(Box.createHorizontalGlue());
-        centrePanel.add(recentProjects);
-        centrePanel.add(Box.createHorizontalGlue());
-        centrePanel.add(importPanel);
-        centrePanel.add(viewPanel);
-        centrePanel.add(Box.createHorizontalGlue());
+        StartupChosenFilesPanel viewPanel = new StartupChosenFilesPanel();
+        GridBagConstraints viewPanelConstraints = new GridBagConstraints();
+        viewPanelConstraints.gridx = 2;
+        viewPanelConstraints.weightx = 1;
+        viewPanelConstraints.weighty = 1;
+        viewPanelConstraints.fill = GridBagConstraints.BOTH;
+
+        RecentProjectsViewPanel recentProjects = new RecentProjectsViewPanel(null);
+        GridBagConstraints recentProjectsConstraints = new GridBagConstraints();
+        recentProjectsConstraints.gridx = 0;
+        recentProjectsConstraints.weightx = 1;
+        recentProjectsConstraints.weighty = 1;
+        recentProjectsConstraints.fill = GridBagConstraints.BOTH;
+
+        centrePanel.add(recentProjects, recentProjectsConstraints);
+        centrePanel.add(importPanel, importPanelConstraints);
+        centrePanel.add(viewPanel, viewPanelConstraints);
 
         contentPane.add(centrePanel, BorderLayout.CENTER);
         this.setVisible(true);

@@ -32,7 +32,7 @@ public class StartUpFileViewPanel extends CatPanel {
 
         CatPanel titlePanel = new CatPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
-        titlePanel.add(Box.createRigidArea(new Dimension(20, 40)));
+        titlePanel.add(Box.createRigidArea(new Dimension(10, 10)));
         titlePanel.add(title);
         titlePanel.add(Box.createHorizontalGlue());
 

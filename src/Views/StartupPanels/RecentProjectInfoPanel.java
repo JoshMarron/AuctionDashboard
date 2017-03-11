@@ -25,8 +25,8 @@ public class RecentProjectInfoPanel extends CatPanel {
 
     private void initInfoPanel() {
         this.setLayout(new BorderLayout());
-        this.setMaximumSize(new Dimension(100, 50));
-        Border outside = BorderFactory.createEmptyBorder(20, 20, 20, 20);
+        this.setMaximumSize(new Dimension(1000, 100));
+        Border outside = BorderFactory.createEmptyBorder(20, 0, 20, 0);
         Border inside = BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor());
         this.setBorder(BorderFactory.createCompoundBorder(outside, inside));
 
@@ -35,7 +35,7 @@ public class RecentProjectInfoPanel extends CatPanel {
         String formattedLastModified = dateFormat.format(lastModified);
 
         CatPanel projectNamePanel = new CatPanel();
-        CatLabel projectNameLabel = new CatLabel(file.getName());
+        CatLabel projectNameLabel = new CatLabel(file.getName().split("\\.")[0]);
         CatLabel projectDateLabel = new CatLabel("Last edited: " + formattedLastModified);
 
         projectNamePanel.setLayout(new BoxLayout(projectNamePanel, BoxLayout.Y_AXIS));
