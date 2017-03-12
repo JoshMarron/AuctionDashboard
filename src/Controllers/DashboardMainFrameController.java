@@ -1,6 +1,5 @@
 package Controllers;
 
-import DataStructures.CSVParser;
 import Model.DatabaseManager;
 import Model.TableModels.Click;
 import Model.TableModels.Impression;
@@ -10,10 +9,6 @@ import Views.MetricType;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,52 +34,9 @@ public class DashboardMainFrameController {
         this.futures = new CopyOnWriteArrayList<>();
     }
 
-    public void processFiles(Map<LogType, File> files) {
-        files.forEach((type, file) -> {
-            SwingUtilities.invokeLater(frame::displayLoading);
-            Future<?> f = helpers.submit(() ->
-            {
-                int maxLength = 0;
-                try {
-                    maxLength = (int) Files.lines(Paths.get(file.getPath())).count();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                int step = 500000;
-                int start = 1;
-                model.wipeTable(type);
-                while (start < maxLength) {
-                    List<String[]> lines = CSVParser.parseLog(file, start, step);
-                    model.insertData(type, lines);
-                    start += step;
-                }
-            });
-            futures.add(f);
-        });
-
-        new Thread(() -> {
-            for (Future<?> f: futures) {
-                try {
-                    f.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            boolean finished = true;
-            for (Future<?> f: futures) {
-                finished &= f.isDone();
-            }
-
-            if (finished) {
-                Map<MetricType, Number> results = this.calculateKeyMetrics(files);
-                SwingUtilities.invokeLater(() -> {
-                    frame.finishedLoading();
-                    frame.displayMetrics(results);
-                });
-            }
-        }).start();
+    public void displayMainFrame(Map<MetricType, Number> data) {
+        frame.setVisible(true);
+        this.displayMetrics(data);
     }
 
     public void displayMetrics(Map<MetricType, Number> data) {

@@ -1,6 +1,7 @@
 package Views;
 
 import Controllers.DashboardMainFrameController;
+import Controllers.DashboardStartupController;
 import Model.DBEnums.LogType;
 import Views.CustomComponents.CatPanel;
 import Views.StartupPanels.RecentProjectsViewPanel;
@@ -15,10 +16,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-//TODO
-//TODO Need to create and configure a startup controller
-//TODO
-
 /**
  * DashboardStartupFrame is the first frame the user sees, containing the elements needed to load in files
  */
@@ -27,10 +24,10 @@ public class DashboardStartupFrame extends JFrame {
     private File homedir;
     private Map<LogType, File> fileMap;
     private StartupChosenFilesPanel viewPanel;
-    private DashboardMainFrameController controller;
+    private DashboardStartupController controller;
     private boolean loading;
 
-    public DashboardStartupFrame(File homedir, DashboardMainFrameController controller) {
+    public DashboardStartupFrame(File homedir, DashboardStartupController controller) {
         this.homedir = homedir;
         fileMap = new HashMap<>();
         this.controller = controller;
