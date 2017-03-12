@@ -68,6 +68,7 @@ public class StartupFileImportPanel extends CatPanel {
         submitPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
         submitPanel.setLayout(new BorderLayout());
         CatButton submitButton = new CatButton("Submit File Choices");
+        submitButton.setFont(submitButton.getFont().deriveFont(20F));
         submitButton.addActionListener((e) -> frame.sumbitFiles());
 
         submitPanel.add(submitButton, BorderLayout.CENTER);

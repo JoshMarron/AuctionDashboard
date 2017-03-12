@@ -3,6 +3,7 @@ package Controllers;
 import Model.DBEnums.LogType;
 import Model.DatabaseManager;
 import Views.DashboardStartupFrame;
+import sun.rmi.runtime.Log;
 
 import javax.swing.*;
 import java.io.File;
@@ -16,6 +17,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 /**
  * DashboardStartupController handles interactions between the Startup View and the model. This is only used
@@ -78,9 +80,9 @@ public class DashboardStartupController {
                 SwingUtilities.invokeLater(() -> {
                     frame.finishedLoading();
                     frame.setVisible(false);
-                    //TODO data should be passed to main frame via the main controller
-                    mainController.displayMainFrame(null);
                 });
+                List<LogType> addedLogs = files.keySet().stream().collect(Collectors.toList());
+                mainController.displayMainFrame(addedLogs);
             }
         }).start();
     }

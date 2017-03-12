@@ -8,10 +8,7 @@ import Model.DBEnums.LogType;
 import Views.MetricType;
 
 import javax.swing.*;
-import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
@@ -23,7 +20,7 @@ public class DashboardMainFrameController {
     //TODO add reference to backend CSV parser + data access
     private DashboardMainFrame frame;
     private DatabaseManager model;
-    private CopyOnWriteArrayList<Future<?>> futures;
+    private List<LogType> availableLogs;
 
     //TODO allow this to be set based on the device?
     private ExecutorService helpers = Executors.newFixedThreadPool(4);
@@ -31,33 +28,35 @@ public class DashboardMainFrameController {
     public DashboardMainFrameController(DashboardMainFrame frame, DatabaseManager model) {
         this.frame = frame;
         this.model = model;
-        this.futures = new CopyOnWriteArrayList<>();
+        availableLogs = new ArrayList<>();
     }
 
-    public void displayMainFrame(Map<MetricType, Number> data) {
-        frame.setVisible(true);
-        this.displayMetrics(data);
+    public void displayMainFrame(List<LogType> addedLogs) {
+        availableLogs.addAll(addedLogs);
+        Map<MetricType, Number> results = this.calculateKeyMetrics();
+        this.displayMetrics(results);
+        SwingUtilities.invokeLater(() -> frame.setVisible(true));
     }
 
     public void displayMetrics(Map<MetricType, Number> data) {
         SwingUtilities.invokeLater(() -> frame.displayMetrics(data));
     }
 
-    private Map<MetricType, Number> calculateKeyMetrics(Map<LogType, File> files) {
+    private Map<MetricType, Number> calculateKeyMetrics() {
         Map<MetricType, Number> results = new HashMap<>();
 
         List<Impression> impressionList = model.selectAllImpressions();
         List<Click> clickList = model.selectAllClicks();
         List<Double> clickCosts = clickList.stream().map(Click::getCost).collect(Collectors.toList());
 
-        if (files.containsKey(LogType.IMPRESSION)) {
+        if (availableLogs.contains(LogType.IMPRESSION)) {
             int impressionCount = MetricUtils.getImpressionCount(impressionList);
             results.put(MetricType.TOTAL_IMPRESSIONS, impressionCount);
         }
-        if (files.containsKey(LogType.CLICK)) {
+        if (availableLogs.contains(LogType.CLICK)) {
             results.put(MetricType.TOTAL_COST, MetricUtils.calculateTotalCost(clickCosts));
         }
-        if (files.containsKey(LogType.CLICK) && files.containsKey(LogType.IMPRESSION)) {
+        if (availableLogs.contains(LogType.CLICK) && availableLogs.contains(LogType.IMPRESSION)) {
             int clickCount = clickList.size();
             int impressionCount = MetricUtils.getImpressionCount(impressionList);
             results.put(MetricType.CTR, MetricUtils.calculateCTR(clickCount, impressionCount));
