@@ -86,8 +86,6 @@ public class DashboardMainFrame extends JFrame {
         this.add(Box.createRigidArea(new Dimension(50, 0)));
         this.add(metricsPanel);
         this.add(Box.createRigidArea(new Dimension(50, 0)));
-
-        this.setVisible(true);
     }
 
     public void setController(DashboardMainFrameController controller) {
@@ -95,7 +93,6 @@ public class DashboardMainFrame extends JFrame {
     }
 
     public void submitFiles(Map<LogType, File> files) {
-        this.controller.processFiles(files);
     }
 
     public void displayMetrics(Map<MetricType, Number> data) {

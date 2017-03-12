@@ -1,8 +1,8 @@
 package Views;
 
-import Controllers.DashboardMainFrameController;
 import Controllers.DashboardStartupController;
 import Model.DBEnums.LogType;
+import Views.CustomComponents.CatLabel;
 import Views.CustomComponents.CatPanel;
 import Views.StartupPanels.RecentProjectsViewPanel;
 import Views.StartupPanels.StartupChosenFilesPanel;
@@ -27,10 +27,9 @@ public class DashboardStartupFrame extends JFrame {
     private DashboardStartupController controller;
     private boolean loading;
 
-    public DashboardStartupFrame(File homedir, DashboardStartupController controller) {
+    public DashboardStartupFrame(File homedir) {
         this.homedir = homedir;
         fileMap = new HashMap<>();
-        this.controller = controller;
     }
 
     public void initStartup() {
@@ -45,7 +44,8 @@ public class DashboardStartupFrame extends JFrame {
             );
         }
 
-        this.setSize(new Dimension(1250, 600));
+        this.setTitle("CatAnalysis");
+        this.setSize(new Dimension(1250, 700));
         this.setResizable(false);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -67,7 +67,7 @@ public class DashboardStartupFrame extends JFrame {
         CatPanel centrePanel = new CatPanel();
         centrePanel.setLayout(new GridBagLayout());
 
-        StartupFileImportPanel importPanel = new StartupFileImportPanel(homedir);
+        StartupFileImportPanel importPanel = new StartupFileImportPanel(homedir, this);
         GridBagConstraints importPanelConstraints = new GridBagConstraints();
         importPanelConstraints.gridx = 1;
         importPanelConstraints.weightx = 10;
@@ -77,7 +77,7 @@ public class DashboardStartupFrame extends JFrame {
         viewPanel = new StartupChosenFilesPanel();
         GridBagConstraints viewPanelConstraints = new GridBagConstraints();
         viewPanelConstraints.gridx = 2;
-        viewPanelConstraints.weightx = 1;
+        viewPanelConstraints.weightx = 6;
         viewPanelConstraints.weighty = 1;
         viewPanelConstraints.fill = GridBagConstraints.BOTH;
 
@@ -92,7 +92,13 @@ public class DashboardStartupFrame extends JFrame {
         centrePanel.add(importPanel, importPanelConstraints);
         centrePanel.add(viewPanel, viewPanelConstraints);
 
+        CatPanel titlePanel = new CatPanel();
+        CatLabel titleLabel = new CatLabel("CatAnalysis Advertising Dashboard");
+        titleLabel.setFont(titleLabel.getFont().deriveFont(60F));
+        titlePanel.add(titleLabel);
+
         contentPane.add(centrePanel, BorderLayout.CENTER);
+        contentPane.add(titlePanel, BorderLayout.NORTH);
         this.initGlassPane();
         this.setVisible(true);
     }
@@ -145,8 +151,11 @@ public class DashboardStartupFrame extends JFrame {
         JOptionPane.showMessageDialog(this, "Data Loaded!",
                 "Success! Your data has been loaded into the database!", JOptionPane.INFORMATION_MESSAGE);
 
-
         this.setEnabled(true);
         repaint();
+    }
+
+    public void setController(DashboardStartupController controller) {
+        this.controller = controller;
     }
 }

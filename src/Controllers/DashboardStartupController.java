@@ -79,7 +79,7 @@ public class DashboardStartupController {
                     frame.finishedLoading();
                     frame.setVisible(false);
                     //TODO data should be passed to main frame via the main controller
-                    mainController.displayMainFrame();
+                    mainController.displayMainFrame(null);
                 });
             }
         }).start();

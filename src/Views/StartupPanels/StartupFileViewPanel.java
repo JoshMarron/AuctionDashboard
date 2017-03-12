@@ -25,6 +25,7 @@ public class StartupFileViewPanel extends CatPanel {
     private void initPanel() {
         this.setLayout(new BorderLayout());
         this.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
+        this.setMinimumSize(new Dimension(500, 0));
 
         filename = new CatLabel("No " + logtype.prettyPrint() + " currently chosen.");
         filename.setHorizontalAlignment(SwingConstants.CENTER);

@@ -2,9 +2,11 @@ package Views.CustomComponents;
 
 import Views.DashboardMainFrame;
 import Views.ViewPresets.ColorSettings;
+import javafx.scene.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Cursor;
 
 /**
  * CatButton is a JButton which doesn't look like complete arse.
@@ -24,6 +26,8 @@ public class CatButton extends JButton {
         this.setBackground(ColorSettings.BUTTON_COLOR.getColor());
         this.setFont(DashboardMainFrame.GLOB_FONT);
         this.setForeground(ColorSettings.TEXT_COLOR.getColor());
+
+        this.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
     @Override

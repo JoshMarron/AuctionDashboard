@@ -2,6 +2,7 @@ package Views.StartupPanels;
 
 import Model.DBEnums.LogType;
 import Views.CustomComponents.*;
+import Views.DashboardStartupFrame;
 import jdk.nashorn.internal.scripts.JO;
 
 import javax.swing.*;
@@ -25,9 +26,11 @@ public class StartupFileImportPanel extends CatPanel {
     private CatFileChooser chooser;
     private CatTextArea previewText;
     private CatComboBox<LogType> logTypeComboBox;
+    private DashboardStartupFrame frame;
 
-    public StartupFileImportPanel(File homedir) {
+    public StartupFileImportPanel(File homedir, DashboardStartupFrame frame) {
         this.homedir = homedir;
+        this.frame = frame;
         this.initFileImportPanel();
     }
 
@@ -53,19 +56,21 @@ public class StartupFileImportPanel extends CatPanel {
         buttonPanel.add(logTypeComboBox);
 
         CatButton addFileButton = new CatButton("Add file");
+        addFileButton.addActionListener((e) -> this.addFile());
+        buttonPanel.add(Box.createHorizontalGlue());
+        buttonPanel.add(addFileButton);
         this.add(buttonPanel, BorderLayout.NORTH);
 
         previewText = new CatTextArea(200, 200);
         this.add(previewText, BorderLayout.CENTER);
 
         CatPanel submitPanel = new CatPanel();
-        submitPanel.setLayout(new BoxLayout(submitPanel, BoxLayout.X_AXIS));
-        CatButton submitButton = new CatButton("Submit");
+        submitPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        submitPanel.setLayout(new BorderLayout());
+        CatButton submitButton = new CatButton("Submit File Choices");
+        submitButton.addActionListener((e) -> frame.sumbitFiles());
 
-        submitPanel.add(Box.createRigidArea(new Dimension(0, 40)));
-        submitPanel.add(Box.createHorizontalGlue());
-        submitPanel.add(submitButton);
-        submitPanel.add(Box.createHorizontalGlue());
+        submitPanel.add(submitButton, BorderLayout.CENTER);
 
         this.add(submitPanel, BorderLayout.SOUTH);
 
@@ -142,6 +147,24 @@ public class StartupFileImportPanel extends CatPanel {
             return null;
         }
 
+    }
+
+    private void addFile() {
+        LogType chosenLog = (LogType) logTypeComboBox.getSelectedItem();
+        if (chosenLog == null) {
+            JOptionPane.showMessageDialog(this, "You must choose a file to add!",
+                    "No file chosen",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        else {
+            frame.fileChosen(chosenLog, selectedFile);
+            this.resetElements();
+        }
+    }
+
+    private void resetElements() {
+        previewText.setText("");
+        logTypeComboBox.removeAllItems();
     }
 
     private void handleFileError(File file) {
