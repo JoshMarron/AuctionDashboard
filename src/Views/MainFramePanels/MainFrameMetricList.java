@@ -42,7 +42,7 @@ public class MainFrameMetricList extends CatPanel {
         metricList.setLayout(new BoxLayout(metricList, BoxLayout.Y_AXIS));
 
         for (MetricType metric: MetricType.values()) {
-            MainFrameMetricBox metricBox = new MainFrameMetricBox(metric);
+            MainFrameMetricBox metricBox = new MainFrameMetricBox(metric, this);
             metricBoxMap.put(metric, metricBox);
             metricList.add(metricBox);
         }
@@ -52,5 +52,9 @@ public class MainFrameMetricList extends CatPanel {
 
     public void putMetricInBox(MetricType type, Number data) {
         metricBoxMap.get(type).updateData(data);
+    }
+
+    public void displayChart(MetricType type) {
+        parentFrame.displayChart(type);
     }
 }

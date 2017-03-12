@@ -112,6 +112,7 @@ public class DashboardStartupFrame extends JFrame {
         contentPane.add(centrePanel, BorderLayout.CENTER);
         contentPane.add(titlePanel, BorderLayout.NORTH);
         this.initGlassPane();
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
 

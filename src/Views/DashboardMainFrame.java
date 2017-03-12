@@ -3,6 +3,7 @@ package Views;
 import Controllers.DashboardMainFrameController;
 
 import Model.DBEnums.LogType;
+import Views.CustomComponents.CatMenuBar;
 import Views.CustomComponents.CatPanel;
 import Views.Deprecated.DashboardMetricsPanel;
 import Views.MainFramePanels.MainFrameMetricList;
@@ -36,6 +37,7 @@ public class DashboardMainFrame extends JFrame {
 
     public void init() {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setSize(new Dimension(1400, 800));
         this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         this.setTitle("CatAnalysis");
 
@@ -51,6 +53,8 @@ public class DashboardMainFrame extends JFrame {
                 }
             }
         };
+
+        this.setJMenuBar(new CatMenuBar());
 
         mainContentPane.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 20));
 
@@ -71,6 +75,10 @@ public class DashboardMainFrame extends JFrame {
     public void displayMetrics(Map<MetricType, Number> data) {
 
         data.forEach((type, value) -> metricList.putMetricInBox(type, value));
+    }
+
+    public void displayChart(MetricType type) {
+        System.out.println("Display the " + type.name() + " chart");
     }
 
 }
