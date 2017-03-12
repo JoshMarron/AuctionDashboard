@@ -3,6 +3,7 @@ package Views.StartupPanels;
 import Model.DBEnums.LogType;
 import Views.CustomComponents.CatPanel;
 import Views.CustomComponents.CatTitlePanel;
+import Views.DashboardStartupFrame;
 import Views.ViewPresets.ColorSettings;
 
 import javax.swing.*;
@@ -18,11 +19,14 @@ import java.util.Map;
  */
 public class StartupChosenFilesPanel extends CatPanel {
 
-    Map<LogType, StartupFileViewPanel> chosenFilePanelMap;
+    private Map<LogType, StartupFileViewPanel> chosenFilePanelMap;
+    private DashboardStartupFrame parentFrame;
 
-    public StartupChosenFilesPanel() {
+    public StartupChosenFilesPanel(DashboardStartupFrame parentFrame) {
+        this.parentFrame = parentFrame;
         chosenFilePanelMap = new HashMap<>();
         this.initChosenFilesPanel();
+
     }
 
     private void initChosenFilesPanel() {
@@ -38,9 +42,9 @@ public class StartupChosenFilesPanel extends CatPanel {
         centrePanel.setBackground(ColorSettings.BG_COLOR.getColor());
         centrePanel.setLayout(new BoxLayout(centrePanel, BoxLayout.Y_AXIS));
 
-        StartupFileViewPanel impressionPanel = new StartupFileViewPanel(LogType.IMPRESSION);
-        StartupFileViewPanel clickPanel = new StartupFileViewPanel(LogType.CLICK);
-        StartupFileViewPanel serverPanel = new StartupFileViewPanel(LogType.SERVER_LOG);
+        StartupFileViewPanel impressionPanel = new StartupFileViewPanel(LogType.IMPRESSION, this);
+        StartupFileViewPanel clickPanel = new StartupFileViewPanel(LogType.CLICK, this);
+        StartupFileViewPanel serverPanel = new StartupFileViewPanel(LogType.SERVER_LOG, this);
         chosenFilePanelMap.put(LogType.IMPRESSION, impressionPanel);
         chosenFilePanelMap.put(LogType.CLICK, clickPanel);
         chosenFilePanelMap.put(LogType.SERVER_LOG, serverPanel);
@@ -59,7 +63,11 @@ public class StartupChosenFilesPanel extends CatPanel {
     }
 
     public void setLogPanelName(LogType log, File file) {
-        chosenFilePanelMap.get(log).setFilename(file);
+        chosenFilePanelMap.get(log).setFile(file);
+    }
+
+    public void reselectFile(LogType type, File file) {
+        this.parentFrame.reselectFile(type, file);
     }
 
 }

@@ -172,4 +172,11 @@ public class StartupFileImportPanel extends CatPanel {
         JOptionPane.showMessageDialog(this, "File " + file.getName() + " could not be opened!",
                 "Error opening file", JOptionPane.ERROR_MESSAGE);
     }
+
+    public void setUpReselection(LogType type, File file) {
+        this.resetElements();
+        this.setPreview(file);
+        this.logTypeComboBox.addItem(type);
+    }
+
 }

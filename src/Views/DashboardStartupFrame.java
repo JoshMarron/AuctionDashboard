@@ -26,6 +26,7 @@ public class DashboardStartupFrame extends JFrame {
     private StartupChosenFilesPanel viewPanel;
     private DashboardStartupController controller;
     private boolean loading;
+    private StartupFileImportPanel importPanel;
 
     public DashboardStartupFrame(File homedir) {
         this.homedir = homedir;
@@ -67,14 +68,14 @@ public class DashboardStartupFrame extends JFrame {
         CatPanel centrePanel = new CatPanel();
         centrePanel.setLayout(new GridBagLayout());
 
-        StartupFileImportPanel importPanel = new StartupFileImportPanel(homedir, this);
+        importPanel = new StartupFileImportPanel(homedir, this);
         GridBagConstraints importPanelConstraints = new GridBagConstraints();
         importPanelConstraints.gridx = 1;
         importPanelConstraints.weightx = 10;
         importPanelConstraints.weighty = 1;
         importPanelConstraints.fill = GridBagConstraints.BOTH;
 
-        viewPanel = new StartupChosenFilesPanel();
+        viewPanel = new StartupChosenFilesPanel(this);
         GridBagConstraints viewPanelConstraints = new GridBagConstraints();
         viewPanelConstraints.gridx = 2;
         viewPanelConstraints.weightx = 6;
@@ -153,6 +154,10 @@ public class DashboardStartupFrame extends JFrame {
 
         this.setEnabled(true);
         repaint();
+    }
+
+    public void reselectFile(LogType type, File file) {
+        this.importPanel.setUpReselection(type, file);
     }
 
     public void setController(DashboardStartupController controller) {
