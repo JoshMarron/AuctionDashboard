@@ -1,7 +1,6 @@
 package Views.Deprecated;
 
 import Views.DashboardMainFrame;
-import Views.MetricBoxPanel;
 import Views.MetricType;
 
 import javax.swing.*;

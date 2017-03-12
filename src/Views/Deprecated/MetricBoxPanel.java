@@ -1,4 +1,7 @@
-package Views;
+package Views.Deprecated;
+
+import Views.DashboardMainFrame;
+import Views.MetricType;
 
 import javax.swing.*;
 import java.awt.*;

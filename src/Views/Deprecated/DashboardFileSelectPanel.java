@@ -1,9 +1,9 @@
-package Views;
+package Views.Deprecated;
 
 import Model.DBEnums.LogType;
 import Views.CustomComponents.CatButton;
 import Views.CustomComponents.CatLabel;
-import Views.Deprecated.DashboardFilePreviewPanel;
+import Views.DashboardMainFrame;
 import Views.ViewPresets.ColorSettings;
 
 import javax.swing.*;
