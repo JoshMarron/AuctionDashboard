@@ -3,7 +3,6 @@ package Views.StartupPanels;
 import Model.DBEnums.LogType;
 import Views.CustomComponents.*;
 import Views.DashboardStartupFrame;
-import jdk.nashorn.internal.scripts.JO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -69,7 +68,7 @@ public class StartupFileImportPanel extends CatPanel {
         submitPanel.setLayout(new BorderLayout());
         CatButton submitButton = new CatButton("Submit File Choices");
         submitButton.setFont(submitButton.getFont().deriveFont(20F));
-        submitButton.addActionListener((e) -> frame.sumbitFiles());
+        submitButton.addActionListener((e) -> frame.submitFiles());
 
         submitPanel.add(submitButton, BorderLayout.CENTER);
 

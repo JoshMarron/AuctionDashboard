@@ -5,6 +5,7 @@ import Controllers.DashboardMainFrameController;
 import Model.DBEnums.LogType;
 import Views.CustomComponents.CatPanel;
 import Views.Deprecated.DashboardMetricsPanel;
+import Views.MainFramePanels.MainFrameMetricList;
 import Views.ViewPresets.ColorSettings;
 
 import javax.swing.*;
@@ -24,9 +25,9 @@ public class DashboardMainFrame extends JFrame {
 
     private File homeDir;
     private DashboardMainFrameController controller;
-    private DashboardMetricsPanel metricsPanel;
     private boolean loading;
     private ImageIcon icon;
+    private MainFrameMetricList metricList;
 
     public DashboardMainFrame(File homeDir) {
         this.homeDir = homeDir;
@@ -51,10 +52,12 @@ public class DashboardMainFrame extends JFrame {
             }
         };
 
-        this.setContentPane(mainContentPane);
-        mainContentPane.setBackground(ColorSettings.BG_COLOR.getColor());
-        mainContentPane.setLayout(new BoxLayout(mainContentPane, BoxLayout.X_AXIS));
+        mainContentPane.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 20));
 
+        metricList = new MainFrameMetricList(this);
+        this.setContentPane(mainContentPane);
+        mainContentPane.setLayout(new BorderLayout());
+        mainContentPane.add(metricList);
 
     }
 
@@ -66,7 +69,8 @@ public class DashboardMainFrame extends JFrame {
     }
 
     public void displayMetrics(Map<MetricType, Number> data) {
-        data.forEach((type, value) -> metricsPanel.putMetricInPanel(type, value));
+
+        data.forEach((type, value) -> metricList.putMetricInBox(type, value));
     }
 
 }

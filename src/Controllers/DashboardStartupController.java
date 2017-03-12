@@ -80,9 +80,9 @@ public class DashboardStartupController {
                 SwingUtilities.invokeLater(() -> {
                     frame.finishedLoading();
                     frame.setVisible(false);
+                    List<LogType> addedLogs = files.keySet().stream().collect(Collectors.toList());
+                    mainController.displayMainFrame(addedLogs);
                 });
-                List<LogType> addedLogs = files.keySet().stream().collect(Collectors.toList());
-                mainController.displayMainFrame(addedLogs);
             }
         }).start();
     }

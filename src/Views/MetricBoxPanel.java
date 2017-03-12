@@ -54,10 +54,7 @@ public class MetricBoxPanel extends JPanel {
         }
 
         else {
-            DecimalFormat df = new DecimalFormat("#.#####");
-            df.setRoundingMode(RoundingMode.CEILING);
-            metricDataLabel.setFont(DashboardMainFrame.GLOB_FONT.deriveFont(50F));
-            metricDataLabel.setText(df.format(this.data));
+
         }
 
         repaint();

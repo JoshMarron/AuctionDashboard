@@ -120,8 +120,16 @@ public class DashboardStartupFrame extends JFrame {
         this.viewPanel.setLogPanelName(logType, file);
     }
 
-    public void sumbitFiles() {
-        this.controller.processFiles(this.fileMap);
+    public void submitFiles() {
+        if (this.fileMap.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "You must submit at least one log file!",
+                    "Empty submission error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        else {
+            this.controller.processFiles(this.fileMap);
+        }
     }
 
     public void initGlassPane() {

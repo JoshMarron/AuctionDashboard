@@ -10,6 +10,9 @@ import java.io.File;
 public class Main {
     public static void main(String[] args) {
         DatabaseManager model = new DatabaseManager();
+        model.init();
+        model.initTables();
+
         DashboardStartupFrame startupFrame = new DashboardStartupFrame(new File(System.getProperty("user.home")));
         DashboardMainFrame mainFrame = new DashboardMainFrame(new File(System.getProperty("user.home")));
         DashboardMainFrameController mainController = new DashboardMainFrameController(mainFrame, model);
@@ -17,10 +20,6 @@ public class Main {
         startupFrame.setController(startupController);
         mainFrame.setController(mainController);
         SwingUtilities.invokeLater(startupFrame::initStartup);
-
-        model.init();
-        model.initTables();
-
         SwingUtilities.invokeLater(mainFrame::init);
     }
 }
