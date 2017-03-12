@@ -11,6 +11,7 @@ import Views.ViewPresets.ColorSettings;
 import Views.ViewPresets.FontSettings;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
@@ -44,6 +45,16 @@ public class DashboardStartupFrame extends JFrame {
                     JOptionPane.ERROR_MESSAGE
             );
         }
+
+        //Try to use anti-aliasing on the font
+        System.setProperty("awt.useSystemAAFontSettings","on");
+        System.setProperty("swing.aatext", "true");
+
+        //Try to make ComboBox look less awful
+        UIManager.put("ComboBox.background", new ColorUIResource(ColorSettings.TEXT_AREA_BG_COLOR.getColor()));
+        UIManager.put("ComboBox.foreground", new ColorUIResource(ColorSettings.TEXT_AREA_TEXT_COLOR.getColor()));
+        UIManager.put("ComboBox.selectionBackground", new ColorUIResource(ColorSettings.TEXT_AREA_BG_COLOR.getColor().brighter()));
+        UIManager.put("ComboBox.selectionForeground", new ColorUIResource(ColorSettings.TEXT_AREA_TEXT_COLOR.getColor()));
 
         this.setTitle("CatAnalysis");
         this.setSize(new Dimension(1250, 700));
