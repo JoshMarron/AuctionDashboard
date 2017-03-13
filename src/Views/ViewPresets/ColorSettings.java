@@ -3,7 +3,7 @@ package Views.ViewPresets;
 import java.awt.*;
 
 /**
- * Created by marro on 10/03/2017.
+ * ColorSettings is an enum of the colour scheme used throughout the application
  */
 public enum ColorSettings {
 

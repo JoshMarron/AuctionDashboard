@@ -5,12 +5,11 @@ import Controllers.DashboardMainFrameController;
 import Model.DBEnums.LogType;
 import Views.CustomComponents.CatMenuBar;
 import Views.CustomComponents.CatPanel;
-import Views.Deprecated.DashboardMetricsPanel;
+import Views.MainFramePanels.MainFrameMainLineChartPanel;
 import Views.MainFramePanels.MainFrameMetricList;
 import Views.ViewPresets.ColorSettings;
 
 import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.io.File;
 import java.util.Map;
@@ -59,9 +58,10 @@ public class DashboardMainFrame extends JFrame {
         mainContentPane.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 20));
 
         metricList = new MainFrameMetricList(this);
+        MainFrameMainLineChartPanel chartPanel = new MainFrameMainLineChartPanel();
         this.setContentPane(mainContentPane);
         mainContentPane.setLayout(new BorderLayout());
-        mainContentPane.add(metricList);
+        mainContentPane.add(chartPanel, BorderLayout.CENTER);
 
     }
 

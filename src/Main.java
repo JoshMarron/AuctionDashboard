@@ -13,13 +13,14 @@ public class Main {
         model.init();
         model.initTables();
 
-        DashboardStartupFrame startupFrame = new DashboardStartupFrame(new File(System.getProperty("user.home")));
+        //DashboardStartupFrame startupFrame = new DashboardStartupFrame(new File(System.getProperty("user.home")));
         DashboardMainFrame mainFrame = new DashboardMainFrame(new File(System.getProperty("user.home")));
         DashboardMainFrameController mainController = new DashboardMainFrameController(mainFrame, model);
-        DashboardStartupController startupController = new DashboardStartupController(startupFrame, model, mainController);
-        startupFrame.setController(startupController);
+        //DashboardStartupController startupController = new DashboardStartupController(startupFrame, model, mainController);
+        //startupFrame.setController(startupController);
         mainFrame.setController(mainController);
-        SwingUtilities.invokeLater(startupFrame::initStartup);
+        //SwingUtilities.invokeLater(startupFrame::initStartup);
         SwingUtilities.invokeLater(mainFrame::init);
+        mainFrame.setVisible(true);
     }
 }

@@ -1,0 +1,22 @@
+.chart {
+    -fx-background-color: #52555b;
+}
+
+.chart-title {
+    -fx-text-fill: #E1E6EF;
+    -fx-font: bold 40px "Tahoma";
+}
+
+.axis-label {
+    -fx-text-fill: #E1E6EF;
+    -fx-font: 20px "Tahoma";
+}
+
+.axis {
+    -fx-tick-label-font: 15px "Tahoma";
+    -fx-tick-label-fill: #E1E6EF;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
