@@ -22,6 +22,7 @@ import java.io.File;
 import java.sql.*;
 import java.time.Instant;
 import java.util.*;
+import java.util.Date;
 
 /**
  * Created by Philip on 26/02/2017.
@@ -492,6 +493,40 @@ public class DatabaseManager {
 //		System.out.println(sql);
 		
 		return createMap(sql);
+	}
+
+	public Map<Instant, Number> getBounceNumberPer(DateEnum dateEnum) {
+
+		return null;
+	}
+
+	public Map<Instant, Number> getCostOfCampaignPer(DateEnum dateEnum) {
+
+		return null;
+	}
+
+	public Map<Instant, Number> getConversionNumberPer(DateEnum dateEnum) {
+		return null;
+	}
+
+	public Map<Instant, Number> getCostPerAcquisitionPer(DateEnum dateEnum) {
+		return null;
+	}
+
+	public Map<Instant, Number> getCostPerClickPer(DateEnum dateEnum) {
+		return null;
+	}
+
+	public Map<Instant, Number> getCostPerThousandImpressionsPer(DateEnum dateEnum) {
+		return null;
+	}
+
+	public Map<Instant, Number> getClickThroughRatePer(DateEnum dateEnum) {
+		return null;
+	}
+
+	public Map<Instant, Number> getBounceRatePer(DateEnum dateEnum) {
+		return null;
 	}
 	
 	/**
