@@ -1,6 +1,7 @@
 package Views.MainFramePanels;
 
 import Views.CustomComponents.CatPanel;
+import Views.MetricType;
 import Views.ViewPresets.ColorSettings;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -19,16 +20,16 @@ public class MainFrameMainLineChartPanel extends CatPanel {
 
     private Scene thisScene;
     private Map<Instant, Number> dataMap;
+    private JFXPanel chartPanel;
 
-    public MainFrameMainLineChartPanel(Map<Instant, Number> dataMap) {
+    public MainFrameMainLineChartPanel() {
         this.init();
-        this.dataMap = dataMap;
     }
 
     private void init() {
         this.setLayout(new BorderLayout());
 
-        JFXPanel chartPanel = new JFXPanel();
+        chartPanel = new JFXPanel();
         chartPanel.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
         Platform.runLater(() -> {
             thisScene = createLineScene();
@@ -57,5 +58,30 @@ public class MainFrameMainLineChartPanel extends CatPanel {
         Scene scene = new Scene(chart);
         chart.getData().addAll(series1);
         return scene;
+    }
+
+    public void displayChart(MetricType type, Map<Instant, Number> data) {
+        Platform.runLater(() -> {
+            CategoryAxis xAxis = new CategoryAxis();
+            NumberAxis yAxis = new NumberAxis();
+
+            xAxis.setLabel("Date");
+            yAxis.setLabel(type.toString());
+
+            LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
+            chart.setTitle(type.toString() + " over time");
+            XYChart.Series series = new XYChart.Series();
+
+            data.forEach((date, num) -> {
+                series.getData().add(new XYChart.Data(date.toString(), num));
+            });
+
+            Scene scene = new Scene(chart);
+            scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
+            chart.getData().addAll(series);
+
+            chartPanel.setScene(scene);
+
+        });
     }
 }

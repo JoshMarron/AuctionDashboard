@@ -474,7 +474,7 @@ public class DatabaseManager {
 	 * @param dateEnum time period to get click count by
 	 * @return map mapping time each period of time to count of clicks in said period
 	 */
-	public Map<Instant, Integer> getClickCountPer(DateEnum dateEnum) {
+	public Map<Instant, Number> getClickCountPer(DateEnum dateEnum) {
 		String sql = null;
 		
 		switch (dateEnum) {
@@ -498,7 +498,7 @@ public class DatabaseManager {
 	 * @param dateEnum time period to get impression count by
 	 * @return map mapping time each period of time to count of impressions in said period
 	 */
-	public Map<Instant, Integer> getImpressionCountPer(DateEnum dateEnum) {
+	public Map<Instant, Number> getImpressionCountPer(DateEnum dateEnum) {
 		String sql = null;
 		
 		switch (dateEnum) {
@@ -522,8 +522,8 @@ public class DatabaseManager {
 	 * @param sql statement to execute
 	 * @return HashMap of the time to a given count of that time period
 	 */
-	private Map<Instant, Integer> createMap(String sql) {
-		Map<Instant, Integer> resultMap = new HashMap<>();
+	private Map<Instant, Number> createMap(String sql) {
+		Map<Instant, Number> resultMap = new HashMap<>();
 		ResultSet resultSet;
 		
 		if (sql != null) {

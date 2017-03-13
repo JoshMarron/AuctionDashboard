@@ -8,10 +8,12 @@ import Views.CustomComponents.CatPanel;
 import Views.MainFramePanels.MainFrameMainLineChartPanel;
 import Views.MainFramePanels.MainFrameMetricList;
 import Views.ViewPresets.ColorSettings;
+import javafx.scene.chart.NumberAxis;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -28,6 +30,7 @@ public class DashboardMainFrame extends JFrame {
     private boolean loading;
     private ImageIcon icon;
     private MainFrameMetricList metricList;
+    private MainFrameMainLineChartPanel chartPanel;
 
     public DashboardMainFrame(File homeDir) {
         this.homeDir = homeDir;
@@ -58,7 +61,7 @@ public class DashboardMainFrame extends JFrame {
         mainContentPane.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 20));
 
         metricList = new MainFrameMetricList(this);
-        MainFrameMainLineChartPanel chartPanel = new MainFrameMainLineChartPanel();
+        chartPanel = new MainFrameMainLineChartPanel();
         this.setContentPane(mainContentPane);
         mainContentPane.setLayout(new BorderLayout());
         mainContentPane.add(chartPanel, BorderLayout.CENTER);
@@ -77,8 +80,12 @@ public class DashboardMainFrame extends JFrame {
         data.forEach((type, value) -> metricList.putMetricInBox(type, value));
     }
 
-    public void displayChart(MetricType type) {
-        System.out.println("Display the " + type.name() + " chart");
+    public void requestChart(MetricType type) {
+        System.out.println("Chart requested: " + type.name());
+    }
+
+    public void displayChart(MetricType type, Map<Instant, Number> data) {
+        chartPanel.displayChart(type, data);
     }
 
 }

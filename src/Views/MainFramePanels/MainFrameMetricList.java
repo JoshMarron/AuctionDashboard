@@ -9,6 +9,7 @@ import Views.ViewPresets.ColorSettings;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +55,7 @@ public class MainFrameMetricList extends CatPanel {
         metricBoxMap.get(type).updateData(data);
     }
 
-    public void displayChart(MetricType type) {
-        parentFrame.displayChart(type);
+    public void requestChart(MetricType type) {
+        parentFrame.requestChart(type);
     }
 }

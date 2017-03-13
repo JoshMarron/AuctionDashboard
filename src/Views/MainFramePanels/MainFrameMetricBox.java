@@ -58,7 +58,7 @@ public class MainFrameMetricBox extends CatListPanel {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (dataAvailable) {
-                parent.displayChart(type);
+                parent.requestChart(type);
             }
         }
 

@@ -1,5 +1,6 @@
 package Controllers;
 
+import Model.DBEnums.DateEnum;
 import Model.DatabaseManager;
 import Model.TableModels.Click;
 import Model.TableModels.Impression;
@@ -40,6 +41,7 @@ public class DashboardMainFrameController {
 
     public void displayMetrics(Map<MetricType, Number> data) {
         SwingUtilities.invokeLater(() -> frame.displayMetrics(data));
+        SwingUtilities.invokeLater(() -> frame.displayChart(MetricType.TOTAL_CLICKS, model.getClickCountPer(DateEnum.DAYS)));
     }
 
     private Map<MetricType, Number> calculateKeyMetrics() {
