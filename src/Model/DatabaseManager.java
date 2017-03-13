@@ -537,6 +537,8 @@ public class DatabaseManager {
 				e.printStackTrace();
 			}
 		}
+		
+		return resultMap;
 	}
 	
 	/**
