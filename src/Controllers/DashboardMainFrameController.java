@@ -80,6 +80,7 @@ public class DashboardMainFrameController {
         if (availableLogs.contains(LogType.CLICK)) {
             results.put(MetricType.TOTAL_COST, MetricUtils.calculateTotalCost(clickCosts));
             results.put(MetricType.TOTAL_CLICKS, clickList.size());
+            results.put(MetricType.TOTAL_UNIQUES, clickList.size());
             results.put(MetricType.CPC, MetricUtils.getCostPerClick(clickCosts, clickList.size()));
         }
         if (availableLogs.contains(LogType.CLICK) && availableLogs.contains(LogType.IMPRESSION)) {

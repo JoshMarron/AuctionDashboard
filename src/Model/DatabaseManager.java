@@ -452,7 +452,7 @@ public class DatabaseManager {
 	public Map<Instant, Number> getClickCountPer(DateEnum dateEnum, boolean unique) {
 		String sql = null;
 		String count = "count(click_date)";
-		if (unique) count = "count(DISTINCT click_date)";
+		if (unique) count = "count(DISTINCT user_id)";
 		
 		switch (dateEnum) {
 			case HOURS:
@@ -481,13 +481,13 @@ public class DatabaseManager {
 		
 		switch (dateEnum) {
 			case HOURS:
-				sql = "SELECT impression_date, count(impression_id) FROM site_impression GROUP BY strftime('%H,%d',impression_date) ORDER BY impression_date";
+				sql = "SELECT impression_date, count(site_impression_id) FROM site_impression GROUP BY strftime('%H,%d',impression_date) ORDER BY impression_date";
 				break;
 			case DAYS:
-				sql = "SELECT impression_date, count(impression_id) FROM site_impression GROUP BY date(impression_date) ORDER BY impression_date";
+				sql = "SELECT impression_date, count(site_impression_id) FROM site_impression GROUP BY date(impression_date) ORDER BY impression_date";
 				break;
 			case WEEKS:
-				sql = "SELECT impression_date, count(impression_id) FROM site_impression GROUP BY strftime('%W', impression_date) ORDER BY impression_date";
+				sql = "SELECT impression_date, count(site_impression_id) FROM site_impression GROUP BY strftime('%W', impression_date) ORDER BY impression_date";
 				break;
 			
 		}
