@@ -64,7 +64,7 @@ public class DashboardMainFrame extends JFrame {
         chartPanel = new MainFrameMainLineChartPanel();
         this.setContentPane(mainContentPane);
         mainContentPane.setLayout(new BorderLayout());
-        mainContentPane.add(chartPanel, BorderLayout.CENTER);
+        mainContentPane.add(metricList, BorderLayout.CENTER);
 
     }
 
