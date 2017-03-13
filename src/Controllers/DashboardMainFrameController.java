@@ -10,6 +10,7 @@ import Model.DBEnums.LogType;
 import Views.MetricType;
 
 import javax.swing.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -42,7 +43,26 @@ public class DashboardMainFrameController {
 
     public void displayMetrics(Map<MetricType, Number> data) {
         SwingUtilities.invokeLater(() -> frame.displayMetrics(data));
-        SwingUtilities.invokeLater(() -> frame.displayChart(MetricType.TOTAL_CLICKS, model.getClickCountPer(DateEnum.DAYS, false)));
+    }
+
+    public void requestChart(MetricType type) {
+        helpers.submit(() -> {
+            Map<Instant, Number> data = getDataForChartFromType(type, DateEnum.DAYS);
+            SwingUtilities.invokeLater(() -> frame.displayChart(type, data));
+        });
+    }
+
+    private Map<Instant, Number> getDataForChartFromType(MetricType type, DateEnum granularity) {
+        switch(type) {
+            case TOTAL_CLICKS:
+                return model.getClickCountPer(granularity, false);
+            case TOTAL_UNIQUES:
+                return model.getClickCountPer(granularity, true);
+            case TOTAL_IMPRESSIONS:
+                return model.getImpressionCountPer(granularity);
+            default:
+                return model.getClickCountPer(granularity, false);
+        }
     }
 
     private Map<MetricType, Number> calculateKeyMetrics() {

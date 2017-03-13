@@ -22,8 +22,6 @@ import java.util.Map;
  */
 public class MainFrameMainLineChartPanel extends CatPanel {
 
-    private Scene thisScene;
-    private Map<Instant, Number> dataMap;
     private JFXPanel chartPanel;
 
     public MainFrameMainLineChartPanel() {
@@ -35,33 +33,8 @@ public class MainFrameMainLineChartPanel extends CatPanel {
 
         chartPanel = new JFXPanel();
         chartPanel.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
-        Platform.runLater(() -> {
-            thisScene = createLineScene();
-            thisScene.getStylesheets().clear();
-            thisScene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
-            chartPanel.setScene(thisScene);
-        });
 
         this.add(chartPanel, BorderLayout.CENTER);
-    }
-
-    private Scene createLineScene() {
-        CategoryAxis xAxis = new CategoryAxis();
-        NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Month");
-        yAxis.setLabel("Number of clicks");
-
-        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
-        chart.setTitle("im a chart");
-        XYChart.Series series1 = new XYChart.Series();
-
-
-        series1.getData().add(new XYChart.Data("Date 1", 2302520));
-        series1.getData().add(new XYChart.Data("Date 2", 243436303));
-
-        Scene scene = new Scene(chart);
-        chart.getData().addAll(series1);
-        return scene;
     }
 
     public void displayChart(MetricType type, Map<Instant, Number> data) {
@@ -81,7 +54,6 @@ public class MainFrameMainLineChartPanel extends CatPanel {
                     .withZone(ZoneId.systemDefault());
 
             data.keySet().stream().sorted().forEach((time) -> series.getData().add(new XYChart.Data(formatter.format(time), data.get(time))));
-
 
 
             Scene scene = new Scene(chart);

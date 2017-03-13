@@ -8,7 +8,6 @@ import Views.CustomComponents.CatPanel;
 import Views.MainFramePanels.MainFrameMainLineChartPanel;
 import Views.MainFramePanels.MainFrameMetricList;
 import Views.ViewPresets.ColorSettings;
-import javafx.scene.chart.NumberAxis;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,7 +63,13 @@ public class DashboardMainFrame extends JFrame {
         chartPanel = new MainFrameMainLineChartPanel();
         this.setContentPane(mainContentPane);
         mainContentPane.setLayout(new BorderLayout());
-        mainContentPane.add(metricList, BorderLayout.CENTER);
+
+        CatPanel mainPanel = new CatPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
+        mainPanel.add(metricList);
+        mainPanel.add(chartPanel);
+
+        mainContentPane.add(mainPanel, BorderLayout.CENTER);
 
     }
 
@@ -81,7 +86,7 @@ public class DashboardMainFrame extends JFrame {
     }
 
     public void requestChart(MetricType type) {
-        System.out.println("Chart requested: " + type.name());
+        controller.requestChart(type);
     }
 
     public void displayChart(MetricType type, Map<Instant, Number> data) {
