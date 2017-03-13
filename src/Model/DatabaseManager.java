@@ -1,26 +1,27 @@
 package Model;
 
+import DataStructures.ClickLog;
 import DataStructures.CsvInterfaces.Gender;
 import DataStructures.CsvInterfaces.Income;
 import Model.DBEnums.DatabaseStatements;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Model.DBEnums.TableType;
+import Model.DBEnums.headers.ClickTableHeaders;
 import Model.DBEnums.headers.Header;
 import Model.TableModels.Click;
 import Model.TableModels.Impression;
 import Model.TableModels.ServerVisit;
 import Model.TableModels.User;
 import com.sun.org.apache.xpath.internal.SourceTree;
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 
+import javax.swing.plaf.nimbus.State;
 import javax.xml.transform.Result;
 import java.io.File;
 import java.sql.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Philip on 26/02/2017.
@@ -124,11 +125,36 @@ public class DatabaseManager {
 			System.out.println("Database loaded successfully from: " + url);
 			
 			System.out.println("Testing for data...");
-			
+			testForTables(conn);
 			
 			return true;
 		}
 		return false;
+	}
+	
+	private void testForTables(Connection conn) {
+		String sql;
+		List<Header> headerList = Arrays.asList(
+				ClickTableHeaders.CLICK_ID,
+				ClickTableHeaders.USER_ID,
+				ClickTableHeaders.CLICK_DATE,
+				ClickTableHeaders.COST);
+		ResultSet resultSet;
+		ResultSetMetaData rsmd;
+		
+		// Check for click table
+		sql = "SELECT * FROM click LIMIT 1";
+		headerList = Arrays.asList();
+		try (Statement stmt = conn.createStatement()) {
+			resultSet = stmt.executeQuery(sql);
+			rsmd = resultSet.getMetaData();
+			
+			for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -447,10 +473,10 @@ public class DatabaseManager {
 	 * @param dateEnum time period to get click count by
 	 * @return map mapping time each period of time to count of clicks in said period
 	 */
-	public Map<Instant, Integer> getClickCountPer(DateEnum dateEnum, boolean unique) {
+	public Map<Instant, Number> getClickCountPer(DateEnum dateEnum, boolean unique) {
 		String sql = null;
-		String count = "count(click_date)";
-		if (unique) count = "count(DISTINCT click_date)";
+		String count = "count(user_id)";
+		if (unique) count = "count(DISTINCT user_id)";
 		
 		switch (dateEnum) {
 			case HOURS:
@@ -474,18 +500,18 @@ public class DatabaseManager {
 	 * @param dateEnum time period to get impression count by
 	 * @return map mapping time each period of time to count of impressions in said period
 	 */
-	public Map<Instant, Integer> getImpressionCountPer(DateEnum dateEnum) {
+	public Map<Instant, Number> getImpressionCountPer(DateEnum dateEnum) {
 		String sql = null;
 		
 		switch (dateEnum) {
 			case HOURS:
-				sql = "SELECT impression_date, count(impression_id) FROM site_impression GROUP BY strftime('%H,%d',impression_date) ORDER BY impression_date";
+				sql = "SELECT impression_date, count(site_impression_id) FROM site_impression GROUP BY strftime('%H,%d',impression_date) ORDER BY impression_date";
 				break;
 			case DAYS:
-				sql = "SELECT impression_date, count(impression_id) FROM site_impression GROUP BY date(impression_date) ORDER BY impression_date";
+				sql = "SELECT impression_date, count(site_impression_id) FROM site_impression GROUP BY date(impression_date) ORDER BY impression_date";
 				break;
 			case WEEKS:
-				sql = "SELECT impression_date, count(impression_id) FROM site_impression GROUP BY strftime('%W', impression_date) ORDER BY impression_date";
+				sql = "SELECT impression_date, count(site_impression_id) FROM site_impression GROUP BY strftime('%W', impression_date) ORDER BY impression_date";
 				break;
 			
 		}
@@ -498,8 +524,8 @@ public class DatabaseManager {
 	 * @param sql statement to execute
 	 * @return HashMap of the time to a given count of that time period
 	 */
-	private Map<Instant, Integer> createMap(String sql) {
-		Map<Instant, Integer> resultMap = new HashMap<>();
+	private Map<Instant, Number> createMap(String sql) {
+		Map<Instant, Number> resultMap = new HashMap<>();
 		ResultSet resultSet;
 		
 		if (sql != null) {
