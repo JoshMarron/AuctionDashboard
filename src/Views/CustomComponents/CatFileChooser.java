@@ -1,6 +1,5 @@
 package Views.CustomComponents;
 
-import SwingUtilsLib.SwingUtils;
 import Views.DashboardMainFrame;
 import Views.ViewPresets.ColorSettings;
 import Views.ViewPresets.FontSettings;
