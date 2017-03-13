@@ -91,7 +91,7 @@ public class DatabaseManager {
 	/**
 	 * Initialises the tables in the database (see schema for details). Is called by the init() function
 	 */
-	private void initTables() {
+	public void initTables() {
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			stmt.execute(DatabaseStatements.DROP_USER.getStatement());
@@ -474,20 +474,23 @@ public class DatabaseManager {
 	 * @param dateEnum time period to get click count by
 	 * @return map mapping time each period of time to count of clicks in said period
 	 */
-	public Map<Instant, Number> getClickCountPer(DateEnum dateEnum) {
+	public Map<Instant, Integer> getClickCountPer(DateEnum dateEnum, boolean unique) {
 		String sql = null;
+		String count = "count(click_date)";
+		if (unique) count = "count(DISTINCT click_date)";
 		
 		switch (dateEnum) {
 			case HOURS:
-				sql = "SELECT click_date, count(click_id) FROM click GROUP BY strftime('%H,%d',click_date) ORDER BY click_date";
+				sql = "SELECT click_date, " + count + " FROM click GROUP BY strftime('%H,%d',click_date) ORDER BY click_date";
 				break;
 			case DAYS:
-				sql = "SELECT click_date, count(click_id) FROM click GROUP BY date(click_date) ORDER BY click_date";
+				sql = "SELECT click_date, " + count + " FROM click GROUP BY date(click_date) ORDER BY click_date";
 				break;
 			case WEEKS:
-				sql = "SELECT click_date, count(click_id) FROM click GROUP BY strftime('%W', click_date) ORDER BY click_date";
+				sql = "SELECT click_date, " + count + " FROM click GROUP BY strftime('%W', click_date) ORDER BY click_date";
 				break;
 		}
+//		System.out.println(sql);
 		
 		return createMap(sql);
 	}
@@ -498,7 +501,7 @@ public class DatabaseManager {
 	 * @param dateEnum time period to get impression count by
 	 * @return map mapping time each period of time to count of impressions in said period
 	 */
-	public Map<Instant, Number> getImpressionCountPer(DateEnum dateEnum) {
+	public Map<Instant, Integer> getImpressionCountPer(DateEnum dateEnum) {
 		String sql = null;
 		
 		switch (dateEnum) {
@@ -522,13 +525,14 @@ public class DatabaseManager {
 	 * @param sql statement to execute
 	 * @return HashMap of the time to a given count of that time period
 	 */
-	private Map<Instant, Number> createMap(String sql) {
-		Map<Instant, Number> resultMap = new HashMap<>();
+	private Map<Instant, Integer> createMap(String sql) {
+		Map<Instant, Integer> resultMap = new HashMap<>();
 		ResultSet resultSet;
 		
 		if (sql != null) {
 			try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 				resultSet = stmt.executeQuery(sql);
+//				printToConsole(resultSet);
 				
 				while (resultSet.next()) {
 					resultMap.put(stringToInstant(resultSet.getString(1)), resultSet.getInt(2));
