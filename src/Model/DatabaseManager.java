@@ -11,6 +11,7 @@ import Model.TableModels.Click;
 import Model.TableModels.Impression;
 import Model.TableModels.ServerVisit;
 import Model.TableModels.User;
+import com.sun.org.apache.xpath.internal.SourceTree;
 
 import javax.xml.transform.Result;
 import java.io.File;
@@ -48,50 +49,9 @@ public class DatabaseManager {
 	}
 	
 	/**
-	 * Sets up the database for the dashboard. First checks for existence of the database and attempts to connect to it
-	 * else it creates the database in the select directory.
-	 */
-	@Deprecated
-	public void init() {
-		File dir = new File("db");
-		File file = new File(filename);
-		
-		if (!dir.exists()) {
-			System.out.println("Directory doesn't exist");
-			dir.mkdir();
-			System.out.println("Creating DIR");
-		} else {
-			System.out.println("Directory exists");
-		}
-		
-//		if (!file.exists()) {
-//			System.out.println("Database doesn't exist");
-//			System.out.println("Creating database...");
-//
-//			try {
-//				Connection conn = connect();
-//
-//				if (conn != null) {
-//					Class.forName("org.sqlite.JDBC");
-//					DatabaseMetaData meta = conn.getMetaData();
-//					System.out.println("Driver name is " + meta.getDriverName());
-//					System.out.println("Database successfully created!");
-//				}
-//				conn.close();
-//			} catch (SQLException | ClassNotFoundException e) {
-//				e.printStackTrace();
-//			}
-//		} else {
-//			System.out.println("Database exists");
-//		}
-		
-		System.out.println("Database created and ready to use");
-	}
-	
-	/**
 	 * Initialises the tables in the database (see schema for details). Is called by the init() function
 	 */
-	private void initTables() {
+	public void initTables() {
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			stmt.execute(DatabaseStatements.DROP_USER.getStatement());
@@ -162,6 +122,11 @@ public class DatabaseManager {
 		if (file.exists()) {
 			Connection conn = connect();
 			System.out.println("Database loaded successfully from: " + url);
+			
+			System.out.println("Testing for data...");
+			String sql = "SELECT * FROM";
+			
+			
 			return true;
 		}
 		return false;
@@ -392,7 +357,8 @@ public class DatabaseManager {
 			long ServerID;
 			long userID;
 			Instant entryDate;
-			Instant exitDate;
+			String exitDateString;
+			Instant exitDateInstant;
 			int pagesViewed;
 			boolean conversion;
 			ServerVisit sv;
@@ -401,7 +367,16 @@ public class DatabaseManager {
 				ServerID = resultSet.getLong(1);
 				userID = resultSet.getLong(2);
 				entryDate = stringToInstant(resultSet.getString(3));
-				exitDate = stringToInstant(resultSet.getString(4));
+				
+				// Catch the n/a case
+				exitDateString = resultSet.getString(4);
+				
+				if (exitDateString.equals("n/a")) {
+					exitDateInstant = null;
+				} else {
+					exitDateInstant = stringToInstant(exitDateString);
+				}
+				
 				pagesViewed = resultSet.getInt(5);
 				conversion = false;
 				try {
@@ -410,7 +385,7 @@ public class DatabaseManager {
 					e.printStackTrace();
 				}
 				
-				sv = new ServerVisit(ServerID, userID, entryDate, exitDate, pagesViewed, conversion);
+				sv = new ServerVisit(ServerID, userID, entryDate, exitDateInstant, pagesViewed, conversion);
 				serverVisits.add(sv);
 			}
 		} catch (SQLException e) {
@@ -474,20 +449,23 @@ public class DatabaseManager {
 	 * @param dateEnum time period to get click count by
 	 * @return map mapping time each period of time to count of clicks in said period
 	 */
-	public Map<Instant, Integer> getClickCountPer(DateEnum dateEnum) {
+	public Map<Instant, Integer> getClickCountPer(DateEnum dateEnum, boolean unique) {
 		String sql = null;
+		String count = "count(click_date)";
+		if (unique) count = "count(DISTINCT click_date)";
 		
 		switch (dateEnum) {
 			case HOURS:
-				sql = "SELECT click_date, count(click_id) FROM click GROUP BY strftime('%H,%d',click_date) ORDER BY click_date";
+				sql = "SELECT click_date, " + count + " FROM click GROUP BY strftime('%H,%d',click_date) ORDER BY click_date";
 				break;
 			case DAYS:
-				sql = "SELECT click_date, count(click_id) FROM click GROUP BY date(click_date) ORDER BY click_date";
+				sql = "SELECT click_date, " + count + " FROM click GROUP BY date(click_date) ORDER BY click_date";
 				break;
 			case WEEKS:
-				sql = "SELECT click_date, count(click_id) FROM click GROUP BY strftime('%W', click_date) ORDER BY click_date";
+				sql = "SELECT click_date, " + count + " FROM click GROUP BY strftime('%W', click_date) ORDER BY click_date";
 				break;
 		}
+//		System.out.println(sql);
 		
 		return createMap(sql);
 	}
@@ -529,6 +507,7 @@ public class DatabaseManager {
 		if (sql != null) {
 			try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 				resultSet = stmt.executeQuery(sql);
+//				printToConsole(resultSet);
 				
 				while (resultSet.next()) {
 					resultMap.put(stringToInstant(resultSet.getString(1)), resultSet.getInt(2));
