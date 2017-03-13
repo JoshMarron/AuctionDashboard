@@ -505,26 +505,35 @@ public class DatabaseManager {
 		return null;
 	}
 
+	//TODO ALL OF THESE NEED TO ALSO HAVE "GET ALL" METHODS WHICH RETURN JUST A NUMBER
+	//All these methods need to get the metric per date enum
+
+	//Number of conversions - obvious
 	public Map<Instant, Number> getConversionNumberPer(DateEnum dateEnum) {
 		return null;
 	}
 
+	//Cost per acquisition - total cost/num conversions
 	public Map<Instant, Number> getCostPerAcquisitionPer(DateEnum dateEnum) {
 		return null;
 	}
 
+	//Cost per click - total cost/num clicks
 	public Map<Instant, Number> getCostPerClickPer(DateEnum dateEnum) {
 		return null;
 	}
 
+	//CPM - (cost/impressions) * 1000
 	public Map<Instant, Number> getCostPerThousandImpressionsPer(DateEnum dateEnum) {
 		return null;
 	}
 
+	//CTR - number of clicks/number of impressions
 	public Map<Instant, Number> getClickThroughRatePer(DateEnum dateEnum) {
 		return null;
 	}
 
+	//Can't remember, ask joe
 	public Map<Instant, Number> getBounceRatePer(DateEnum dateEnum) {
 		return null;
 	}
