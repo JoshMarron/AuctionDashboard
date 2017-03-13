@@ -3,12 +3,14 @@ package Model;
 import DataStructures.ClickLog;
 import DataStructures.CsvInterfaces.Gender;
 import DataStructures.CsvInterfaces.Income;
+import DataStructures.ServerLog;
 import Model.DBEnums.DatabaseStatements;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Model.DBEnums.TableType;
 import Model.DBEnums.headers.ClickTableHeaders;
 import Model.DBEnums.headers.Header;
+import Model.DBEnums.headers.ServerLogTableHeaders;
 import Model.TableModels.Click;
 import Model.TableModels.Impression;
 import Model.TableModels.ServerVisit;
@@ -35,7 +37,7 @@ public class DatabaseManager {
 	private String url;
 	
 	public DatabaseManager() {
-		
+
 //		filename = "db/model3.db";
 //		url = "jdbc:sqlite:" + filename;
 	}
@@ -77,6 +79,7 @@ public class DatabaseManager {
 	
 	/**
 	 * Creates a database if it doesn't already exist and sets the filename to it
+	 *
 	 * @param location location of the file that is to be created
 	 */
 	public void createDB(String location) {
@@ -107,17 +110,19 @@ public class DatabaseManager {
 		}
 	}
 	
-	public void saveDB() {}
+	public void saveDB() {
+	}
 	
 	/**
 	 * Loads a database. Pass in a file name and it will attempt to create a connection to it, will throw Exception if
 	 * it fails
+	 *
 	 * @param location file path of the database
 	 * @return boolean whether it finds the file or not
 	 * @throws SQLException if it fails to create a connection to the database
 	 */
-	public boolean loadDB(String location) throws SQLException {
-		filename  = location;
+	public boolean loadDB(String location) throws SQLException, CorruptTableException {
+		filename = location;
 		File file = new File(filename);
 		url = "jdbc:sqlite:" + filename;
 		
@@ -133,28 +138,43 @@ public class DatabaseManager {
 		return false;
 	}
 	
-	private void testForTables(Connection conn) {
+	private void testForTables(Connection conn) throws SQLException, CorruptTableException {
 		String sql;
-		List<Header> headerList = Arrays.asList(
+		List<Header> headerList;
+		ResultSet resultSet;
+		ResultSetMetaData rsmd;
+		Statement stmt = conn.createStatement();;
+		
+		// Check for click table
+		sql = "SELECT * FROM click LIMIT 1";
+		headerList = Arrays.asList(
 				ClickTableHeaders.CLICK_ID,
 				ClickTableHeaders.USER_ID,
 				ClickTableHeaders.CLICK_DATE,
 				ClickTableHeaders.COST);
-		ResultSet resultSet;
-		ResultSetMetaData rsmd;
+		resultSet = stmt.executeQuery(sql);
+		rsmd = resultSet.getMetaData();
 		
-		// Check for click table
-		sql = "SELECT * FROM click LIMIT 1";
-		headerList = Arrays.asList();
-		try (Statement stmt = conn.createStatement()) {
-			resultSet = stmt.executeQuery(sql);
-			rsmd = resultSet.getMetaData();
-			
-			for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-				
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+			if (!rsmd.getColumnName(i).equals(headerList.get(i - 1)))
+				throw new CorruptTableException("Click table is corrupted, the header " + headerList.get(i - 1) + " doesn't exist");
+		}
+		
+		// Check for server log table
+		sql = "SELECT * FROM server_log LIMIT 1";
+		headerList = Arrays.asList(
+				ServerLogTableHeaders.SERVER_LOG_ID,
+				ServerLogTableHeaders.USER_ID,
+				ServerLogTableHeaders.ENTRY_DATE,
+				ServerLogTableHeaders.EXIT_DATE,
+				ServerLogTableHeaders.PAGES_VIEWED,
+				ServerLogTableHeaders.CONVERSION);
+		resultSet = stmt.executeQuery(sql);
+		rsmd = resultSet.getMetaData();
+		
+		for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+			if (!rsmd.getColumnName(i).equals(headerList.get(i - 1)))
+				throw new CorruptTableException("Server log table is corrupted, header " + headerList.get(i - 1) + " doesn't exist");
 		}
 	}
 	
@@ -471,6 +491,7 @@ public class DatabaseManager {
 	/**
 	 * Takes a time period and returns map mapping each period of time period and a count for clicks in said period.
 	 * The instant returned for time will be the earliest time the database finds and will be the full date and time
+	 *
 	 * @param dateEnum time period to get click count by
 	 * @return map mapping time each period of time to count of clicks in said period
 	 */
@@ -541,6 +562,7 @@ public class DatabaseManager {
 	/**
 	 * Takes a time period and returns map mapping each period of time period and a count for site impressions in said period.
 	 * The instant returned for time will be the earliest time the database finds and will be the full date and time
+	 *
 	 * @param dateEnum time period to get impression count by
 	 * @return map mapping time each period of time to count of impressions in said period
 	 */
@@ -565,6 +587,7 @@ public class DatabaseManager {
 	
 	/**
 	 * Executes a given sql String Statement and produces a map of the results which it then returns
+	 *
 	 * @param sql statement to execute
 	 * @return HashMap of the time to a given count of that time period
 	 */
@@ -650,5 +673,23 @@ public class DatabaseManager {
 			e.printStackTrace();
 		}
 		
+	}
+}
+
+class CorruptTableException extends Exception {
+	public CorruptTableException() {
+		super();
+	}
+	
+	public CorruptTableException(String message) {
+		super(message);
+	}
+	
+	public CorruptTableException(String message, Throwable cause) {
+		super(message, cause);
+	}
+	
+	public CorruptTableException(Throwable cause) {
+		super(cause);
 	}
 }
