@@ -4,6 +4,7 @@ import Model.DBEnums.DateEnum;
 import Model.DatabaseManager;
 import Model.TableModels.Click;
 import Model.TableModels.Impression;
+import Model.TableModels.ServerVisit;
 import Views.DashboardMainFrame;
 import Model.DBEnums.LogType;
 import Views.MetricType;
@@ -41,7 +42,7 @@ public class DashboardMainFrameController {
 
     public void displayMetrics(Map<MetricType, Number> data) {
         SwingUtilities.invokeLater(() -> frame.displayMetrics(data));
-        SwingUtilities.invokeLater(() -> frame.displayChart(MetricType.TOTAL_CLICKS, model.getClickCountPer(DateEnum.DAYS)));
+        SwingUtilities.invokeLater(() -> frame.displayChart(MetricType.TOTAL_CLICKS, model.getClickCountPer(DateEnum.DAYS, false)));
     }
 
     private Map<MetricType, Number> calculateKeyMetrics() {
@@ -50,6 +51,7 @@ public class DashboardMainFrameController {
         List<Impression> impressionList = model.selectAllImpressions();
         List<Click> clickList = model.selectAllClicks();
         List<Double> clickCosts = clickList.stream().map(Click::getCost).collect(Collectors.toList());
+        List<ServerVisit> visits = model.getAllServerVisits();
 
         if (availableLogs.contains(LogType.IMPRESSION)) {
             int impressionCount = MetricUtils.getImpressionCount(impressionList);
@@ -62,7 +64,13 @@ public class DashboardMainFrameController {
             int clickCount = clickList.size();
             int impressionCount = MetricUtils.getImpressionCount(impressionList);
             results.put(MetricType.CTR, MetricUtils.calculateCTR(clickCount, impressionCount));
+            results.put(MetricType.CPM, MetricUtils.getCostPerImpression(impressionList, clickCosts));
         }
+
+        if(availableLogs.contains(LogType.SERVER_LOG)){
+            results.put(MetricType.TOTAL_BOUNCES, MetricUtils.getBounceCount(visits));
+        }
+
 
         return results;
 

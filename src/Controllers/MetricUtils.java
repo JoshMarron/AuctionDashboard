@@ -80,6 +80,6 @@ public class MetricUtils {
 
     //CPM
     public static double getCostPerThousandImpressions(List<Impression>impressions, List<Double> clickCosts){
-        return (getCostPerImpression(impressions, clickCosts)/1000);
+        return (getCostPerImpression(impressions, clickCosts)*1000);
     }
 }
