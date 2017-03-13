@@ -79,6 +79,8 @@ public class DashboardMainFrameController {
         }
         if (availableLogs.contains(LogType.CLICK)) {
             results.put(MetricType.TOTAL_COST, MetricUtils.calculateTotalCost(clickCosts));
+            results.put(MetricType.TOTAL_CLICKS, clickList.size());
+            results.put(MetricType.CPC, MetricUtils.getCostPerClick(clickCosts, clickList.size()));
         }
         if (availableLogs.contains(LogType.CLICK) && availableLogs.contains(LogType.IMPRESSION)) {
             int clickCount = clickList.size();
@@ -89,6 +91,12 @@ public class DashboardMainFrameController {
 
         if(availableLogs.contains(LogType.SERVER_LOG)){
             results.put(MetricType.TOTAL_BOUNCES, MetricUtils.getBounceCount(visits));
+            results.put(MetricType.TOTAL_CONVERSIONS, MetricUtils.getConversionCount(visits));
+        }
+
+        if(availableLogs.contains(LogType.SERVER_LOG) && availableLogs.contains(LogType.CLICK)){
+            results.put(MetricType.CPA, MetricUtils.getCostPerAcquisition(visits, clickCosts));
+            results.put(MetricType.BOUNCE_RATE, MetricUtils.getBounceRate(clickList, visits));
         }
 
 

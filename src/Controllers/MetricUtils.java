@@ -57,7 +57,7 @@ public class MetricUtils {
     }
 
     public static double getBounceRate(List<Click> clicks, List<ServerVisit> visits){
-        return (getBounceCount(visits)/clicks.size());
+        return (getBounceCount(visits)/(double)clicks.size());
     }
 
     public static int getConversionCount(List<ServerVisit> serverLog){

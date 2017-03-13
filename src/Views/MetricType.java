@@ -31,7 +31,7 @@ public enum MetricType {
     CPC ("Cost per Click (CPC)",
             "You need a Click file to view this metric",
             Arrays.asList(LogType.CLICK)),
-    CPM ("Cost per Impression (CPM)",
+    CPM ("Cost per Thousand Impressions (CPM)",
             "You need an Impression file to view this metric",
             Arrays.asList(LogType.IMPRESSION)),
     BOUNCE_RATE ("Bounce Rate",
