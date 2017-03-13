@@ -33,8 +33,8 @@ public class DatabaseManager {
 	
 	public DatabaseManager() {
 		
-		filename = "db/model3.db";
-		url = "jdbc:sqlite:" + filename;
+//		filename = "db/model3.db";
+//		url = "jdbc:sqlite:" + filename;
 	}
 	
 	/**
@@ -51,6 +51,7 @@ public class DatabaseManager {
 	 * Sets up the database for the dashboard. First checks for existence of the database and attempts to connect to it
 	 * else it creates the database in the select directory.
 	 */
+	@Deprecated
 	public void init() {
 		File dir = new File("db");
 		File file = new File(filename);
@@ -63,26 +64,26 @@ public class DatabaseManager {
 			System.out.println("Directory exists");
 		}
 		
-		if (!file.exists()) {
-			System.out.println("Database doesn't exist");
-			System.out.println("Creating database...");
-			
-			try {
-				Connection conn = connect();
-				
-				if (conn != null) {
-					Class.forName("org.sqlite.JDBC");
-					DatabaseMetaData meta = conn.getMetaData();
-					System.out.println("Driver name is " + meta.getDriverName());
-					System.out.println("Database successfully created!");
-				}
-				conn.close();
-			} catch (SQLException | ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		} else {
-			System.out.println("Database exists");
-		}
+//		if (!file.exists()) {
+//			System.out.println("Database doesn't exist");
+//			System.out.println("Creating database...");
+//
+//			try {
+//				Connection conn = connect();
+//
+//				if (conn != null) {
+//					Class.forName("org.sqlite.JDBC");
+//					DatabaseMetaData meta = conn.getMetaData();
+//					System.out.println("Driver name is " + meta.getDriverName());
+//					System.out.println("Database successfully created!");
+//				}
+//				conn.close();
+//			} catch (SQLException | ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		} else {
+//			System.out.println("Database exists");
+//		}
 		
 		System.out.println("Database created and ready to use");
 	}
@@ -90,7 +91,7 @@ public class DatabaseManager {
 	/**
 	 * Initialises the tables in the database (see schema for details). Is called by the init() function
 	 */
-	public void initTables() {
+	private void initTables() {
 		
 		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 			stmt.execute(DatabaseStatements.DROP_USER.getStatement());
@@ -110,6 +111,60 @@ public class DatabaseManager {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Creates a database if it doesn't already exist and sets the filename to it
+	 * @param location location of the file that is to be created
+	 */
+	public void createDB(String location) {
+		this.filename = location;
+		File file = new File(filename);
+		url = "jdbc:sqlite:" + filename;
+		
+		if (!file.exists()) {
+			System.out.println("Database doesn't exist at: " + url);
+			System.out.println("Attempting to create database at: " + url);
+			
+			try {
+				Connection conn = connect();
+				
+				if (conn != null) {
+					Class.forName("org.sqlite.JDBC");
+					DatabaseMetaData meta = conn.getMetaData();
+					System.out.println("Driver name is " + meta.getDriverName());
+					System.out.println("Database successfully created at: " + url);
+				}
+				conn.close();
+				initTables();
+			} catch (SQLException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("Database exists at: " + url);
+		}
+	}
+	
+	public void saveDB() {}
+	
+	/**
+	 * Loads a database. Pass in a file name and it will attempt to create a connection to it, will throw Exception if
+	 * it fails
+	 * @param location file path of the database
+	 * @return boolean whether it finds the file or not
+	 * @throws SQLException if it fails to create a connection to the database
+	 */
+	public boolean loadDB(String location) throws SQLException {
+		filename  = location;
+		File file = new File(filename);
+		url = "jdbc:sqlite:" + filename;
+		
+		if (file.exists()) {
+			Connection conn = connect();
+			System.out.println("Database loaded successfully from: " + url);
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -414,26 +469,62 @@ public class DatabaseManager {
 	}
 	
 	/**
-	 * Takes a time period and returns map mapping each period of time period and a count for clicks in said period
+	 * Takes a time period and returns map mapping each period of time period and a count for clicks in said period.
+	 * The instant returned for time will be the earliest time the database finds and will be the full date and time
 	 * @param dateEnum time period to get click count by
 	 * @return map mapping time each period of time to count of clicks in said period
 	 */
 	public Map<Instant, Integer> getClickCountPer(DateEnum dateEnum) {
-		Map<Instant, Integer> resultMap = new HashMap<>();
-		ResultSet resultSet;
 		String sql = null;
 		
 		switch (dateEnum) {
-			case DAYS:
-				sql = "SELECT click_date, count(click_id) FROM click GROUP BY date(click_date) ORDER BY click_date";
-				break;
 			case HOURS:
 				sql = "SELECT click_date, count(click_id) FROM click GROUP BY strftime('%H,%d',click_date) ORDER BY click_date";
+				break;
+			case DAYS:
+				sql = "SELECT click_date, count(click_id) FROM click GROUP BY date(click_date) ORDER BY click_date";
 				break;
 			case WEEKS:
 				sql = "SELECT click_date, count(click_id) FROM click GROUP BY strftime('%W', click_date) ORDER BY click_date";
 				break;
 		}
+		
+		return createMap(sql);
+	}
+	
+	/**
+	 * Takes a time period and returns map mapping each period of time period and a count for site impressions in said period.
+	 * The instant returned for time will be the earliest time the database finds and will be the full date and time
+	 * @param dateEnum time period to get impression count by
+	 * @return map mapping time each period of time to count of impressions in said period
+	 */
+	public Map<Instant, Integer> getImpressionCountPer(DateEnum dateEnum) {
+		String sql = null;
+		
+		switch (dateEnum) {
+			case HOURS:
+				sql = "SELECT impression_date, count(impression_id) FROM site_impression GROUP BY strftime('%H,%d',impression_date) ORDER BY impression_date";
+				break;
+			case DAYS:
+				sql = "SELECT impression_date, count(impression_id) FROM site_impression GROUP BY date(impression_date) ORDER BY impression_date";
+				break;
+			case WEEKS:
+				sql = "SELECT impression_date, count(impression_id) FROM site_impression GROUP BY strftime('%W', impression_date) ORDER BY impression_date";
+				break;
+			
+		}
+		
+		return createMap(sql);
+	}
+	
+	/**
+	 * Executes a given sql String Statement and produces a map of the results which it then returns
+	 * @param sql statement to execute
+	 * @return HashMap of the time to a given count of that time period
+	 */
+	private Map<Instant, Integer> createMap(String sql) {
+		Map<Instant, Integer> resultMap = new HashMap<>();
+		ResultSet resultSet;
 		
 		if (sql != null) {
 			try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
@@ -446,16 +537,6 @@ public class DatabaseManager {
 				e.printStackTrace();
 			}
 		}
-		
-		return resultMap;
-	}
-	
-
-	public Map<Instant, Integer> getImpressionCount() {
-
-		HashMap<Instant, Integer> resultMap = new HashMap<>();
-
-		return resultMap;
 	}
 	
 	/**
