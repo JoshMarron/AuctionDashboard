@@ -11,6 +11,10 @@ import javafx.scene.chart.*;
 import javax.swing.*;
 import java.awt.*;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -72,9 +76,13 @@ public class MainFrameMainLineChartPanel extends CatPanel {
             chart.setTitle(type.toString() + " over time");
             XYChart.Series series = new XYChart.Series();
 
-            data.forEach((date, num) -> {
-                series.getData().add(new XYChart.Data(date.toString(), num));
-            });
+            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+                    .withLocale(Locale.UK)
+                    .withZone(ZoneId.systemDefault());
+
+            data.keySet().stream().sorted().forEach((time) -> series.getData().add(new XYChart.Data(formatter.format(time), data.get(time))));
+
+
 
             Scene scene = new Scene(chart);
             scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());

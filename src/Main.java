@@ -10,7 +10,7 @@ import java.io.File;
 public class Main {
     public static void main(String[] args) {
         DatabaseManager model = new DatabaseManager();
-        model.createDB("db/model.db");
+        model.createDB("db/model.cat");
 
         DashboardStartupFrame startupFrame = new DashboardStartupFrame(new File(System.getProperty("user.home")));
         DashboardMainFrame mainFrame = new DashboardMainFrame(new File(System.getProperty("user.home")));
