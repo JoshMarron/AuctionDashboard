@@ -1,3 +1,4 @@
+
 package Model;
 
 import DataStructures.ClickLog;
@@ -8,9 +9,7 @@ import Model.DBEnums.DatabaseStatements;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Model.DBEnums.TableType;
-import Model.DBEnums.headers.ClickTableHeaders;
-import Model.DBEnums.headers.Header;
-import Model.DBEnums.headers.ServerLogTableHeaders;
+import Model.DBEnums.headers.*;
 import Model.TableModels.Click;
 import Model.TableModels.Impression;
 import Model.TableModels.ServerVisit;
@@ -110,7 +109,12 @@ public class DatabaseManager {
 		}
 	}
 	
-	public void saveDB() {
+	/**
+	 * Return the File form of the url
+	 * @return File of the url
+	 */
+	public File saveDB() {
+		return new File(url);
 	}
 	
 	/**
@@ -138,9 +142,16 @@ public class DatabaseManager {
 		return false;
 	}
 	
+	/**
+	 * Simple function to test for table existence, executes a simple SQLite command for each table, gets the meta data
+	 * for each table and loops through the headers and checks for their existence
+	 * @param conn Connection to pass the SQLite statement through
+	 * @throws SQLException Thrown when the SQLite statement fails
+	 * @throws CorruptTableException Thrown when one of the table headers doesn't equal the enum headers
+	 */
 	private void testForTables(Connection conn) throws SQLException, CorruptTableException {
 		String sql;
-		List<Header> headerList;
+		List<String> headerList;
 		ResultSet resultSet;
 		ResultSetMetaData rsmd;
 		Statement stmt = conn.createStatement();;
@@ -148,10 +159,10 @@ public class DatabaseManager {
 		// Check for click table
 		sql = "SELECT * FROM click LIMIT 1";
 		headerList = Arrays.asList(
-				ClickTableHeaders.CLICK_ID,
-				ClickTableHeaders.USER_ID,
-				ClickTableHeaders.CLICK_DATE,
-				ClickTableHeaders.COST);
+				ClickTableHeaders.CLICK_ID.toString(),
+				ClickTableHeaders.USER_ID.toString(),
+				ClickTableHeaders.CLICK_DATE.toString(),
+				ClickTableHeaders.COST.toString());
 		resultSet = stmt.executeQuery(sql);
 		rsmd = resultSet.getMetaData();
 		
@@ -163,18 +174,49 @@ public class DatabaseManager {
 		// Check for server log table
 		sql = "SELECT * FROM server_log LIMIT 1";
 		headerList = Arrays.asList(
-				ServerLogTableHeaders.SERVER_LOG_ID,
-				ServerLogTableHeaders.USER_ID,
-				ServerLogTableHeaders.ENTRY_DATE,
-				ServerLogTableHeaders.EXIT_DATE,
-				ServerLogTableHeaders.PAGES_VIEWED,
-				ServerLogTableHeaders.CONVERSION);
+				ServerLogTableHeaders.SERVER_LOG_ID.toString(),
+				ServerLogTableHeaders.USER_ID.toString(),
+				ServerLogTableHeaders.ENTRY_DATE.toString(),
+				ServerLogTableHeaders.EXIT_DATE.toString(),
+				ServerLogTableHeaders.PAGES_VIEWED.toString(),
+				ServerLogTableHeaders.CONVERSION.toString());
 		resultSet = stmt.executeQuery(sql);
 		rsmd = resultSet.getMetaData();
 		
 		for (int i = 1; i <= rsmd.getColumnCount(); i++) {
 			if (!rsmd.getColumnName(i).equals(headerList.get(i - 1)))
 				throw new CorruptTableException("Server log table is corrupted, header " + headerList.get(i - 1) + " doesn't exist");
+		}
+		
+		// Check for site impression table
+		sql = "SELECT * FROM site_impression";
+		headerList = Arrays.asList(
+				SiteImpressionHeaders.SITE_IMPRESSION_ID.toString(),
+				SiteImpressionHeaders.USER_ID.toString(),
+				SiteImpressionHeaders.CONTEXT.toString(),
+				SiteImpressionHeaders.IMPRESSION_COST.toString(),
+				SiteImpressionHeaders.IMPRESSION_DATE.toString());
+		resultSet = stmt.executeQuery(sql);
+		rsmd = resultSet.getMetaData();
+		
+		for (int i =1; i <= rsmd.getColumnCount(); i++) {
+			if (!rsmd.getColumnName(i).equals(headerList.get(i-1)))
+				throw new CorruptTableException("Site impression table is corrupted, header " + headerList.get(i - 1) + " doesn't exist");
+		}
+		
+		// Check for user table
+		sql = "SELECT * FROM user ";
+		headerList = Arrays.asList(
+				UserTableHeaders.USER_ID.toString(),
+				UserTableHeaders.AGE.toString(),
+				UserTableHeaders.GENDER.toString(),
+				UserTableHeaders.INCOME.toString());
+		resultSet = stmt.executeQuery(sql);
+		rsmd = resultSet.getMetaData();
+		
+		for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+			if (!rsmd.getColumnName(i).equals(headerList.get(i-1)))
+				throw new CorruptTableException("User table is corrupted, header " + headerList.get(i - 1) + " doesn't exist");
 		}
 	}
 	
@@ -511,29 +553,75 @@ public class DatabaseManager {
 				sql = "SELECT click_date, " + count + " FROM click GROUP BY strftime('%W', click_date) ORDER BY click_date";
 				break;
 		}
-//		System.out.println(sql);
 		
 		return createMap(sql);
 	}
-
+	
+	/**
+	 * Get bounce number per certain time period
+	 * @param dateEnum time period to get number of bounces per
+	 * @return map mapping time Instant to number of bounces
+	 */
 	public Map<Instant, Number> getBounceNumberPer(DateEnum dateEnum) {
-
-		return null;
+		String sql = null;
+		
+		switch (dateEnum) {
+			case HOURS:
+				sql = "SELECT entry_date, count(pages_viewed) FROM server_log WHERE pages_viewed = 1 GROUP BY strftime('%H,%d',click_date)";
+				break;
+			case DAYS:
+				sql = "SELECT entry_date, count(pages_viewed) FROM server_log WHERE pages_viewed = 1 GROUP BY date(entry_date)";
+				break;
+			case WEEKS:
+				sql = "SELECT entry_date, count(pages_viewed) FROM server_log WHERE pages_viewed = 1 GROUP BY strftime('%W', entry_date)";
+				break;
+		}
+		return createMap(sql);
 	}
-
+	
 	public Map<Instant, Number> getCostOfCampaignPer(DateEnum dateEnum) {
-
-		return null;
+		String sql = null;
+		
+		switch (dateEnum) {
+			case HOURS:
+				sql = "SELECT ifnull(impression_date, click_date), (SUM(cost) + ifnull(SUM(impression_cost),0))\n" +
+						"FROM click\n" +
+						"LEFT JOIN site_impression ON strftime('%H,%d',click.click_date) = strftime('%H,%d', site_impression.impression_date)\n" +
+						"GROUP BY strftime('%H,%d', click_date)\n" +
+						"  UNION\n" +
+						"    SELECT ifnull(click_date, impression_date),(SUM(impression_cost) + ifnull(SUM(cost),0))\n" +
+						"    FROM site_impression\n" +
+						"    LEFT JOIN click ON strftime('%H,%d',site_impression.impression_date) = strftime('%H,%d', click.click_date)\n" +
+						"    GROUP BY strftime('%H,%d', impression_date);";
+		}
 	}
 
 	//TODO ALL OF THESE NEED TO ALSO HAVE "GET ALL" METHODS WHICH RETURN JUST A NUMBER
 	//All these methods need to get the metric per date enum
-
-	//Number of conversions - obvious
+	
+	/**
+	 * Get number of conversions for a given time period
+	 * @param dateEnum Time period to get conversion number per
+	 * @return map mapping Instant date to number of conversions
+	 */
 	public Map<Instant, Number> getConversionNumberPer(DateEnum dateEnum) {
-		return null;
+		String sql = null;
+		
+		switch (dateEnum) {
+			case HOURS:
+				sql = "SELECT entry_date, count(conversion) FROM server_log WHERE conversion = 'Yes' GROUP BY strftime('%H,%d', entry_date)";
+				break;
+			case DAYS:
+				sql = "SELECT entry_date, count(conversion) FROM server_log WHERE conversion = 'Yes' GROUP BY date(entry_date)";
+				break;
+			case WEEKS:
+				sql = "SELECT entry_date, count(conversion) FROM server_log WHERE conversion = 'Yes' GROUP BY strftime('%W', entry_date)";
+				break;
+		}
+		
+		return createMap(sql);
 	}
-
+	
 	//Cost per acquisition - total cost/num conversions
 	public Map<Instant, Number> getCostPerAcquisitionPer(DateEnum dateEnum) {
 		return null;
@@ -598,7 +686,6 @@ public class DatabaseManager {
 		if (sql != null) {
 			try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 				resultSet = stmt.executeQuery(sql);
-//				printToConsole(resultSet);
 				
 				while (resultSet.next()) {
 					resultMap.put(stringToInstant(resultSet.getString(1)), resultSet.getInt(2));
