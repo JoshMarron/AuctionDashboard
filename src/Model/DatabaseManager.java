@@ -14,6 +14,7 @@ import Model.TableModels.Click;
 import Model.TableModels.Impression;
 import Model.TableModels.ServerVisit;
 import Model.TableModels.User;
+import Views.ViewPresets.AttributeType;
 import com.sun.org.apache.xpath.internal.SourceTree;
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 
@@ -679,7 +680,54 @@ public class DatabaseManager {
 		
 		return createMap(sql);
 	}
-	
+
+	private Map<AttributeType, Number> getTotalImpressionsForAttribute(AttributeType attributeType) {
+		return null;
+	}
+
+	private Map<AttributeType, Number> getTotalClicksForAttribute(AttributeType attributeType) {
+		return null;
+	}
+
+	private Map<AttributeType, Number> getTotalBouncesForAttribute(AttributeType attributeType) {
+		return null;
+	}
+
+	private Map<AttributeType, Number> getTotalConversionsForAttribute(AttributeType attributeType) {
+		return null;
+	}
+
+	private Map<AttributeType, Number> getTotalUniquesForAttribute(AttributeType attributeType) {
+		return null;
+	}
+
+	private Map<AttributeType, Number> getTotalImpressionCostForAttribute(AttributeType attributeType) {
+		return null;
+	}
+
+	private Map<AttributeType, Number> getTotalClickCostForAttribute(AttributeType attributeType) {
+		return null;
+	}
+
+	private Map<AttributeType, Number> getCPAForAttribute(AttributeType attributeType) {
+		return null;
+	}
+
+	private Map<AttributeType, Number> getCPCForAttribute(AttributeType attributeType) {
+		return null;
+	}
+
+	private Map<AttributeType, Number> getCPMForAttribute(AttributeType attributeType) {
+		return null;
+	}
+
+	private Map<AttributeType, Number> getCTRForAttribute(AttributeType attributeType) {
+		return null;
+	}
+
+	private Map<AttributeType, Number> getBounceRateForAttribute(AttributeType attributeType) {
+		return null;
+	}
 	/**
 	 * Executes a given sql String Statement and produces a map of the results which it then returns
 	 *
