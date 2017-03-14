@@ -8,6 +8,7 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,6 +44,12 @@ public class MainFrameMainBarChartPanel extends CatPanel {
         BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
         barChart.setTitle(type.toString() + " by " + attribute.toString());
 
+        XYChart.Series series = new XYChart.Series();
 
+        if (attribute.equals(AttributeType.AGE)) {
+
+        } else {
+            data.forEach((attr, value) -> series.getData().add(new XYChart.Data(attr, value)));
+        }
     }
 }
