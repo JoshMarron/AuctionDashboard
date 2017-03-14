@@ -59,7 +59,10 @@ public class DashboardMainFrameController {
     }
 
     public void displayMetrics(Map<MetricType, Number> data) {
-        SwingUtilities.invokeLater(() -> frame.displayMetrics(data));
+        SwingUtilities.invokeLater(() -> {
+            frame.displayMetrics(data);
+        });
+        this.requestChart(MetricType.TOTAL_IMPRESSIONS);
     }
 
     public void requestChart(MetricType type) {
@@ -77,6 +80,10 @@ public class DashboardMainFrameController {
                 return model.getClickCountPer(granularity, true);
             case TOTAL_IMPRESSIONS:
                 return model.getImpressionCountPer(granularity);
+            case TOTAL_CONVERSIONS:
+                return model.getConversionNumberPer(granularity);
+            case TOTAL_BOUNCES:
+                return model.getBounceNumberPer(granularity);
             default:
                 return model.getClickCountPer(granularity, false);
         }

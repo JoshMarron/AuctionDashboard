@@ -8,6 +8,7 @@ import Views.ViewPresets.ColorSettings;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,7 +37,7 @@ public class RecentProjectsViewPanel extends CatPanel {
         recentProjectBoxesPanel.setLayout(new BoxLayout(recentProjectBoxesPanel, BoxLayout.Y_AXIS));
 
         recentFiles.stream()
-                .sorted((file1, file2) -> Long.valueOf(file1.lastModified()).compareTo(file2.lastModified()))
+                .sorted(Collections.reverseOrder((file1, file2) -> Long.valueOf(file1.lastModified()).compareTo(file2.lastModified())))
                 .forEach((file) -> {
             RecentProjectInfoPanel infoPanel = new RecentProjectInfoPanel(file, this);
             recentProjectBoxesPanel.add(infoPanel);
