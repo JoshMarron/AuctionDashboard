@@ -35,7 +35,9 @@ public class RecentProjectsViewPanel extends CatPanel {
         recentProjectBoxesPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         recentProjectBoxesPanel.setLayout(new BoxLayout(recentProjectBoxesPanel, BoxLayout.Y_AXIS));
 
-        recentFiles.forEach((file) -> {
+        recentFiles.stream()
+                .sorted((file1, file2) -> Long.valueOf(file1.lastModified()).compareTo(file2.lastModified()))
+                .forEach((file) -> {
             RecentProjectInfoPanel infoPanel = new RecentProjectInfoPanel(file, this);
             recentProjectBoxesPanel.add(infoPanel);
         });
