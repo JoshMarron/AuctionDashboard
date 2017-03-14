@@ -7,6 +7,8 @@ import Views.ViewPresets.ColorSettings;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.text.SimpleDateFormat;
 
@@ -16,9 +18,11 @@ import java.text.SimpleDateFormat;
 public class RecentProjectInfoPanel extends CatPanel {
 
     private File file;
+    private RecentProjectsViewPanel parent;
 
-    public RecentProjectInfoPanel(File file) {
+    public RecentProjectInfoPanel(File file, RecentProjectsViewPanel parent) {
         this.file = file;
+        this.parent = parent;
         this.initInfoPanel();
     }
 
@@ -44,6 +48,27 @@ public class RecentProjectInfoPanel extends CatPanel {
         projectNamePanel.add(projectDateLabel);
         projectNamePanel.add(Box.createVerticalGlue());
 
+        this.addMouseListener(new RecentProjectInfoAdapter());
         this.add(projectNamePanel, BorderLayout.CENTER);
+    }
+
+    class RecentProjectInfoAdapter extends MouseAdapter {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            RecentProjectInfoPanel.this.parent.chooseRecentProject(file);
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            RecentProjectInfoPanel.this.setBackground(ColorSettings.BUTTON_HOVER_COLOR.getColor());
+            repaint();
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            RecentProjectInfoPanel.this.setBackground(ColorSettings.BG_COLOR.getColor());
+            repaint();
+        }
     }
 }

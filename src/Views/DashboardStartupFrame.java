@@ -14,8 +14,12 @@ import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 /**
  * DashboardStartupFrame is the first frame the user sees, containing the elements needed to load in files
@@ -93,7 +97,17 @@ public class DashboardStartupFrame extends JFrame {
         viewPanelConstraints.weighty = 1;
         viewPanelConstraints.fill = GridBagConstraints.BOTH;
 
-        RecentProjectsViewPanel recentProjects = new RecentProjectsViewPanel(null);
+        List<File> fileList = new ArrayList<>();
+        try {
+            fileList = controller.getRecentProjects();
+        } catch (IOException ioe) {
+            JOptionPane.showMessageDialog(this,
+                    "Recent projects file is missing or corrupted.",
+                    "Recent projects error!",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+        RecentProjectsViewPanel recentProjects = new RecentProjectsViewPanel(fileList, this);
         GridBagConstraints recentProjectsConstraints = new GridBagConstraints();
         recentProjectsConstraints.gridx = 0;
         recentProjectsConstraints.weightx = 1;
@@ -127,8 +141,7 @@ public class DashboardStartupFrame extends JFrame {
                     "You must submit at least one log file!",
                     "Empty submission error",
                     JOptionPane.ERROR_MESSAGE);
-        }
-        else {
+        } else {
             String result = JOptionPane.showInputDialog(this,
                     "Choose a name for your project",
                     "Choose a name!",

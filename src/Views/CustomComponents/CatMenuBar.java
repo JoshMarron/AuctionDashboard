@@ -20,8 +20,6 @@ public class CatMenuBar extends JMenuBar {
     private void init() {
         this.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorSettings.PANEL_BORDER_COLOR.getColor()));
 
-        CatMenu someMenu = new CatMenu("File");
-        this.add(someMenu);
     }
 
     @Override

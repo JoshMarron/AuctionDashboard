@@ -3,6 +3,7 @@ package Controllers;
 import Model.DBEnums.LogType;
 import Model.DatabaseManager;
 import Views.DashboardStartupFrame;
+import org.apache.commons.io.FileUtils;
 import sun.rmi.runtime.Log;
 
 import javax.swing.*;
@@ -38,7 +39,17 @@ public class DashboardStartupController {
         this.runningImports = new ArrayList<>();
     }
 
+    public List<File> getRecentProjects() throws IOException {
+        File savedFile = new File("data/saved.txt");
+        if (!savedFile.exists()) {
+            return new ArrayList<>();
+        }
 
+        List<String> lines = FileUtils.readLines(savedFile, "utf-8");
+        List<File> files = lines.stream().map(File::new).collect(Collectors.toList());
+
+        return files;
+    }
 
     public void processFiles(Map<LogType, File> files, String projectName) {
         model.createDB("db/" + projectName + ".cat");

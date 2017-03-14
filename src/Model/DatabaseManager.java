@@ -114,7 +114,7 @@ public class DatabaseManager {
 	 * @return File of the url
 	 */
 	public File saveDB() {
-		return new File(url);
+		return new File(filename);
 	}
 	
 	/**
@@ -594,6 +594,8 @@ public class DatabaseManager {
 						"    LEFT JOIN click ON strftime('%H,%d',site_impression.impression_date) = strftime('%H,%d', click.click_date)\n" +
 						"    GROUP BY strftime('%H,%d', impression_date);";
 		}
+
+		return null;
 	}
 
 	//TODO ALL OF THESE NEED TO ALSO HAVE "GET ALL" METHODS WHICH RETURN JUST A NUMBER

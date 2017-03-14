@@ -8,9 +8,11 @@ import Model.TableModels.ServerVisit;
 import Views.DashboardMainFrame;
 import Model.DBEnums.LogType;
 import Views.MetricType;
+import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
@@ -66,9 +68,15 @@ public class DashboardMainFrameController {
         }
     }
 
-    public void saveProject(File filename) {
-        File savedProjects = new File("data/saved.analdata");
-
+    public void saveProject(File filename) throws IOException {
+        File savedProjects = new File("data/saved.txt");
+        savedProjects.getParentFile().mkdirs();
+        savedProjects.createNewFile();
+        File db = model.saveDB();
+        FileUtils.copyFile(db.getAbsoluteFile(), filename);
+        List<String> previousProjects = FileUtils.readLines(savedProjects, "utf-8");
+        FileUtils.writeStringToFile(savedProjects, filename.getAbsolutePath(), "utf-8");
+        FileUtils.writeLines(savedProjects, previousProjects, "\n", true);
     }
 
     private Map<MetricType, Number> calculateKeyMetrics() {
