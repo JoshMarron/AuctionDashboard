@@ -52,6 +52,7 @@ public class MainFrameMetricBox extends CatListPanel {
         metricDataLabel.setFont(FontSettings.GLOB_FONT.getFont().deriveFont(20F));
         metricDataLabel.setText(df.format(data));
         this.dataAvailable = true;
+        repaint();
     }
 
     class MetricBoxAdapter extends MouseAdapter {
@@ -65,7 +66,7 @@ public class MainFrameMetricBox extends CatListPanel {
         @Override
         public void mouseEntered(MouseEvent e) {
             if (dataAvailable) {
-                MainFrameMetricBox.this.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                MainFrameMetricBox.this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 MainFrameMetricBox.this.setBackground(ColorSettings.BUTTON_HOVER_COLOR.getColor());
                 repaint();
             }

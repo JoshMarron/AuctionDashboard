@@ -147,6 +147,9 @@ public class DashboardStartupFrame extends CatFrame {
     }
 
     public void chooseRecentProject(File recentFile) {
-        this.controller.loadOldProject(recentFile);
+        int chooseVal = JOptionPane.showConfirmDialog(this, "Load " + recentFile.getName() + "?");
+        if (chooseVal == JOptionPane.OK_OPTION) {
+            this.controller.loadOldProject(recentFile);
+        }
     }
 }

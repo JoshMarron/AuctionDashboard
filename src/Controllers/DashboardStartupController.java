@@ -104,20 +104,26 @@ public class DashboardStartupController {
     }
 
     public void loadOldProject(File oldProject) {
-
-        try {
-            model.loadDB(oldProject.getAbsolutePath());
-            List<LogType> list = Arrays.asList(LogType.IMPRESSION, LogType.CLICK, LogType.SERVER_LOG);
-            SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(() -> {
+            frame.displayLoading();
+        });
+        Future<?> f = helpers.submit(() -> model.loadDB(oldProject.getAbsolutePath()));
+        new Thread(() -> {
+            try {
+                f.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            if (f.isDone()) {
+                SwingUtilities.invokeLater((() -> {
+                    frame.finishedLoading();
+                    frame.setVisible(false);
+                }));
+                List<LogType> list = Arrays.asList(LogType.IMPRESSION, LogType.CLICK, LogType.SERVER_LOG);
                 mainController.displayMainFrame(list);
-                frame.setVisible(false);
-            });
-        } catch (CorruptTableException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
+            }
+        }).start();
 
     }
 }

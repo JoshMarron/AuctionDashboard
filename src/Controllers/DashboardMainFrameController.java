@@ -89,7 +89,7 @@ public class DashboardMainFrameController {
         File db = model.saveDB();
         FileUtils.copyFile(db.getAbsoluteFile(), filename);
         List<String> previousProjects = FileUtils.readLines(savedProjects, "utf-8");
-        FileUtils.writeStringToFile(savedProjects, filename.getAbsolutePath(), "utf-8");
+        FileUtils.writeStringToFile(savedProjects, filename.getAbsolutePath() + '\n', "utf-8");
         FileUtils.writeLines(savedProjects, previousProjects, "\n", true);
     }
 
