@@ -1,5 +1,6 @@
 package Views.MainFramePanels;
 
+import Model.DBEnums.DateEnum;
 import Views.CustomComponents.CatPanel;
 import Views.MetricType;
 import Views.ViewPresets.ColorSettings;
@@ -37,7 +38,7 @@ public class MainFrameMainLineChartPanel extends CatPanel {
         this.add(chartPanel, BorderLayout.CENTER);
     }
 
-    public void displayChart(MetricType type, Map<Instant, Number> data) {
+    public void displayChart(MetricType type, DateEnum granularity, Map<Instant, Number> data) {
         Platform.runLater(() -> {
             CategoryAxis xAxis = new CategoryAxis();
             NumberAxis yAxis = new NumberAxis();
@@ -49,11 +50,19 @@ public class MainFrameMainLineChartPanel extends CatPanel {
             chart.setTitle(type.toString() + " over time");
             XYChart.Series series = new XYChart.Series();
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
-                    .withLocale(Locale.UK)
-                    .withZone(ZoneId.systemDefault());
 
-            data.keySet().stream().sorted().forEach((time) -> series.getData().add(new XYChart.Data(formatter.format(time), data.get(time))));
+            if (granularity.equals(DateEnum.HOURS)) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                        .withLocale(Locale.UK)
+                        .withZone(ZoneId.systemDefault());
+                data.keySet().stream().sorted().forEach((time) -> series.getData().add(new XYChart.Data(formatter.format(time), data.get(time))));
+            }
+            else {
+                DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+                        .withLocale(Locale.UK)
+                        .withZone(ZoneId.systemDefault());
+                data.keySet().stream().sorted().forEach((time) -> series.getData().add(new XYChart.Data(formatter.format(time), data.get(time))));
+            }
 
 
             Scene scene = new Scene(chart);

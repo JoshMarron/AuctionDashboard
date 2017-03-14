@@ -48,7 +48,7 @@ public class DashboardMainFrameController {
     public void requestChart(MetricType type) {
         helpers.submit(() -> {
             Map<Instant, Number> data = getDataForChartFromType(type, DateEnum.DAYS);
-            SwingUtilities.invokeLater(() -> frame.displayChart(type, data));
+            SwingUtilities.invokeLater(() -> frame.displayChart(type, DateEnum.DAYS, data));
         });
     }
 

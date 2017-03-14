@@ -2,6 +2,7 @@ package Views;
 
 import Controllers.DashboardMainFrameController;
 
+import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Views.CustomComponents.CatMenuBar;
 import Views.CustomComponents.CatPanel;
@@ -89,8 +90,8 @@ public class DashboardMainFrame extends JFrame {
         controller.requestChart(type);
     }
 
-    public void displayChart(MetricType type, Map<Instant, Number> data) {
-        chartPanel.displayChart(type, data);
+    public void displayChart(MetricType type, DateEnum granularity, Map<Instant, Number> data) {
+        chartPanel.displayChart(type, granularity, data);
     }
 
 }
