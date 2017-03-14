@@ -129,7 +129,11 @@ public class DashboardStartupFrame extends JFrame {
                     JOptionPane.ERROR_MESSAGE);
         }
         else {
-            this.controller.processFiles(this.fileMap);
+            String result = JOptionPane.showInputDialog(this,
+                    "Choose a name for your project",
+                    "Choose a name!",
+                    JOptionPane.QUESTION_MESSAGE);
+            this.controller.processFiles(this.fileMap, result);
         }
     }
 

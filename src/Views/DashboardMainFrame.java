@@ -8,6 +8,8 @@ import Views.CustomComponents.CatMenuBar;
 import Views.CustomComponents.CatPanel;
 import Views.MainFramePanels.MainFrameMainLineChartPanel;
 import Views.MainFramePanels.MainFrameMetricList;
+import Views.MainFramePanels.MainFramePieChartPanel;
+import Views.ViewPresets.AttributeType;
 import Views.ViewPresets.ColorSettings;
 
 import javax.swing.*;
@@ -62,6 +64,7 @@ public class DashboardMainFrame extends JFrame {
 
         metricList = new MainFrameMetricList(this);
         chartPanel = new MainFrameMainLineChartPanel();
+        MainFramePieChartPanel piePanel = new MainFramePieChartPanel(AttributeType.AGE);
         this.setContentPane(mainContentPane);
         mainContentPane.setLayout(new BorderLayout());
 

@@ -25,11 +25,11 @@ import java.util.stream.Collectors;
  */
 public class DashboardStartupController {
 
-    DashboardStartupFrame frame;
-    DatabaseManager model;
-    DashboardMainFrameController mainController;
-    List<Future<?>> runningImports;
-    ExecutorService helpers = Executors.newFixedThreadPool(4);
+    private DashboardStartupFrame frame;
+    private DatabaseManager model;
+    private DashboardMainFrameController mainController;
+    private List<Future<?>> runningImports;
+    private ExecutorService helpers = Executors.newFixedThreadPool(4);
 
     public DashboardStartupController(DashboardStartupFrame frame, DatabaseManager model, DashboardMainFrameController mainController) {
         this.frame = frame;
@@ -38,7 +38,10 @@ public class DashboardStartupController {
         this.runningImports = new ArrayList<>();
     }
 
-    public void processFiles(Map<LogType, File> files) {
+
+
+    public void processFiles(Map<LogType, File> files, String projectName) {
+        model.createDB("db/" + projectName + ".cat");
         files.forEach((type, file) -> {
             SwingUtilities.invokeLater(frame::displayLoading);
             Future<?> f = helpers.submit(() ->
@@ -52,7 +55,6 @@ public class DashboardStartupController {
 
                 int step = 500000;
                 int start = 1;
-                model.wipeTable(type);
                 while (start < maxLength) {
                     List<String[]> lines = CSVParser.parseLog(file, start, step);
                     model.insertData(type, lines);

@@ -10,6 +10,7 @@ import Model.DBEnums.LogType;
 import Views.MetricType;
 
 import javax.swing.*;
+import java.io.File;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
@@ -63,6 +64,11 @@ public class DashboardMainFrameController {
             default:
                 return model.getClickCountPer(granularity, false);
         }
+    }
+
+    public void saveProject(File filename) {
+        File savedProjects = new File("data/saved.analdata");
+
     }
 
     private Map<MetricType, Number> calculateKeyMetrics() {

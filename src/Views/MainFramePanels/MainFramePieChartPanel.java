@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 
 import javax.swing.*;
@@ -37,15 +38,22 @@ public class MainFramePieChartPanel extends CatPanel {
         this.add(chartPanel, BorderLayout.CENTER);
     }
 
-    public void displayChart(MetricType metric, DateEnum granularity, Map<String, Number> data) {
+    public void displayChart(MetricType metric, Map<String, Number> data) {
 
         Platform.runLater(() -> {
             PieChart chart = new PieChart();
+            chart.setTitle(metric.toString() + " by" + type.toString());
             ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
 
             data.forEach((name, number) -> {
-                //TODO FILL THIS OUT, NEED TO CALCULATE PERCENTAGES - HERE OR CONTROLLER???
+                pieData.add(new PieChart.Data(name, number.doubleValue()));
             });
+
+            Scene scene = new Scene(chart);
+            chart.setData(pieData);
+            scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
+            chartPanel.setScene(scene);
+
         });
     }
 }
