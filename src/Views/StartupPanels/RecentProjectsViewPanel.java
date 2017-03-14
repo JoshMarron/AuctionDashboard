@@ -46,6 +46,6 @@ public class RecentProjectsViewPanel extends CatPanel {
     }
 
     public void chooseRecentProject(File project) {
-        System.out.println("Load " + project.getName());
+        parent.chooseRecentProject(project);
     }
 }

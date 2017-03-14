@@ -39,9 +39,23 @@ public class DashboardMainFrameController {
 
     public void displayMainFrame(List<LogType> addedLogs) {
         availableLogs.addAll(addedLogs);
-        Map<MetricType, Number> results = this.calculateKeyMetrics();
-        this.displayMetrics(results);
-        SwingUtilities.invokeLater(() -> frame.setVisible(true));
+        Future<?> future = helpers.submit(() -> {
+            SwingUtilities.invokeLater(() -> {
+                frame.setVisible(true);
+                frame.displayLoading();
+            });
+            Map<MetricType, Number> results = this.calculateKeyMetrics();
+            this.displayMetrics(results);
+        });
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        if (future.isDone()) {
+            SwingUtilities.invokeLater(() -> frame.finishedLoading());
+        }
     }
 
     public void displayMetrics(Map<MetricType, Number> data) {

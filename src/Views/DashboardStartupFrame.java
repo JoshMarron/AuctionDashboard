@@ -2,6 +2,7 @@ package Views;
 
 import Controllers.DashboardStartupController;
 import Model.DBEnums.LogType;
+import Views.CustomComponents.CatFrame;
 import Views.CustomComponents.CatLabel;
 import Views.CustomComponents.CatPanel;
 import Views.StartupPanels.RecentProjectsViewPanel;
@@ -24,13 +25,11 @@ import java.util.List;
 /**
  * DashboardStartupFrame is the first frame the user sees, containing the elements needed to load in files
  */
-public class DashboardStartupFrame extends JFrame {
+public class DashboardStartupFrame extends CatFrame {
 
-    private File homedir;
     private Map<LogType, File> fileMap;
     private StartupChosenFilesPanel viewPanel;
     private DashboardStartupController controller;
-    private boolean loading;
     private StartupFileImportPanel importPanel;
 
     public DashboardStartupFrame(File homedir) {
@@ -39,6 +38,7 @@ public class DashboardStartupFrame extends JFrame {
     }
 
     public void initStartup() {
+        super.init();
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -65,20 +65,7 @@ public class DashboardStartupFrame extends JFrame {
         this.setResizable(false);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        CatPanel contentPane = new CatPanel() {
-            @Override
-            public void paint(Graphics g) {
-                super.paint(g);
-                Graphics2D g2 = (Graphics2D) g;
-
-                if (loading) {
-                    g2.setColor(ColorSettings.LOADING_COLOR.getColor());
-                    g2.fillRect(0, 0, this.getWidth(), this.getHeight());
-                }
-            }
-        };
-        contentPane.setLayout(new BorderLayout());
-        this.setContentPane(contentPane);
+        CatPanel contentPane = (CatPanel) this.getContentPane();
 
         CatPanel centrePanel = new CatPanel();
         centrePanel.setLayout(new GridBagLayout());
@@ -150,48 +137,6 @@ public class DashboardStartupFrame extends JFrame {
         }
     }
 
-    public void initGlassPane() {
-        JPanel loadingPanel = (JPanel) this.getGlassPane();
-        loadingPanel.setLayout(new BorderLayout());
-
-        ImageIcon icon = new ImageIcon("img/animal.gif");
-        icon.setImage(icon.getImage().getScaledInstance(300, 300, Image.SCALE_DEFAULT));
-        JLabel loadingLabel = new JLabel(icon);
-
-        JLabel textLoadingLabel = new JLabel("Loading...");
-        textLoadingLabel.setFont(FontSettings.LOADING_FONT.getFont());
-        textLoadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        textLoadingLabel.setVerticalAlignment(SwingConstants.CENTER);
-
-        JPanel textLoadingPanel = new JPanel();
-        textLoadingPanel.setLayout(new BoxLayout(textLoadingPanel, BoxLayout.X_AXIS));
-        textLoadingPanel.add(Box.createRigidArea(new Dimension(0, 100)));
-        textLoadingPanel.add(Box.createHorizontalGlue());
-        textLoadingPanel.add(textLoadingLabel);
-        textLoadingPanel.add(Box.createHorizontalGlue());
-        textLoadingPanel.setOpaque(false);
-
-        loadingPanel.add(loadingLabel, BorderLayout.CENTER);
-        loadingPanel.add(textLoadingPanel, BorderLayout.SOUTH);
-    }
-
-    public void displayLoading() {
-        this.loading = true;
-        this.getGlassPane().setVisible(true);
-        this.getContentPane().setEnabled(false);
-        repaint();
-    }
-
-    public void finishedLoading() {
-        this.loading = false;
-        this.getGlassPane().setVisible(false);
-
-        JOptionPane.showMessageDialog(this, "Data Loaded!",
-                "Success! Your data has been loaded into the database!", JOptionPane.INFORMATION_MESSAGE);
-
-        this.setEnabled(true);
-        repaint();
-    }
 
     public void reselectFile(LogType type, File file) {
         this.importPanel.setUpReselection(type, file);
@@ -199,5 +144,9 @@ public class DashboardStartupFrame extends JFrame {
 
     public void setController(DashboardStartupController controller) {
         this.controller = controller;
+    }
+
+    public void chooseRecentProject(File recentFile) {
+        this.controller.loadOldProject(recentFile);
     }
 }

@@ -5,6 +5,7 @@ import Controllers.DashboardMainFrameController;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Views.CustomComponents.CatFileChooser;
+import Views.CustomComponents.CatFrame;
 import Views.CustomComponents.CatMenuBar;
 import Views.CustomComponents.CatPanel;
 import Views.MainFramePanels.MainFrameMainLineChartPanel;
@@ -25,41 +26,28 @@ import java.util.Map;
  * DashboardMainFrame is the main frame visible during the running of the application, which contains all of the
  * GUI elements.
  */
-public class DashboardMainFrame extends JFrame {
+public class DashboardMainFrame extends CatFrame {
 
     public static final Color BG_COLOR = new Color(146, 171, 185);
     public static final Font GLOB_FONT = new Font("Tahoma", Font.BOLD, 14);
 
-    private File homeDir;
     private DashboardMainFrameController controller;
-    private boolean loading;
-    private ImageIcon icon;
     private MainFrameMetricList metricList;
     private MainFrameMainLineChartPanel chartPanel;
 
     public DashboardMainFrame(File homeDir) {
-        this.homeDir = homeDir;
+        this.homedir = homeDir;
         loading = false;
     }
 
     public void init() {
+        super.init();
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setSize(new Dimension(1400, 800));
         this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         this.setTitle("CatAnalysis");
 
-        CatPanel mainContentPane = new CatPanel() {
-            @Override
-            public void paint(Graphics g) {
-                super.paint(g);
-                Graphics2D g2 = (Graphics2D) g;
-
-                if (loading) {
-                    g2.setColor(ColorSettings.LOADING_COLOR.getColor());
-                    g2.fillRect(0, 0, this.getWidth(), this.getHeight());
-                }
-            }
-        };
+        CatPanel mainContentPane = (CatPanel) this.getContentPane();
 
         this.setJMenuBar(new MainFrameMenu(this));
 
@@ -76,6 +64,7 @@ public class DashboardMainFrame extends JFrame {
         mainPanel.add(metricList);
         mainPanel.add(chartPanel);
 
+        this.initGlassPane();
         mainContentPane.add(mainPanel, BorderLayout.CENTER);
 
     }

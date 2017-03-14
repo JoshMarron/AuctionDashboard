@@ -1,5 +1,6 @@
 package Controllers;
 
+import Model.CorruptTableException;
 import Model.DBEnums.LogType;
 import Model.DatabaseManager;
 import Views.DashboardStartupFrame;
@@ -11,7 +12,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -52,9 +55,9 @@ public class DashboardStartupController {
     }
 
     public void processFiles(Map<LogType, File> files, String projectName) {
-        model.createDB("db/" + projectName + ".cat");
         files.forEach((type, file) -> {
             SwingUtilities.invokeLater(frame::displayLoading);
+            model.createDB("db/" + projectName + ".cat");
             Future<?> f = helpers.submit(() ->
             {
                 int maxLength = 0;
@@ -93,10 +96,28 @@ public class DashboardStartupController {
                 SwingUtilities.invokeLater(() -> {
                     frame.finishedLoading();
                     frame.setVisible(false);
-                    List<LogType> addedLogs = files.keySet().stream().collect(Collectors.toList());
-                    mainController.displayMainFrame(addedLogs);
                 });
+                List<LogType> addedLogs = files.keySet().stream().collect(Collectors.toList());
+                mainController.displayMainFrame(addedLogs);
             }
         }).start();
+    }
+
+    public void loadOldProject(File oldProject) {
+
+        try {
+            model.loadDB(oldProject.getAbsolutePath());
+            List<LogType> list = Arrays.asList(LogType.IMPRESSION, LogType.CLICK, LogType.SERVER_LOG);
+            SwingUtilities.invokeLater(() -> {
+                mainController.displayMainFrame(list);
+                frame.setVisible(false);
+            });
+        } catch (CorruptTableException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
