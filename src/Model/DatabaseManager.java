@@ -66,6 +66,11 @@ public class DatabaseManager {
 			stmt.execute(DatabaseStatements.DROP_SERVER_LOG.getStatement());
 			stmt.execute(DatabaseStatements.CREATE_SERVER_LOG.getStatement());
 			
+			// Indexes
+			stmt.execute(DatabaseStatements.INDEX_CLICK_DATE.getStatement());
+			stmt.execute(DatabaseStatements.INDEX_IMPRESSION_DATE.getStatement());
+			stmt.execute(DatabaseStatements.INDEX_SERVER_LOG_DATE.getStatement());
+			
 			Statement syncOff = conn.createStatement();
 			String sqlSyncOff = "PRAGMA synchronous=OFF";
 			syncOff.execute(sqlSyncOff);
@@ -114,7 +119,7 @@ public class DatabaseManager {
 	 * @return File of the url
 	 */
 	public File saveDB() {
-		return new File(filename);
+		return new File(url);
 	}
 	
 	/**
@@ -594,7 +599,7 @@ public class DatabaseManager {
 						"    LEFT JOIN click ON strftime('%H,%d',site_impression.impression_date) = strftime('%H,%d', click.click_date)\n" +
 						"    GROUP BY strftime('%H,%d', impression_date);";
 		}
-
+		
 		return null;
 	}
 
@@ -764,4 +769,3 @@ public class DatabaseManager {
 		
 	}
 }
-
