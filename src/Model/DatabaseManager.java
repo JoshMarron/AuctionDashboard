@@ -879,7 +879,7 @@ public class DatabaseManager {
 		Map<LocalDateTime, Number> impressionMap = createMapWithLocalDateTime(sqlImpression);
 		
 		clickMap.forEach((date, num) -> {
-			date.
+
 			
 		});
 		
