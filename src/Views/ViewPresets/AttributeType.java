@@ -8,21 +8,21 @@ public enum AttributeType {
     GENDER ("Gender", "gender"),
     INCOME ("Income", "income"),
     AGE ("Age", "age"),
-    CONTEXT ("Context", "context");
+    CONTEXT ("Context", "income");
+    
+    private final String sql;
+    private final String name;
 
-    private String name;
-    private String querybit;
-
-    private AttributeType(String name, String querybit) {
+    private AttributeType(String name, String sql) {
         this.name = name;
-        this.querybit = querybit;
+        this.sql = sql;
     }
 
     public String toString() {
         return this.name;
     }
-
-    public String getQueryBit() {
-        return this.querybit;
+    
+    public String toSQL() {
+        return this.sql;
     }
 }
