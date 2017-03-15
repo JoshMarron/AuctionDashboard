@@ -23,7 +23,7 @@ import javax.swing.plaf.nimbus.State;
 import javax.xml.transform.Result;
 import java.io.File;
 import java.sql.*;
-import java.time.Instant;
+import java.time.*;
 import java.util.*;
 import java.util.Date;
 
@@ -36,6 +36,7 @@ public class DatabaseManager {
 	
 	private String filename;
 	private String url;
+	private Map<Instant, Number> totalCostDaysMap;
 	
 	public DatabaseManager() {
 
@@ -121,7 +122,7 @@ public class DatabaseManager {
 	 * @return File of the url
 	 */
 	public File saveDB() {
-		return new File(url);
+		return new File(filename);
 	}
 	
 	/**
@@ -225,6 +226,8 @@ public class DatabaseManager {
 			if (!rsmd.getColumnName(i).equals(headerList.get(i-1)))
 				throw new CorruptTableException("User table is corrupted, header " + headerList.get(i - 1) + " doesn't exist");
 		}
+		
+		System.out.println("Tables exist");
 	}
 	
 	/**
@@ -636,8 +639,11 @@ public class DatabaseManager {
 		return null;
 	}
 
-	//Cost per click - total cost/num clicks
+	//Cost per click - total cost/num click
+	// TODO this
 	public Map<Instant, Number> getCostPerClickPer(DateEnum dateEnum) {
+		
+		
 		return null;
 	}
 
@@ -729,6 +735,7 @@ public class DatabaseManager {
 	private Map<Attribute, Number> getBounceRateForAttribute(AttributeType attributeType) {
 		return null;
 	}
+	
 	/**
 	 * Executes a given sql String Statement and produces a map of the results which it then returns
 	 *
@@ -744,12 +751,82 @@ public class DatabaseManager {
 				resultSet = stmt.executeQuery(sql);
 				
 				while (resultSet.next()) {
-					resultMap.put(stringToInstant(resultSet.getString(1)), resultSet.getInt(2));
+					resultMap.put(stringToInstant(resultSet.getString(1)), resultSet.getDouble(2));
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
+		
+		return resultMap;
+	}
+	
+	private Map<LocalDateTime, Number> createMapWithLocalDateTime(String sql) {
+		Map<LocalDateTime, Number> resultMap = new HashMap<>();
+		ResultSet resultSet;
+		
+		if (sql != null) {
+			try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+				resultSet = stmt.executeQuery(sql);
+				
+				while (resultSet.next()) {
+					resultMap.put(stringToDateTime(resultSet.getString(1)), resultSet.getDouble(2));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return resultMap;
+	}
+	
+	/**
+	 * Literal dirt: Returns map of total cost for given time period
+	 * @param dateEnum Time period to get costs for
+	 * @return Map of Instant date to cost for that period
+	 */
+	public Map<Instant, Number> getTotalCostPer(DateEnum dateEnum) {
+		String sqlClick = null;
+		String sqlImpression = null;
+		Map<Instant, Number> resultMap = null;
+		
+		switch (dateEnum) {
+			case HOURS:
+				sqlClick = "SELECT click_date, SUM(cost) FROM click GROUP BY strftime('%H,%d', click_date);";
+				sqlImpression = "SELECT impression_date, SUM(impression_cost) FROM site_impression GROUP BY strftime('%H,%d', impression_date);";
+				break;
+			case DAYS:
+				sqlClick = "SELECT click_date, SUM(cost) FROM click GROUP BY date(click_date);";
+				sqlImpression = "SELECT impression_date, SUM(impression_cost) FROM site_impression GROUP BY strftime('%d', impression_date);";
+				break;
+			case WEEKS:
+				sqlClick = "SELECT click_date, SUM(cost) FROM click GROUP BY strftime('%W', click_date);";
+				sqlImpression = "SELECT impression_date, SUM(impression_cost) FROM site_impression GROUP BY strftime('%W', impression_date);";
+				break;
+		}
+		
+//		if (sqlClick != null && sqlImpression != null) {
+//			try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+//				ResultSet rsClick = stmt.executeQuery(sqlClick);
+//				printToConsole(rsClick);
+//				ResultSet rsImpression = stmt.executeQuery(sqlImpression);
+//
+//				resultMap = new HashMap<>();
+//				while (rsClick.next()) {
+//					resultMap.put(stringToInstant(rsClick.getString(2)), (rsClick.getDouble(3) + rsImpression.getDouble(3)));
+//				}
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
+		
+		Map<LocalDateTime, Number> clickMap = createMapWithLocalDateTime(sqlClick);
+		Map<LocalDateTime, Number> impressionMap = createMapWithLocalDateTime(sqlImpression);
+		
+		clickMap.forEach((date, num) -> {
+			date.
+			
+		});
 		
 		return resultMap;
 	}
@@ -763,6 +840,11 @@ public class DatabaseManager {
 	 */
 	private Instant stringToInstant(String dateToParse) {
 		return Instant.parse(dateToParse.replace(" ", "T") + "Z");
+	}
+	
+	private LocalDateTime stringToDateTime(String dateToParse) {
+		Instant ins = stringToInstant(dateToParse);
+		return LocalDateTime.ofInstant(ins, ZoneId.systemDefault());
 	}
 	
 	/**

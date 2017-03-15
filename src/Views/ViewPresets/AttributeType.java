@@ -5,18 +5,24 @@ package Views.ViewPresets;
  */
 public enum AttributeType {
 
-    GENDER ("Gender"),
-    INCOME ("Income"),
-    AGE ("Age"),
-    CONTEXT ("Context");
+    GENDER ("Gender", "gender"),
+    INCOME ("Income", "income"),
+    AGE ("Age", "age"),
+    CONTEXT ("Context", "income");
+    
+    private final String sql;
+    private final String name;
 
-    private String name;
-
-    private AttributeType(String name) {
+    private AttributeType(String name, String sql) {
         this.name = name;
+        this.sql = sql;
     }
 
     public String toString() {
         return this.name;
+    }
+    
+    public String toSQL() {
+        return this.sql;
     }
 }
