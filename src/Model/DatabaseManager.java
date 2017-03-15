@@ -1,6 +1,7 @@
 
 package Model;
 
+import Controllers.DashboardMainFrameController;
 import DataStructures.ClickLog;
 import DataStructures.CsvInterfaces.Gender;
 import DataStructures.CsvInterfaces.Income;
@@ -682,16 +683,51 @@ public class DatabaseManager {
 		return createMap(sql);
 	}
 
-	private Map<Attribute, Number> getTotalImpressionsForAttribute(AttributeType attributeType) {
-		return null;
+	public Map<String, Number> getTotalImpressionsForAttribute(AttributeType attributeType) {
+		String sql = null;
+
+		if (attributeType.equals(AttributeType.CONTEXT)) {
+			sql = "SELECT " + attributeType.getQueryBit() + ", count(site_impression_id) FROM site_impression GROUP BY " +
+					" context";
+		}
+		else {
+			sql = "SELECT " + attributeType.getQueryBit() + ", count(site_impression_id) FROM site_impression JOIN " +
+					" user ON site_impression.user_id = user.user_id GROUP BY " + attributeType.getQueryBit() + ";";
+		}
+
+		return createAttributeMap(sql);
+
+
 	}
 
-	private Map<Attribute, Number> getTotalClicksForAttribute(AttributeType attributeType) {
-		return null;
+	public Map<String, Number> getTotalClicksForAttribute(AttributeType attributeType) {
+		String sql = null;
+
+		if (attributeType.equals(AttributeType.CONTEXT)) {
+			sql = "SELECT " + attributeType.getQueryBit() + ", count(click_id) FROM click " +
+					"JOIN site_impression ON click.user_id = site_impression.user_id " +
+					"GROUP BY " + attributeType.getQueryBit() + ";";
+		} else {
+			sql = "SELECT " + attributeType.getQueryBit() + ", count(click_id) FROM click " +
+					"JOIN user ON click.user_id = user.user_id GROUP BY " + attributeType.getQueryBit() + ";";
+		}
+
+		return createAttributeMap(sql);
 	}
 
-	private Map<Attribute, Number> getTotalBouncesForAttribute(AttributeType attributeType) {
-		return null;
+	public Map<String, Number> getTotalBouncesForAttribute(AttributeType attributeType) {
+		String sql = null;
+
+		if (attributeType.equals(AttributeType.CONTEXT)) {
+		    sql = "SELECT " + attributeType.getQueryBit() + ", count(server_log_id)  FROM " +
+                    "server_log JOIN site_impression ON server_log.user_id = site_impression.user_id  WHERE pages_viewed = 1" +
+                    " GROUP BY " + attributeType.getQueryBit() + ";";
+        } else {
+            sql = "SELECT " + attributeType.getQueryBit() + ", count(server_log_id) FROM " +
+                    "server_log JOIN user ON server_log.user_id = user.user_id WHERE pages_viewed = 1 "  +
+                    "GROUP BY " + attributeType.getQueryBit() + ";";
+        }
+		return createAttributeMap(sql);
 	}
 
 	private Map<Attribute, Number> getTotalConversionsForAttribute(AttributeType attributeType) {
@@ -751,6 +787,25 @@ public class DatabaseManager {
 			}
 		}
 		
+		return resultMap;
+	}
+
+	private Map<String, Number> createAttributeMap(String sql) {
+		Map<String, Number> resultMap = new HashMap<>();
+		ResultSet resultSet;
+
+		if (sql != null) {
+			try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+				resultSet = stmt.executeQuery(sql);
+
+				while (resultSet.next()) {
+					resultMap.put(resultSet.getString(1), resultSet.getInt(2));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
 		return resultMap;
 	}
 	

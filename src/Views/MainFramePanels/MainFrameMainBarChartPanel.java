@@ -1,5 +1,6 @@
 package Views.MainFramePanels;
 
+import Model.DBEnums.attributes.Attribute;
 import Views.CustomComponents.CatPanel;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
@@ -34,7 +35,7 @@ public class MainFrameMainBarChartPanel extends CatPanel {
         this.add(chartPanel, BorderLayout.CENTER);
     }
 
-    public void displayChart(MetricType type, AttributeType attribute, Map<AttributeType, Number> data) {
+    public void displayChart(MetricType type, AttributeType attribute, Map<Attribute, Number> data) {
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
 

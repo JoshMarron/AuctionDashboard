@@ -5,18 +5,24 @@ package Views.ViewPresets;
  */
 public enum AttributeType {
 
-    GENDER ("Gender"),
-    INCOME ("Income"),
-    AGE ("Age"),
-    CONTEXT ("Context");
+    GENDER ("Gender", "gender"),
+    INCOME ("Income", "income"),
+    AGE ("Age", "age"),
+    CONTEXT ("Context", "context");
 
     private String name;
+    private String querybit;
 
-    private AttributeType(String name) {
+    private AttributeType(String name, String querybit) {
         this.name = name;
+        this.querybit = querybit;
     }
 
     public String toString() {
         return this.name;
+    }
+
+    public String getQueryBit() {
+        return this.querybit;
     }
 }

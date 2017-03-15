@@ -5,6 +5,7 @@ import Views.ViewPresets.ColorSettings;
 import javafx.scene.*;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.Cursor;
 
@@ -21,7 +22,9 @@ public class CatButton extends JButton {
     private void initButton() {
         this.setContentAreaFilled(false);
 
-        this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        Border outside = BorderFactory.createEmptyBorder(10, 10, 10, 10);
+        Border inside = BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor());
+        this.setBorder(BorderFactory.createCompoundBorder(inside, outside));
         this.setFocusPainted(false);
         this.setBackground(ColorSettings.BUTTON_COLOR.getColor());
         this.setFont(DashboardMainFrame.GLOB_FONT);
