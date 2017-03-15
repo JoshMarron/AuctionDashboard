@@ -75,7 +75,7 @@ public class MetricUtils {
     }
 
     public static double getCostPerImpression(List<Impression> impressions, List<Double> clickCosts){
-        return(calculateTotalCost(clickCosts)/getImpressionCount(impressions));
+        return(calculateTotalCost(clickCosts)/getImpressionCount(impressions) * 1000);
     }
 
     //CPM

@@ -1,8 +1,10 @@
 package Model;
 
+import Model.DBEnums.DateEnum;
 import Views.ViewPresets.AttributeType;
 
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -18,8 +20,12 @@ public class DatabaseTestMain {
             e.printStackTrace();
         }
 
-        Map<String, Number> testModel = model.getTotalImpressionCostForAttribute(AttributeType.GENDER);
+        Map<String, Number> testModel = model.getBounceRateForAttribute(AttributeType.CONTEXT);
+        Map<Instant, Number> testModel2 = model.getBounceRatePer(DateEnum.DAYS);
 
         testModel.forEach((type, value) -> System.out.println(type + ": " + value));
+        testModel2.forEach((type, value) -> System.out.println(type + ": " + value));
+
+        System.out.println(testModel2.values().stream().reduce((a, b) -> a.doubleValue() + b.doubleValue()));
     }
 }

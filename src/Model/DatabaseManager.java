@@ -16,15 +16,18 @@ import Model.TableModels.Click;
 import Model.TableModels.Impression;
 import Model.TableModels.ServerVisit;
 import Model.TableModels.User;
+import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 import com.sun.org.apache.xpath.internal.SourceTree;
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
+import javafx.scene.chart.NumberAxis;
 
 import javax.swing.plaf.nimbus.State;
 import javax.xml.transform.Result;
 import java.io.File;
 import java.sql.*;
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.Date;
 
@@ -590,24 +593,72 @@ public class DatabaseManager {
 		return createMap(sql);
 	}
 	
-	public Map<Instant, Number> getCostOfCampaignPer(DateEnum dateEnum) {
+	public Map<LocalDateTime, Number> getCostOfImpressionsPer(DateEnum dateEnum) {
 		String sql = null;
 		
 		switch (dateEnum) {
 			case HOURS:
-				sql = "SELECT ifnull(impression_date, click_date), (SUM(cost) + ifnull(SUM(impression_cost),0))\n" +
-						"FROM click\n" +
-						"LEFT JOIN site_impression ON strftime('%H,%d',click.click_date) = strftime('%H,%d', site_impression.impression_date)\n" +
-						"GROUP BY strftime('%H,%d', click_date)\n" +
-						"  UNION\n" +
-						"    SELECT ifnull(click_date, impression_date),(SUM(impression_cost) + ifnull(SUM(cost),0))\n" +
-						"    FROM site_impression\n" +
-						"    LEFT JOIN click ON strftime('%H,%d',site_impression.impression_date) = strftime('%H,%d', click.click_date)\n" +
-						"    GROUP BY strftime('%H,%d', impression_date);";
+				sql = "SELECT impression_date, SUM(impression_cost) " +
+						"FROM site_impression " +
+						"GROUP BY strftime('%H,%d', impression_date);";
+				break;
+            case DAYS:
+                sql = "SELECT impression_date, SUM(impression_cost) " +
+                        "FROM site_impression " +
+                        "GROUP BY strftime('%d', impression_date);";
+                break;
+            case WEEKS:
+                sql = "SELECT impression_date, SUM(impression_cost) " +
+                        "FROM site_impression " +
+                        "GROUP BY strftime('%W', impression_date);";
+                break;
 		}
 		
-		return null;
+		return createMapWithLocalDateTime(sql, dateEnum);
 	}
+
+	public Map<LocalDateTime, Number> getCostOfClicksPer(DateEnum dateEnum) {
+	    String sql = null;
+
+        switch (dateEnum) {
+            case HOURS:
+                sql = "SELECT click_date, SUM(cost) " +
+                        "FROM click " +
+                        "GROUP BY strftime('%H,%d', click_date);";
+                break;
+            case DAYS:
+                sql = "SELECT click_date, SUM(cost) " +
+                        "FROM click " +
+                        "GROUP BY strftime('%d', click_date);";
+                break;
+            case WEEKS:
+                sql = "SELECT click_date, SUM(cost) " +
+                        "FROM click " +
+                        "GROUP BY strftime('%W', click_date);";
+                break;
+        }
+
+        return createMapWithLocalDateTime(sql, dateEnum);
+    }
+
+    public Map<Instant, Number> getTotalCostPer(DateEnum dateEnum) {
+	    Map<LocalDateTime, Number> impressionMap = getCostOfImpressionsPer(dateEnum);
+	    Map<LocalDateTime, Number> clickMap = getCostOfClicksPer(dateEnum);
+        Map<Instant, Number> resultMap = new HashMap<>();
+
+        impressionMap.forEach((date, val) -> {
+            resultMap.put(date.toInstant(ZoneOffset.UTC), val);
+        });
+
+        clickMap.forEach((date, val) -> {
+            if (resultMap.containsKey(date.toInstant(ZoneOffset.UTC))) {
+                resultMap.put(date.toInstant(ZoneOffset.UTC), val.doubleValue() + resultMap.get(date.toInstant(ZoneOffset.UTC)).doubleValue());
+            }
+        });
+
+        return resultMap;
+
+    }
 
 	//TODO ALL OF THESE NEED TO ALSO HAVE "GET ALL" METHODS WHICH RETURN JUST A NUMBER
 	//All these methods need to get the metric per date enum
@@ -636,31 +687,66 @@ public class DatabaseManager {
 	}
 	
 	//Cost per acquisition - total cost/num conversions
-	public Map<Instant, Number> getCostPerAcquisitionPer(DateEnum dateEnum) {
-		return null;
+	public Map<Instant, Number> getCPAPer(DateEnum dateEnum) {
+        Map<Instant, Number> costMap = DBUtils.truncateInstantMap(getTotalCostPer(dateEnum), dateEnum);
+        Map<Instant, Number> conversionMap = DBUtils.truncateInstantMap(getConversionNumberPer(dateEnum), dateEnum);
+        Map<Instant, Number> resultMap = new HashMap<>();
+
+        costMap.forEach(resultMap::put);
+
+        conversionMap.forEach((date, val) -> {
+            resultMap.put(date, costMap.get(date).doubleValue() / val.doubleValue());
+        });
+
+        return resultMap;
+
 	}
 
 	//Cost per click - total cost/num click
-	// TODO this
-	public Map<Instant, Number> getCostPerClickPer(DateEnum dateEnum) {
-		
-		
-		return null;
+	public Map<Instant, Number> getCPCPer(DateEnum dateEnum) {
+		Map<Instant, Number> costMap = DBUtils.truncateInstantMap(getTotalCostPer(dateEnum), dateEnum);
+		Map<Instant, Number> clickMap = DBUtils.truncateInstantMap(getClickCountPer(dateEnum, false), dateEnum);
+		Map<Instant, Number> resultMap = new HashMap<>();
+
+		costMap.forEach(resultMap::put);
+
+		clickMap.forEach((date, val) -> resultMap.put(date, costMap.get(date).doubleValue() / val.doubleValue()));
+
+		return resultMap;
+
 	}
 
 	//CPM - (cost/impressions) * 1000
-	public Map<Instant, Number> getCostPerThousandImpressionsPer(DateEnum dateEnum) {
-		return null;
+	public Map<Instant, Number> getCPMPer(DateEnum dateEnum) {
+        Map<Instant, Number> costMap = DBUtils.truncateInstantMap(getTotalCostPer(dateEnum), dateEnum);
+        Map<Instant, Number> impressionMap = DBUtils.truncateInstantMap(getImpressionCountPer(dateEnum), dateEnum);
+        Map<Instant, Number> resultMap = new HashMap<>();
+
+        costMap.forEach((date, val) -> resultMap.put(date, (val.doubleValue() / impressionMap.get(date).doubleValue()) * 1000));
+
+        return resultMap;
 	}
 
 	//CTR - number of clicks/number of impressions
-	public Map<Instant, Number> getClickThroughRatePer(DateEnum dateEnum) {
-		return null;
+	public Map<Instant, Number> getCTRPer(DateEnum dateEnum) {
+		Map<Instant, Number> clickMap = DBUtils.truncateInstantMap(getClickCountPer(dateEnum, false), dateEnum);
+		Map<Instant, Number> impressionMap = DBUtils.truncateInstantMap(getImpressionCountPer(dateEnum), dateEnum);
+        Map<Instant, Number> resultMap = new HashMap<>();
+
+        clickMap.forEach((date, val) -> resultMap.put(date, (val.doubleValue() / impressionMap.get(date).doubleValue())));
+
+        return resultMap;
 	}
 
 	//Can't remember, ask joe
 	public Map<Instant, Number> getBounceRatePer(DateEnum dateEnum) {
-		return null;
+		Map<Instant, Number> bounceMap = DBUtils.truncateInstantMap(getBounceNumberPer(dateEnum), dateEnum);
+		Map<Instant, Number> clickMap = DBUtils.truncateInstantMap(getClickCountPer(dateEnum, false), dateEnum);
+		Map<Instant, Number> resultMap = new HashMap<>();
+
+		bounceMap.forEach((date, val) -> resultMap.put(date, val.doubleValue() / clickMap.get(date).doubleValue()));
+
+		return resultMap;
 	}
 	
 	/**
@@ -781,28 +867,91 @@ public class DatabaseManager {
         return createAttributeMap(sql);
 	}
 
-	private Map<Attribute, Number> getTotalClickCostForAttribute(AttributeType attributeType) {
-		return null;
+	public Map<String, Number> getTotalClickCostForAttribute(AttributeType attributeType) {
+        String sql;
+
+        if (attributeType.equals(AttributeType.CONTEXT)) {
+            sql = "SELECT " + attributeType.getQueryBit() + ", SUM(cost) FROM click " +
+                    "JOIN site_impression ON click.user_id = site_impression.user_id " +
+                    "GROUP BY " + attributeType.getQueryBit() + ";";
+        } else {
+            sql = "SELECT " + attributeType.getQueryBit() + ", SUM(cost) FROM " +
+                    "click JOIN user ON click.user_id = user.user_id " +
+                    "GROUP BY " + attributeType.getQueryBit() + ";";
+        }
+
+        return createAttributeMap(sql);
 	}
 
-	private Map<Attribute, Number> getCPAForAttribute(AttributeType attributeType) {
-		return null;
+	public Map<String, Number> getTotalCostForAttribute(AttributeType attributeType) {
+
+	    Map<String, Number> clickMap = getTotalClickCostForAttribute(attributeType);
+	    Map<String, Number> impressionMap = getTotalImpressionCostForAttribute(attributeType);
+
+	    clickMap.forEach((attr, value) -> {
+            if (impressionMap.containsKey(attr)) {
+                impressionMap.put(attr, (impressionMap.get(attr).doubleValue() + value.doubleValue()));
+            } else {
+                impressionMap.put(attr, value);
+            }
+        });
+
+        return impressionMap;
+    }
+
+	public Map<String, Number> getCPAForAttribute(AttributeType attributeType) {
+		Map<String, Number> costMap = getTotalCostForAttribute(attributeType);
+		Map<String, Number> conversionMap = getTotalConversionsForAttribute(attributeType);
+
+		costMap.forEach((attr, value) -> {
+		    conversionMap.put(attr, (value.doubleValue() / conversionMap.get(attr).doubleValue()));
+        });
+
+		return conversionMap;
 	}
 
-	private Map<Attribute, Number> getCPCForAttribute(AttributeType attributeType) {
-		return null;
+	public Map<String, Number> getCPCForAttribute(AttributeType attributeType) {
+		Map<String, Number> costMap = getTotalCostForAttribute(attributeType);
+		Map<String, Number> clickMap = getTotalClicksForAttribute(attributeType);
+
+		costMap.forEach((attr, value) -> {
+		    clickMap.put(attr, (value.doubleValue() / clickMap.get(attr).doubleValue()));
+        });
+
+		return clickMap;
 	}
 
-	private Map<Attribute, Number> getCPMForAttribute(AttributeType attributeType) {
-		return null;
+	public Map<String, Number> getCPMForAttribute(AttributeType attributeType) {
+		Map<String, Number> costMap = getTotalCostForAttribute(attributeType);
+		Map<String, Number> impressionMap = getTotalImpressionsForAttribute(attributeType);
+
+		costMap.forEach((attr, value) -> {
+		    impressionMap.put(attr, ((value.doubleValue() / impressionMap.get(attr).doubleValue()) * 1000));
+        });
+
+		return impressionMap;
 	}
 
-	private Map<Attribute, Number> getCTRForAttribute(AttributeType attributeType) {
-		return null;
+	public Map<String, Number> getCTRForAttribute(AttributeType attributeType) {
+		Map<String, Number> clickMap = getTotalClicksForAttribute(attributeType);
+		Map<String, Number> impressionMap = getTotalImpressionsForAttribute(attributeType);
+
+		clickMap.forEach((attr, value) -> {
+		    impressionMap.put(attr, (value.doubleValue() / impressionMap.get(attr).doubleValue()));
+        });
+
+		return impressionMap;
 	}
 
-	private Map<Attribute, Number> getBounceRateForAttribute(AttributeType attributeType) {
-		return null;
+	public Map<String, Number> getBounceRateForAttribute(AttributeType attributeType) {
+		Map<String, Number> bounceMap = getTotalBouncesForAttribute(attributeType);
+		Map<String, Number> clickMap = getTotalClicksForAttribute(attributeType);
+
+        bounceMap.forEach((attr, value) -> {
+            clickMap.put(attr, (value.doubleValue() / clickMap.get(attr).doubleValue()));
+        });
+
+        return clickMap;
 	}
 	
 	/**
@@ -830,7 +979,7 @@ public class DatabaseManager {
 		return resultMap;
 	}
 	
-	private Map<LocalDateTime, Number> createMapWithLocalDateTime(String sql) {
+	private Map<LocalDateTime, Number> createMapWithLocalDateTime(String sql, DateEnum dateEnum) {
 		Map<LocalDateTime, Number> resultMap = new HashMap<>();
 		ResultSet resultSet;
 		
@@ -838,9 +987,23 @@ public class DatabaseManager {
 			try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
 				resultSet = stmt.executeQuery(sql);
 				
-				while (resultSet.next()) {
-					resultMap.put(stringToDateTime(resultSet.getString(1)), resultSet.getDouble(2));
-				}
+				switch(dateEnum) {
+                    case DAYS:
+                        while (resultSet.next()) {
+                            resultMap.put(stringToDateTime(resultSet.getString(1)).truncatedTo(ChronoUnit.DAYS), resultSet.getDouble(2));
+                        }
+                        break;
+                    case HOURS:
+                        while (resultSet.next()) {
+                            resultMap.put(stringToDateTime(resultSet.getString(1)).truncatedTo(ChronoUnit.HOURS), resultSet.getDouble(2));
+                        }
+                        break;
+                    case WEEKS:
+                        while (resultSet.next()) {
+                            resultMap.put(stringToDateTime(resultSet.getString(1)).truncatedTo(ChronoUnit.WEEKS), resultSet.getDouble(2));
+                        }
+                        break;
+                }
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -868,56 +1031,6 @@ public class DatabaseManager {
 		return resultMap;
 	}
 
-	/**
-	 * Literal dirt: Returns map of total cost for given time period
-	 * @param dateEnum Time period to get costs for
-	 * @return Map of Instant date to cost for that period
-	 */
-	public Map<Instant, Number> getTotalCostPer(DateEnum dateEnum) {
-		String sqlClick = null;
-		String sqlImpression = null;
-		Map<Instant, Number> resultMap = null;
-		
-		switch (dateEnum) {
-			case HOURS:
-				sqlClick = "SELECT click_date, SUM(cost) FROM click GROUP BY strftime('%H,%d', click_date);";
-				sqlImpression = "SELECT impression_date, SUM(impression_cost) FROM site_impression GROUP BY strftime('%H,%d', impression_date);";
-				break;
-			case DAYS:
-				sqlClick = "SELECT click_date, SUM(cost) FROM click GROUP BY date(click_date);";
-				sqlImpression = "SELECT impression_date, SUM(impression_cost) FROM site_impression GROUP BY strftime('%d', impression_date);";
-				break;
-			case WEEKS:
-				sqlClick = "SELECT click_date, SUM(cost) FROM click GROUP BY strftime('%W', click_date);";
-				sqlImpression = "SELECT impression_date, SUM(impression_cost) FROM site_impression GROUP BY strftime('%W', impression_date);";
-				break;
-		}
-		
-//		if (sqlClick != null && sqlImpression != null) {
-//			try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-//				ResultSet rsClick = stmt.executeQuery(sqlClick);
-//				printToConsole(rsClick);
-//				ResultSet rsImpression = stmt.executeQuery(sqlImpression);
-//
-//				resultMap = new HashMap<>();
-//				while (rsClick.next()) {
-//					resultMap.put(stringToInstant(rsClick.getString(2)), (rsClick.getDouble(3) + rsImpression.getDouble(3)));
-//				}
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//		}
-		
-		Map<LocalDateTime, Number> clickMap = createMapWithLocalDateTime(sqlClick);
-		Map<LocalDateTime, Number> impressionMap = createMapWithLocalDateTime(sqlImpression);
-		
-		clickMap.forEach((date, num) -> {
-
-			
-		});
-		
-		return resultMap;
-	}
 	
 	/**
 	 * Simple conversion that takes a String date from the database and converts it to a Java Instant readable format
