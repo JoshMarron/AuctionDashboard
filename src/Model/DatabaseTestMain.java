@@ -18,7 +18,7 @@ public class DatabaseTestMain {
             e.printStackTrace();
         }
 
-        Map<String, Number> testModel = model.getTotalUniquesForAttribute(AttributeType.AGE);
+        Map<String, Number> testModel = model.getTotalImpressionCostForAttribute(AttributeType.GENDER);
 
         testModel.forEach((type, value) -> System.out.println(type + ": " + value));
     }

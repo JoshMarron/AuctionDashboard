@@ -2,16 +2,17 @@ package Views;
 
 import Controllers.DashboardStartupController;
 import Model.DBEnums.LogType;
-import Views.CustomComponents.CatFrame;
-import Views.CustomComponents.CatLabel;
-import Views.CustomComponents.CatPanel;
+import Views.CustomComponents.*;
 import Views.StartupPanels.RecentProjectsViewPanel;
 import Views.StartupPanels.StartupChosenFilesPanel;
 import Views.StartupPanels.StartupFileImportPanel;
+import Views.StartupPanels.StartupMenu;
 import Views.ViewPresets.ColorSettings;
 import Views.ViewPresets.FontSettings;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.io.File;
@@ -110,6 +111,9 @@ public class DashboardStartupFrame extends CatFrame {
         titleLabel.setFont(titleLabel.getFont().deriveFont(60F));
         titlePanel.add(titleLabel);
 
+        StartupMenu menu = new StartupMenu(this);
+        this.setJMenuBar(menu);
+
         contentPane.add(centrePanel, BorderLayout.CENTER);
         contentPane.add(titlePanel, BorderLayout.NORTH);
         this.initGlassPane();
@@ -150,6 +154,20 @@ public class DashboardStartupFrame extends CatFrame {
         int chooseVal = JOptionPane.showConfirmDialog(this, "Load " + recentFile.getName() + "?");
         if (chooseVal == JOptionPane.OK_OPTION) {
             this.controller.loadOldProject(recentFile);
+        }
+    }
+
+    public void selectProjectFromFolder() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Choose a project file...");
+        FileNameExtensionFilter catFilter = new FileNameExtensionFilter("CAT Files", "cat");
+        chooser.setFileFilter(catFilter);
+
+        int chooserVal = chooser.showOpenDialog(this);
+
+        if (chooserVal == JFileChooser.APPROVE_OPTION) {
+            File filename = chooser.getSelectedFile();
+            this.chooseRecentProject(filename);
         }
     }
 }

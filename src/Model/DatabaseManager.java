@@ -770,12 +770,15 @@ public class DatabaseManager {
         String sql;
 
         if (attributeType.equals(AttributeType.CONTEXT)) {
-
+            sql = "SELECT " + attributeType.getQueryBit() + ", SUM(impression_cost) FROM site_impression " +
+                    "GROUP BY " + attributeType.getQueryBit() + ";";
         } else {
-
+            sql = "SELECT " + attributeType.getQueryBit() + ", SUM(impression_cost) FROM " +
+                    "site_impression JOIN user ON site_impression.user_id = user.user_id " +
+                    "GROUP BY " + attributeType.getQueryBit() + ";";
         }
 
-        return null;
+        return createAttributeMap(sql);
 	}
 
 	private Map<Attribute, Number> getTotalClickCostForAttribute(AttributeType attributeType) {
@@ -855,7 +858,7 @@ public class DatabaseManager {
 				resultSet = stmt.executeQuery(sql);
 
 				while (resultSet.next()) {
-					resultMap.put(resultSet.getString(1), resultSet.getInt(2));
+					resultMap.put(resultSet.getString(1), resultSet.getDouble(2));
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -864,7 +867,7 @@ public class DatabaseManager {
 
 		return resultMap;
 	}
-	
+
 	/**
 	 * Literal dirt: Returns map of total cost for given time period
 	 * @param dateEnum Time period to get costs for
