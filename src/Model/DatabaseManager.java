@@ -736,16 +736,46 @@ public class DatabaseManager {
 		return createAttributeMap(sql);
 	}
 
-	private Map<Attribute, Number> getTotalConversionsForAttribute(AttributeType attributeType) {
-		return null;
+	public Map<String, Number> getTotalConversionsForAttribute(AttributeType attributeType) {
+
+	    String sql;
+
+		if (attributeType.equals(AttributeType.CONTEXT)) {
+		    sql = "SELECT " + attributeType.getQueryBit() + ", count(server_log_id) FROM " +
+                    "server_log JOIN site_impression ON server_log.user_id = site_impression.user_id WHERE conversion = 'Yes' GROUP BY " + attributeType.getQueryBit() + ";";
+        } else {
+		    sql = "SELECT " + attributeType.getQueryBit() + ", count(server_log_id) FROM " +
+                    "server_log JOIN user ON server_log.user_id = user.user_id WHERE conversion = 'Yes' GROUP BY " + attributeType.getQueryBit() + ";";
+        }
+
+        return createAttributeMap(sql);
 	}
 
-	private Map<Attribute, Number> getTotalUniquesForAttribute(AttributeType attributeType) {
-		return null;
+	public Map<String, Number> getTotalUniquesForAttribute(AttributeType attributeType) {
+        String sql = null;
+
+        if (attributeType.equals(AttributeType.CONTEXT)) {
+            sql = "SELECT " + attributeType.getQueryBit() + ", count(DISTINCT click.user_id) FROM click " +
+                    "JOIN site_impression ON click.user_id = site_impression.user_id " +
+                    "GROUP BY " + attributeType.getQueryBit() + ";";
+        } else {
+            sql = "SELECT " + attributeType.getQueryBit() + ", count(DISTINCT click.user_id) FROM click " +
+                    "JOIN user ON click.user_id = user.user_id GROUP BY " + attributeType.getQueryBit() + ";";
+        }
+
+        return createAttributeMap(sql);
 	}
 
-	private Map<Attribute, Number> getTotalImpressionCostForAttribute(AttributeType attributeType) {
-		return null;
+	public Map<String, Number> getTotalImpressionCostForAttribute(AttributeType attributeType) {
+        String sql;
+
+        if (attributeType.equals(AttributeType.CONTEXT)) {
+
+        } else {
+
+        }
+
+        return null;
 	}
 
 	private Map<Attribute, Number> getTotalClickCostForAttribute(AttributeType attributeType) {

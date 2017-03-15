@@ -18,7 +18,7 @@ public class DatabaseTestMain {
             e.printStackTrace();
         }
 
-        Map<String, Number> testModel = model.getTotalBouncesForAttribute(AttributeType.AGE);
+        Map<String, Number> testModel = model.getTotalUniquesForAttribute(AttributeType.AGE);
 
         testModel.forEach((type, value) -> System.out.println(type + ": " + value));
     }

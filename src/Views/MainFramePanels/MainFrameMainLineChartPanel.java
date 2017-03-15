@@ -49,7 +49,7 @@ public class MainFrameMainLineChartPanel extends CatPanel {
             LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
             chart.setTitle(type.toString() + " over time");
             XYChart.Series series = new XYChart.Series();
-
+            series.setName(type.toString());
 
             if (granularity.equals(DateEnum.HOURS)) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
