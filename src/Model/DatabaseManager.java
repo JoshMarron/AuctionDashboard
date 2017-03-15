@@ -9,6 +9,7 @@ import Model.DBEnums.DatabaseStatements;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Model.DBEnums.TableType;
+import Model.DBEnums.attributes.Attribute;
 import Model.DBEnums.headers.*;
 import Model.TableModels.Click;
 import Model.TableModels.Impression;
@@ -681,51 +682,51 @@ public class DatabaseManager {
 		return createMap(sql);
 	}
 
-	private Map<AttributeType, Number> getTotalImpressionsForAttribute(AttributeType attributeType) {
+	private Map<Attribute, Number> getTotalImpressionsForAttribute(AttributeType attributeType) {
 		return null;
 	}
 
-	private Map<AttributeType, Number> getTotalClicksForAttribute(AttributeType attributeType) {
+	private Map<Attribute, Number> getTotalClicksForAttribute(AttributeType attributeType) {
 		return null;
 	}
 
-	private Map<AttributeType, Number> getTotalBouncesForAttribute(AttributeType attributeType) {
+	private Map<Attribute, Number> getTotalBouncesForAttribute(AttributeType attributeType) {
 		return null;
 	}
 
-	private Map<AttributeType, Number> getTotalConversionsForAttribute(AttributeType attributeType) {
+	private Map<Attribute, Number> getTotalConversionsForAttribute(AttributeType attributeType) {
 		return null;
 	}
 
-	private Map<AttributeType, Number> getTotalUniquesForAttribute(AttributeType attributeType) {
+	private Map<Attribute, Number> getTotalUniquesForAttribute(AttributeType attributeType) {
 		return null;
 	}
 
-	private Map<AttributeType, Number> getTotalImpressionCostForAttribute(AttributeType attributeType) {
+	private Map<Attribute, Number> getTotalImpressionCostForAttribute(AttributeType attributeType) {
 		return null;
 	}
 
-	private Map<AttributeType, Number> getTotalClickCostForAttribute(AttributeType attributeType) {
+	private Map<Attribute, Number> getTotalClickCostForAttribute(AttributeType attributeType) {
 		return null;
 	}
 
-	private Map<AttributeType, Number> getCPAForAttribute(AttributeType attributeType) {
+	private Map<Attribute, Number> getCPAForAttribute(AttributeType attributeType) {
 		return null;
 	}
 
-	private Map<AttributeType, Number> getCPCForAttribute(AttributeType attributeType) {
+	private Map<Attribute, Number> getCPCForAttribute(AttributeType attributeType) {
 		return null;
 	}
 
-	private Map<AttributeType, Number> getCPMForAttribute(AttributeType attributeType) {
+	private Map<Attribute, Number> getCPMForAttribute(AttributeType attributeType) {
 		return null;
 	}
 
-	private Map<AttributeType, Number> getCTRForAttribute(AttributeType attributeType) {
+	private Map<Attribute, Number> getCTRForAttribute(AttributeType attributeType) {
 		return null;
 	}
 
-	private Map<AttributeType, Number> getBounceRateForAttribute(AttributeType attributeType) {
+	private Map<Attribute, Number> getBounceRateForAttribute(AttributeType attributeType) {
 		return null;
 	}
 	/**
