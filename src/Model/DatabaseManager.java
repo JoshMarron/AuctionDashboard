@@ -96,6 +96,7 @@ public class DatabaseManager {
 	public void createDB(String location) {
 		this.filename = location;
 		File file = new File(filename);
+		file.getParentFile().mkdirs();
 		url = "jdbc:sqlite:" + filename;
 		
 		if (!file.exists()) {
