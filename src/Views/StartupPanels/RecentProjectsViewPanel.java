@@ -28,6 +28,7 @@ public class RecentProjectsViewPanel extends CatPanel {
     private void initPanel() {
 
         this.setLayout(new BorderLayout());
+        this.setMinimumSize(new Dimension(300, 0));
         this.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
 
         CatTitlePanel titlePanel = new CatTitlePanel("Recent Projects");
@@ -45,7 +46,9 @@ public class RecentProjectsViewPanel extends CatPanel {
         recentProjectBoxesPanel.add(Box.createVerticalGlue());
 
         this.add(titlePanel, BorderLayout.NORTH);
-        this.add(recentProjectBoxesPanel, BorderLayout.CENTER);
+
+        JScrollPane scrollPane = new JScrollPane(recentProjectBoxesPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.add(scrollPane, BorderLayout.CENTER);
     }
 
     public void chooseRecentProject(File project) {

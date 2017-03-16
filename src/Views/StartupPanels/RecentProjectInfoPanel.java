@@ -29,6 +29,7 @@ public class RecentProjectInfoPanel extends CatListPanel {
     private void initInfoPanel() {
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.setPreferredSize(new Dimension(400, 100));
         long lastModified = file.lastModified();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         String formattedLastModified = dateFormat.format(new Date(lastModified));

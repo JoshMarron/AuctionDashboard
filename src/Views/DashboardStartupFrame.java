@@ -74,14 +74,14 @@ public class DashboardStartupFrame extends CatFrame {
         importPanel = new StartupFileImportPanel(homedir, this);
         GridBagConstraints importPanelConstraints = new GridBagConstraints();
         importPanelConstraints.gridx = 1;
-        importPanelConstraints.weightx = 10;
+        importPanelConstraints.weightx = 100F;
         importPanelConstraints.weighty = 1;
         importPanelConstraints.fill = GridBagConstraints.BOTH;
 
         viewPanel = new StartupChosenFilesPanel(this);
         GridBagConstraints viewPanelConstraints = new GridBagConstraints();
         viewPanelConstraints.gridx = 2;
-        viewPanelConstraints.weightx = 6;
+        viewPanelConstraints.weightx = 1;
         viewPanelConstraints.weighty = 1;
         viewPanelConstraints.fill = GridBagConstraints.BOTH;
 
@@ -98,7 +98,7 @@ public class DashboardStartupFrame extends CatFrame {
         RecentProjectsViewPanel recentProjects = new RecentProjectsViewPanel(fileList, this);
         GridBagConstraints recentProjectsConstraints = new GridBagConstraints();
         recentProjectsConstraints.gridx = 0;
-        recentProjectsConstraints.weightx = 1;
+        recentProjectsConstraints.weightx = 5;
         recentProjectsConstraints.weighty = 1;
         recentProjectsConstraints.fill = GridBagConstraints.BOTH;
 
@@ -137,7 +137,9 @@ public class DashboardStartupFrame extends CatFrame {
                     "Choose a name for your project",
                     "Choose a name!",
                     JOptionPane.QUESTION_MESSAGE);
-            this.controller.processFiles(this.fileMap, result);
+            if (result != null) {
+                this.controller.processFiles(this.fileMap, result);
+            }
         }
     }
 

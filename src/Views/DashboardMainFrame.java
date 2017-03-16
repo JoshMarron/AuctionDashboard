@@ -11,6 +11,7 @@ import Views.ViewPresets.AttributeType;
 import Views.ViewPresets.ChartType;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -124,10 +125,23 @@ public class DashboardMainFrame extends CatFrame {
 
     public void saveFileAs() {
         JFileChooser saveChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("CAT CatAnalysis Files", "cat");
+        saveChooser.setFileFilter(filter);
         int saveChooserVal = saveChooser.showSaveDialog(this);
         if (saveChooserVal == JFileChooser.APPROVE_OPTION) {
             try {
-                controller.saveProject(saveChooser.getSelectedFile());
+                File saved = saveChooser.getSelectedFile();
+                String savedFileName = saved.getName();
+                if (!savedFileName.contains(".")) {
+                    savedFileName = savedFileName.split("\\.")[0] + ".cat";
+                } else {
+                    savedFileName = savedFileName + ".cat";
+                }
+                controller.saveProject(new File(savedFileName));
+                JOptionPane.showMessageDialog(this,
+                        "File successfully saved!",
+                        "Saved",
+                        JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this,
                         "The file could not be saved at the selected location!",
@@ -136,10 +150,7 @@ public class DashboardMainFrame extends CatFrame {
                 return;
             }
         }
-        JOptionPane.showMessageDialog(this,
-                "File successfully saved!",
-                "Saved",
-                JOptionPane.INFORMATION_MESSAGE);
+
     }
 
     public void closeProject() {
