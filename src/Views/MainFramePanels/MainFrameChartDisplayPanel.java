@@ -19,8 +19,8 @@ import java.util.Map;
 public class MainFrameChartDisplayPanel extends CatPanel {
 
     private DashboardMainFrame parent;
-    Map<ChartType, MainFrameMainTimeChartPanel> timeChartMap;
-    Map<ChartType, MainFrameMainAttributeChartPanel> attributeChartMap;
+    private Map<ChartType, MainFrameMainTimeChartPanel> timeChartMap;
+    private Map<ChartType, MainFrameMainAttributeChartPanel> attributeChartMap;
     private ChartType currentChart;
     private CardLayout cards;
 

@@ -60,7 +60,13 @@ public class DashboardMainFrameController {
         SwingUtilities.invokeLater(() -> {
             frame.displayMetrics(data);
         });
-        this.requestTimeChart(MetricType.TOTAL_IMPRESSIONS);
+        if (availableLogs.contains(LogType.IMPRESSION)) {
+            requestTimeChart(MetricType.TOTAL_IMPRESSIONS);
+        } else if (availableLogs.contains(LogType.CLICK)) {
+            requestTimeChart(MetricType.TOTAL_CLICKS);
+        } else if (availableLogs.contains(LogType.SERVER_LOG)) {
+            requestTimeChart(MetricType.TOTAL_CONVERSIONS);
+        }
     }
 
     public void requestTimeChart(MetricType type) {
