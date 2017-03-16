@@ -158,6 +158,7 @@ public class DashboardMainFrame extends CatFrame {
     }
 
     public void closeProject() {
+        this.requestedChart = ChartType.LINE;
         controller.closeProject();
     }
 
