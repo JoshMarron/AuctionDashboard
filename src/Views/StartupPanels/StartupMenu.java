@@ -7,7 +7,7 @@ import Views.DashboardStartupFrame;
 import javax.swing.*;
 
 /**
- * Created by marro on 15/03/2017.
+ * StartupMenu is the MenuBar for the startup screen
  */
 public class StartupMenu extends CatMenuBar {
 
@@ -23,7 +23,12 @@ public class StartupMenu extends CatMenuBar {
         CatMenu menu = new CatMenu("File");
         JMenuItem open = new JMenuItem("Open...");
         open.addActionListener((e) -> frame.selectProjectFromFolder());
+
+        JMenuItem exit = new JMenuItem("Exit");
+        exit.addActionListener((e) -> frame.exit());
+
         menu.add(open);
+        menu.add(exit);
 
         this.add(menu);
     }

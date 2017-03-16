@@ -170,4 +170,8 @@ public class DashboardStartupFrame extends CatFrame {
             this.chooseRecentProject(filename);
         }
     }
+
+    public void exit() {
+        System.exit(0);
+    }
 }
