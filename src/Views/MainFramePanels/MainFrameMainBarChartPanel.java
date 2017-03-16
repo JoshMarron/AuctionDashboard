@@ -1,5 +1,6 @@
 package Views.MainFramePanels;
 
+import DataStructures.CsvInterfaces.Income;
 import Model.DBEnums.attributes.Attribute;
 import Views.CustomComponents.CatPanel;
 import Views.MetricType;
@@ -14,6 +15,7 @@ import javafx.scene.chart.XYChart;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -45,10 +47,30 @@ public class MainFrameMainBarChartPanel extends MainFrameMainAttributeChartPanel
 
         BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
         barChart.setTitle(type.toString() + " by " + attribute.toString());
+        barChart.setLegendVisible(false);
 
         XYChart.Series series = new XYChart.Series();
 
-        data.forEach((attr, num) -> series.getData().add(new XYChart.Data(attr, num)));
+        if (attribute.equals(AttributeType.AGE)) {
+            Map<String, String> newMap = new HashMap<>();
+            data.forEach((attr, val) -> {
+                String stripped = attr.replaceAll("[^0-9 -]", "");
+                String[] split = stripped.split("-");
+                if (split.length > 1) {
+                    stripped = split[1];
+                }
+                newMap.put(stripped, attr);
+            });
+            newMap.keySet().stream().sorted().forEach((str) -> {
+                series.getData().add(new XYChart.Data(newMap.get(str), data.get(newMap.get(str))));
+            });
+        } else if (attribute.equals(AttributeType.INCOME)) {
+            series.getData().add(new XYChart.Data(Income.LOW.toString(), data.get(Income.LOW.toString())));
+            series.getData().add(new XYChart.Data(Income.MEDIUM.toString(), data.get(Income.MEDIUM.toString())));
+            series.getData().add(new XYChart.Data(Income.HIGH.toString(), data.get(Income.HIGH.toString())));
+        } else {
+            data.forEach((attr, num) -> series.getData().add(new XYChart.Data(attr, num)));
+        }
 
         barChart.getData().add(series);
         Scene scene = new Scene(barChart);

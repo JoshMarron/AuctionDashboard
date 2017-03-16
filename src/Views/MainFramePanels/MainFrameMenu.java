@@ -22,10 +22,15 @@ public class MainFrameMenu extends CatMenuBar {
         CatMenu fileMenu = new CatMenu("File");
         JMenuItem saveAsMenuItem = new JMenuItem("Save as...");
         saveAsMenuItem.addActionListener((e) -> frame.saveFileAs());
-        JMenuItem saveMenuItem = new JMenuItem("Save");
 
-        fileMenu.add(saveMenuItem);
+        JMenuItem closeProjectItem = new JMenuItem("Close Project");
+        closeProjectItem.addActionListener((e) -> frame.closeProject());
+        JMenuItem exitItem = new JMenuItem("Exit");
+        exitItem.addActionListener((e) -> System.exit(0));
+
         fileMenu.add(saveAsMenuItem);
+        fileMenu.add(closeProjectItem);
+        fileMenu.add(exitItem);
 
         this.add(fileMenu);
     }

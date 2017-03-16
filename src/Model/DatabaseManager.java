@@ -1195,4 +1195,30 @@ public class DatabaseManager {
 		}
 		
 	}
+
+	public List<LogType> getAvailableLogsFromTables() {
+	    List<LogType> logs = new ArrayList<>();
+	    String sql = "SELECT COUNT(*) FROM site_impression;";
+	    Number test = getSingleMetric(sql);
+
+	    if (test.intValue() != 0) {
+            logs.add(LogType.IMPRESSION);
+        }
+
+        sql = "SELECT COUNT(*) FROM click;";
+	    test = getSingleMetric(sql);
+
+	    if (test.intValue() != 0) {
+	        logs.add(LogType.CLICK);
+        }
+
+        sql = "SELECT COUNT(*) FROM server_log;";
+	    test = getSingleMetric(sql);
+
+	    if (test.intValue() != 0) {
+	        logs.add(LogType.SERVER_LOG);
+        }
+
+        return logs;
+    }
 }

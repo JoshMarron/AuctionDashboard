@@ -4,6 +4,7 @@ import Model.DBEnums.DateEnum;
 import Model.DatabaseManager;
 import Views.DashboardMainFrame;
 import Model.DBEnums.LogType;
+import Views.DashboardStartupFrame;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 import org.apache.commons.io.FileUtils;
@@ -35,7 +36,7 @@ public class DashboardMainFrameController {
     }
 
     public void displayMainFrame(List<LogType> addedLogs) {
-        availableLogs.addAll(addedLogs);
+        availableLogs = addedLogs;
         Future<?> future = helpers.submit(() -> {
             SwingUtilities.invokeLater(() -> {
                 frame.setVisible(true);
@@ -143,6 +144,14 @@ public class DashboardMainFrameController {
         List<String> previousProjects = FileUtils.readLines(savedProjects, "utf-8");
         FileUtils.writeStringToFile(savedProjects, filename.getAbsolutePath() + '\n', "utf-8");
         FileUtils.writeLines(savedProjects, previousProjects, "\n", true);
+    }
+
+    public void closeProject() {
+        frame.setVisible(false);
+        DashboardStartupFrame startupFrame = new DashboardStartupFrame(frame.getHomeDir());
+        DashboardStartupController startupController = new DashboardStartupController(startupFrame, model, this);
+        startupFrame.setController(startupController);
+        startupFrame.initStartup();
     }
 
     private Map<MetricType, Number> calculateKeyMetrics() {

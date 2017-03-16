@@ -83,7 +83,7 @@ public class DashboardMainFrame extends CatFrame {
     }
 
     public void displayMetrics(Map<MetricType, Number> data) {
-
+        metricList.resetMetricBoxes();
         data.forEach((type, value) -> metricList.putMetricInBox(type, value));
     }
 
@@ -140,5 +140,13 @@ public class DashboardMainFrame extends CatFrame {
                 "File successfully saved!",
                 "Saved",
                 JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void closeProject() {
+        controller.closeProject();
+    }
+
+    public File getHomeDir() {
+        return this.homedir;
     }
 }

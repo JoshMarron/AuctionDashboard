@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -107,7 +106,14 @@ public class DashboardStartupController {
         SwingUtilities.invokeLater(() -> {
             frame.displayLoading();
         });
-        Future<?> f = helpers.submit(() -> model.loadDB(oldProject.getAbsolutePath()));
+        Future<?> f = helpers.submit(() -> {
+            try {
+                model.loadDB(oldProject.getAbsolutePath());
+            } catch (SQLException | CorruptTableException e) {
+                e.printStackTrace();
+            }
+
+        });
         new Thread(() -> {
             try {
                 f.get();
@@ -115,12 +121,12 @@ public class DashboardStartupController {
                 e.printStackTrace();
             }
             if (f.isDone()) {
+                List<LogType> list = model.getAvailableLogsFromTables();
+                mainController.displayMainFrame(list);
                 SwingUtilities.invokeLater((() -> {
                     frame.finishedLoading();
                     frame.setVisible(false);
                 }));
-                List<LogType> list = Arrays.asList(LogType.IMPRESSION, LogType.CLICK, LogType.SERVER_LOG);
-                mainController.displayMainFrame(list);
 
             }
         }).start();

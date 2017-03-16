@@ -57,4 +57,8 @@ public class MainFrameMetricList extends CatPanel {
     public void requestChart(MetricType type) {
         parentFrame.requestMetricChange(type);
     }
+
+    public void resetMetricBoxes() {
+        metricBoxMap.values().forEach(MainFrameMetricBox::reset);
+    }
 }

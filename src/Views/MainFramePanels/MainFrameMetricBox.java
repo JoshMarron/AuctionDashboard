@@ -57,6 +57,12 @@ public class MainFrameMetricBox extends CatListPanel {
         repaint();
     }
 
+    public void reset() {
+        metricDataLabel.setFont(FontSettings.GLOB_FONT.getFont());
+        metricDataLabel.setText(this.type.getErrorMessage());
+        this.dataAvailable = false;
+    }
+
     class MetricBoxAdapter extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {

@@ -7,6 +7,10 @@
     -fx-font: bold 40px "Tahoma";
 }
 
+.chart-bar {
+    -fx-bar-fill: #92abb9;
+}
+
 .axis-label {
     -fx-text-fill: #E1E6EF;
     -fx-font: 20px "Tahoma";
