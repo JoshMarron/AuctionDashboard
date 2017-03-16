@@ -663,7 +663,7 @@ public class DatabaseManager {
 				break;
 		}
 		
-		return createMap(sql);
+		return DBUtils.truncateInstantMap(createMap(sql), dateEnum);
 	}
 	
 	/**
@@ -685,7 +685,7 @@ public class DatabaseManager {
 				sql = "SELECT entry_date, count(pages_viewed) FROM server_log WHERE pages_viewed = 1 GROUP BY strftime('%W', entry_date)";
 				break;
 		}
-		return createMap(sql);
+		return DBUtils.truncateInstantMap(createMap(sql), dateEnum);
 	}
 	
 	public Map<LocalDateTime, Number> getCostOfImpressionsPer(DateEnum dateEnum) {
@@ -778,7 +778,7 @@ public class DatabaseManager {
 				break;
 		}
 		
-		return createMap(sql);
+		return DBUtils.truncateInstantMap(createMap(sql), dateEnum);
 	}
 	
 	//Cost per acquisition - total cost/num conversions
@@ -867,7 +867,7 @@ public class DatabaseManager {
 			
 		}
 		
-		return createMap(sql);
+		return DBUtils.truncateInstantMap(createMap(sql), dateEnum);
 	}
 
 	public Map<String, Number> getTotalImpressionsForAttribute(AttributeType attributeType) {
