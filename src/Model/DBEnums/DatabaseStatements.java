@@ -1,4 +1,4 @@
-package Model;
+package Model.DBEnums;
 
 /**
  * Created by marro on 01/03/2017.
@@ -42,7 +42,13 @@ public enum DatabaseStatements {
             " pages_viewed INTEGER NOT NULL, \n" +
             " conversion TEXT NOT NULL, \n" +
             " FOREIGN KEY (user_id) REFERENCES user(user_id)" +
-            ");");
+            ");"),
+    INDEX_IMPRESSION_DATE("" +
+            "CREATE INDEX impression_date_index ON site_impression(impression_date);"),
+    INDEX_CLICK_DATE("" +
+            "CREATE INDEX click_date_index ON click(click_date);"),
+    INDEX_SERVER_LOG_DATE("" +
+            "CREATE INDEX server_log_date_index ON server_log(entry_date);");
 
     private String statement;
 

@@ -2,109 +2,78 @@ package Views;
 
 import Controllers.DashboardMainFrameController;
 
-import Model.LogType;
+import Model.DBEnums.DateEnum;
+import Model.DBEnums.LogType;
+import Views.CustomComponents.CatFrame;
+import Views.CustomComponents.CatPanel;
+import Views.MainFramePanels.*;
+import Views.ViewPresets.AttributeType;
+import Views.ViewPresets.ChartType;
+
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.time.Instant;
 import java.util.Map;
 
 /**
  * DashboardMainFrame is the main frame visible during the running of the application, which contains all of the
  * GUI elements.
  */
-public class DashboardMainFrame extends JFrame {
+public class DashboardMainFrame extends CatFrame {
 
-    public static final Color BG_COLOR = new Color(146, 171, 185);
-    public static final Font GLOB_FONT = new Font("Tahoma", Font.BOLD, 14);
-
-    private File homeDir;
+    private MainFrameChartDisplayPanel chartPanel;
     private DashboardMainFrameController controller;
-    private DashboardMetricsPanel metricsPanel;
-    private boolean loading;
-    private ImageIcon icon;
+    private MainFrameMetricList metricList;
+    private ChartType requestedChart;
+    private MetricType currentMetric;
+    private AttributeType currentAttribute;
+    private MainFrameChartOptionsPanel optionsPanel;
 
     public DashboardMainFrame(File homeDir) {
-        this.homeDir = homeDir;
+        this.homedir = homeDir;
+        this.requestedChart = ChartType.LINE;
+        this.currentAttribute = AttributeType.CONTEXT;
+        this.currentMetric = MetricType.TOTAL_IMPRESSIONS;
         loading = false;
     }
 
     public void init() {
+        super.init();
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.setSize(1200, 900);
-        this.setTitle("Catalysis");
+        this.setSize(new Dimension(1400, 800));
+        this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        this.setTitle("CatAnalysis");
 
-        //Try to use anti-aliasing on the font
-        System.setProperty("awt.useSystemAAFontSettings","on");
-        System.setProperty("swing.aatext", "true");
+        CatPanel mainContentPane = (CatPanel) this.getContentPane();
 
-        //Set the System Look and Feel
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                    "Error getting System Look and Feel, reverting to Java default",
-                    "Graphical Error",
-                    JOptionPane.ERROR_MESSAGE
-                    );
-        }
+        this.setJMenuBar(new MainFrameMenu(this));
 
-        JPanel contentPane = new JPanel() {
-            @Override
-            public void paint(Graphics g) {
-                super.paint(g);
-                Graphics2D g2 = (Graphics2D) g;
+        mainContentPane.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 20));
 
-                if (loading) {
-                    g2.setColor(new Color(181, 184, 188, 160));
-                    g2.fillRect(0, 0, this.getWidth(), this.getHeight());
-                }
-            }
-        };
-        this.setContentPane(contentPane);
-        contentPane.setBackground(BG_COLOR);
+        this.setContentPane(mainContentPane);
+        mainContentPane.setLayout(new BorderLayout());
 
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
+        metricList = new MainFrameMetricList(this);
+        chartPanel = new MainFrameChartDisplayPanel(this);
+        optionsPanel = new MainFrameChartOptionsPanel(this);
 
-        DashboardFileSelectPanel fileSelect = new DashboardFileSelectPanel(homeDir, this);
-        fileSelect.init();
+        CatPanel chartDisplay = new CatPanel();
+        chartDisplay.setBorder(BorderFactory.createEmptyBorder());
+        chartDisplay.setLayout(new BorderLayout());
 
-        metricsPanel = new DashboardMetricsPanel();
-        metricsPanel.init();
+        chartDisplay.add(chartPanel, BorderLayout.CENTER);
+        chartDisplay.add(optionsPanel, BorderLayout.SOUTH);
 
-        this.add(Box.createRigidArea(new Dimension(50, 0)));
-        this.add(fileSelect);
-        this.add(Box.createRigidArea(new Dimension(50, 0)));
-        this.add(metricsPanel);
-        this.add(Box.createRigidArea(new Dimension(50, 0)));
+        CatPanel mainPanel = new CatPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
+        mainPanel.add(metricList);
+        mainPanel.add(chartDisplay);
 
         this.initGlassPane();
-
-        this.setVisible(true);
-    }
-
-    public void initGlassPane() {
-        JPanel loadingPanel = (JPanel) this.getGlassPane();
-        loadingPanel.setLayout(new BorderLayout());
-
-        icon = new ImageIcon("img/animal.gif");
-        icon.setImage(icon.getImage().getScaledInstance(300, 300, Image.SCALE_DEFAULT));
-        JLabel loadingLabel = new JLabel(icon);
-
-        JLabel textLoadingLabel = new JLabel("Loading...");
-        textLoadingLabel.setFont(new Font(GLOB_FONT.getName(), GLOB_FONT.getStyle(), 40));
-        textLoadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        textLoadingLabel.setVerticalAlignment(SwingConstants.CENTER);
-
-        JPanel textLoadingPanel = new JPanel();
-        textLoadingPanel.setLayout(new BoxLayout(textLoadingPanel, BoxLayout.X_AXIS));
-        textLoadingPanel.add(Box.createRigidArea(new Dimension(0, 100)));
-        textLoadingPanel.add(Box.createHorizontalGlue());
-        textLoadingPanel.add(textLoadingLabel);
-        textLoadingPanel.add(Box.createHorizontalGlue());
-        textLoadingPanel.setOpaque(false);
-
-        loadingPanel.add(loadingLabel, BorderLayout.CENTER);
-        loadingPanel.add(textLoadingPanel, BorderLayout.SOUTH);
+        mainContentPane.add(mainPanel, BorderLayout.CENTER);
     }
 
     public void setController(DashboardMainFrameController controller) {
@@ -112,29 +81,87 @@ public class DashboardMainFrame extends JFrame {
     }
 
     public void submitFiles(Map<LogType, File> files) {
-        this.controller.processFiles(files);
     }
 
     public void displayMetrics(Map<MetricType, Number> data) {
-        data.forEach((type, value) -> metricsPanel.putMetricInPanel(type, value));
+        metricList.resetMetricBoxes();
+        data.forEach((type, value) -> metricList.putMetricInBox(type, value));
     }
 
-    public void displayLoading() {
-        this.loading = true;
-        this.getGlassPane().setVisible(true);
-        this.getContentPane().setEnabled(false);
-        repaint();
+    public void requestMetricChange(MetricType type) {
+        this.currentMetric = type;
+        requestNewChart();
     }
 
-    public void finishedLoading() {
-        this.loading = false;
-        this.getGlassPane().setVisible(false);
+    public void requestTimeChartTypeChange(ChartType chartType) {
+        if (!this.requestedChart.equals(chartType)) {
+            this.requestedChart = chartType;
+            requestNewChart();
+        }
+    }
 
-        JOptionPane.showMessageDialog(this, "Data Loaded!",
-                "Success! Your data has been loaded into the database!", JOptionPane.INFORMATION_MESSAGE);
+    public void requestAttributeChartTypeChange(ChartType chartType, AttributeType attr) {
+        if (!this.requestedChart.equals(chartType) || !this.currentAttribute.equals(attr)) {
+            this.requestedChart = chartType;
+            this.currentAttribute = attr;
+            requestNewChart();
+        }
+    }
 
+    private void requestNewChart() {
+        this.displayLoading();
+        if (this.requestedChart.equals(ChartType.LINE)) {
+            controller.requestTimeChart(currentMetric);
+        } else {
+            controller.requestAttributeChart(currentMetric, currentAttribute);
+        }
+    }
 
-        this.setEnabled(true);
-        repaint();
+    public void displayChart(MetricType type, DateEnum granularity, Map<Instant, Number> data) {
+        chartPanel.displayTimeChart(requestedChart, type, granularity, data);
+        this.finishedLoading();
+    }
+
+    public void displayChart(MetricType type, AttributeType attr, Map<String, Number> data) {
+        chartPanel.displayAttributeChart(requestedChart, type, attr, data);
+        this.finishedLoading();
+    }
+
+    public void saveFileAs() {
+        JFileChooser saveChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("CAT CatAnalysis Files", "cat");
+        saveChooser.setFileFilter(filter);
+        int saveChooserVal = saveChooser.showSaveDialog(this);
+        if (saveChooserVal == JFileChooser.APPROVE_OPTION) {
+            try {
+                File saved = saveChooser.getSelectedFile();
+                String savedFileName = saved.getName();
+                if (!savedFileName.contains(".")) {
+                    savedFileName = savedFileName.split("\\.")[0] + ".cat";
+                } else {
+                    savedFileName = savedFileName + ".cat";
+                }
+                controller.saveProject(new File(savedFileName));
+                JOptionPane.showMessageDialog(this,
+                        "File successfully saved!",
+                        "Saved",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this,
+                        "The file could not be saved at the selected location!",
+                        "Saving error!",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+    }
+
+    public void closeProject() {
+        controller.closeProject();
+    }
+
+    public File getHomeDir() {
+        return this.homedir;
     }
 }

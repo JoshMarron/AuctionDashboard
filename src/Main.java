@@ -1,20 +1,23 @@
 import Controllers.DashboardMainFrameController;
+import Controllers.DashboardStartupController;
 import Model.DatabaseManager;
 import Views.DashboardMainFrame;
+import Views.DashboardStartupFrame;
 
 import javax.swing.*;
 import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-
-        DashboardMainFrame frame = new DashboardMainFrame(new File(System.getProperty("user.home")));
         DatabaseManager model = new DatabaseManager();
-        model.init();
-        model.initTables();
-        DashboardMainFrameController controller = new DashboardMainFrameController(frame, model);
-        //TODO resolve the circular dependency with the listener pattern
-        frame.setController(controller);
-        SwingUtilities.invokeLater(frame::init);
+
+        DashboardStartupFrame startupFrame = new DashboardStartupFrame(new File(System.getProperty("user.home")));
+        DashboardMainFrame mainFrame = new DashboardMainFrame(new File(System.getProperty("user.home")));
+        DashboardMainFrameController mainController = new DashboardMainFrameController(mainFrame, model);
+        DashboardStartupController startupController = new DashboardStartupController(startupFrame, model, mainController);
+        startupFrame.setController(startupController);
+        mainFrame.setController(mainController);
+        SwingUtilities.invokeLater(startupFrame::initStartup);
+        SwingUtilities.invokeLater(mainFrame::init);
     }
 }

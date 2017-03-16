@@ -1,24 +1,20 @@
 package Controllers;
 
-import DataStructures.CSVParser;
+import Model.DBEnums.DateEnum;
 import Model.DatabaseManager;
-import Model.TableModels.Click;
-import Model.TableModels.Impression;
 import Views.DashboardMainFrame;
-import Model.LogType;
+import Model.DBEnums.LogType;
+import Views.DashboardStartupFrame;
 import Views.MetricType;
+import Views.ViewPresets.AttributeType;
+import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * DashboardMainFrameController is in charge of relaying events from the GUI to the backend
@@ -28,7 +24,7 @@ public class DashboardMainFrameController {
     //TODO add reference to backend CSV parser + data access
     private DashboardMainFrame frame;
     private DatabaseManager model;
-    private List<Future<?>> futures;
+    private List<LogType> availableLogs;
 
     //TODO allow this to be set based on the device?
     private ExecutorService helpers = Executors.newFixedThreadPool(4);
@@ -36,67 +32,161 @@ public class DashboardMainFrameController {
     public DashboardMainFrameController(DashboardMainFrame frame, DatabaseManager model) {
         this.frame = frame;
         this.model = model;
-        this.futures = new ArrayList<>();
+        availableLogs = new ArrayList<>();
     }
 
-    public void processFiles(Map<LogType, File> files) {
-        files.forEach((type, file) -> {
-            SwingUtilities.invokeLater(frame::displayLoading);
-            Future<?> f = helpers.submit(() ->
-            {
-                List<String[]> list = CSVParser.parseLog(file);
-                model.insertData(type, list);
+    public void displayMainFrame(List<LogType> addedLogs) {
+        availableLogs = addedLogs;
+        Future<?> future = helpers.submit(() -> {
+            SwingUtilities.invokeLater(() -> {
+                frame.setVisible(true);
+                frame.displayLoading();
             });
-            futures.add(f);
+            Map<MetricType, Number> results = this.calculateKeyMetrics();
+            this.displayMetrics(results);
         });
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
 
-        new Thread(() -> {
-            for (Future<?> f: futures) {
-                try {
-                    f.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            boolean finished = true;
-            for (Future<?> f: futures) {
-                finished &= f.isDone();
-            }
-
-            if (finished) {
-                Map<MetricType, Number> results = this.calculateKeyMetrics(files);
-                SwingUtilities.invokeLater(() -> {
-                    frame.finishedLoading();
-                    frame.displayMetrics(results);
-                });
-            }
-        }).start();
+        if (future.isDone()) {
+            SwingUtilities.invokeLater(() -> frame.finishedLoading());
+        }
     }
 
     public void displayMetrics(Map<MetricType, Number> data) {
-        SwingUtilities.invokeLater(() -> frame.displayMetrics(data));
+        SwingUtilities.invokeLater(() -> {
+            frame.displayMetrics(data);
+        });
+        if (availableLogs.contains(LogType.IMPRESSION)) {
+            requestTimeChart(MetricType.TOTAL_IMPRESSIONS);
+        } else if (availableLogs.contains(LogType.CLICK)) {
+            requestTimeChart(MetricType.TOTAL_CLICKS);
+        } else if (availableLogs.contains(LogType.SERVER_LOG)) {
+            requestTimeChart(MetricType.TOTAL_CONVERSIONS);
+        }
     }
 
-    private Map<MetricType, Number> calculateKeyMetrics(Map<LogType, File> files) {
+    public void requestTimeChart(MetricType type) {
+        helpers.submit(() -> {
+            Map<Instant, Number> data = getDataForChartFromType(type, DateEnum.DAYS);
+            SwingUtilities.invokeLater(() -> frame.displayChart(type, DateEnum.DAYS, data));
+        });
+    }
+
+    public void requestAttributeChart(MetricType type, AttributeType attr) {
+        helpers.submit(() -> {
+            Map<String, Number> data = getDataForChartFromAttribute(type, attr);
+            SwingUtilities.invokeLater(() -> frame.displayChart(type, attr, data));
+        });
+    }
+
+    private Map<Instant, Number> getDataForChartFromType(MetricType type, DateEnum granularity) {
+        switch(type) {
+            case TOTAL_CLICKS:
+                return model.getClickCountPer(granularity, false);
+            case TOTAL_UNIQUES:
+                return model.getClickCountPer(granularity, true);
+            case TOTAL_IMPRESSIONS:
+                return model.getImpressionCountPer(granularity);
+            case TOTAL_CONVERSIONS:
+                return model.getConversionNumberPer(granularity);
+            case TOTAL_BOUNCES:
+                return model.getBounceNumberPer(granularity);
+            case BOUNCE_RATE:
+                return model.getBounceRatePer(granularity);
+            case CPA:
+                return model.getCPAPer(granularity);
+            case CPC:
+                return model.getCPCPer(granularity);
+            case TOTAL_COST:
+                return model.getTotalCostPer(granularity);
+            case CPM:
+                return model.getCPMPer(granularity);
+            case CTR:
+                return model.getCTRPer(granularity);
+            default:
+                return null;
+        }
+    }
+
+    private Map<String, Number> getDataForChartFromAttribute(MetricType type, AttributeType attr) {
+        switch (type) {
+            case TOTAL_CLICKS:
+                return model.getTotalClicksForAttribute(attr);
+            case TOTAL_IMPRESSIONS:
+                return model.getTotalImpressionsForAttribute(attr);
+            case TOTAL_UNIQUES:
+                return model.getTotalUniquesForAttribute(attr);
+            case TOTAL_COST:
+                return model.getTotalCostForAttribute(attr);
+            case TOTAL_CONVERSIONS:
+                return model.getTotalConversionsForAttribute(attr);
+            case TOTAL_BOUNCES:
+                return model.getTotalBouncesForAttribute(attr);
+            case BOUNCE_RATE:
+                return model.getBounceRateForAttribute(attr);
+            case CPA:
+                return model.getCPAForAttribute(attr);
+            case CPC:
+                return model.getCPCForAttribute(attr);
+            case CPM:
+                return model.getCPMForAttribute(attr);
+            case CTR:
+                return model.getCTRForAttribute(attr);
+            default:
+                return null;
+        }
+    }
+
+    public void saveProject(File filename) throws IOException {
+        File savedProjects = new File("data/saved.txt");
+        savedProjects.getParentFile().mkdirs();
+        savedProjects.createNewFile();
+        File db = model.saveDB();
+        FileUtils.copyFile(db.getAbsoluteFile(), filename);
+        List<String> previousProjects = FileUtils.readLines(savedProjects, "utf-8");
+        FileUtils.writeStringToFile(savedProjects, filename.getAbsolutePath() + '\n', "utf-8");
+        FileUtils.writeLines(savedProjects, previousProjects, "\n", true);
+    }
+
+    public void closeProject() {
+        frame.setVisible(false);
+        DashboardStartupFrame startupFrame = new DashboardStartupFrame(frame.getHomeDir());
+        DashboardStartupController startupController = new DashboardStartupController(startupFrame, model, this);
+        startupFrame.setController(startupController);
+        startupFrame.initStartup();
+    }
+
+    private Map<MetricType, Number> calculateKeyMetrics() {
         Map<MetricType, Number> results = new HashMap<>();
 
-        List<Impression> impressionList = model.getAllImpressions();
-        List<Click> clickList = model.getAllClicks();
-        List<Double> clickCosts = clickList.stream().map(Click::getCost).collect(Collectors.toList());
+        if (availableLogs.contains(LogType.IMPRESSION)) {
+            results.put(MetricType.TOTAL_IMPRESSIONS, model.getTotalImpressions());
+        }
+        if (availableLogs.contains(LogType.CLICK)) {
+            results.put(MetricType.TOTAL_CLICKS, model.getTotalClicks());
+            results.put(MetricType.TOTAL_UNIQUES, model.getTotalUniques());
+        }
+        if (availableLogs.contains(LogType.CLICK) && availableLogs.contains(LogType.IMPRESSION)) {
+            results.put(MetricType.TOTAL_COST, model.getTotalCampaignCost());
+            results.put(MetricType.CPC, model.getCPC());
+            results.put(MetricType.CTR, model.getCTR());
+            results.put(MetricType.CPM, model.getCPM());
+        }
 
-        if (files.containsKey(LogType.IMPRESSION)) {
-            int impressionCount = MetricUtils.getImpressionCount(impressionList);
-            results.put(MetricType.TOTAL_IMPRESSIONS, impressionCount);
+        if(availableLogs.contains(LogType.SERVER_LOG)){
+            results.put(MetricType.TOTAL_BOUNCES, model.getTotalBounces());
+            results.put(MetricType.TOTAL_CONVERSIONS, model.getTotalConversions());
         }
-        if (files.containsKey(LogType.CLICK)) {
-            results.put(MetricType.TOTAL_COST, MetricUtils.calculateTotalCost(clickCosts));
+
+        if(availableLogs.contains(LogType.SERVER_LOG) && availableLogs.contains(LogType.CLICK)){
+            results.put(MetricType.CPA, model.getCPA());
+            results.put(MetricType.BOUNCE_RATE, model.getBounceRate());
         }
-        if (files.containsKey(LogType.CLICK) && files.containsKey(LogType.IMPRESSION)) {
-            int clickCount = clickList.size();
-            int impressionCount = MetricUtils.getImpressionCount(impressionList);
-            results.put(MetricType.CTR, MetricUtils.calculateCTR(clickCount, impressionCount));
-        }
+
 
         return results;
 
