@@ -17,15 +17,13 @@ import java.awt.*;
 import java.util.Map;
 
 /**
- * MainFramePieChartPanel displays a small pie chart of attributes as total shares
+ * MainFrameMainPieChartPanel displays a small pie chart of attributes as total shares
  */
-public class MainFramePieChartPanel extends CatPanel {
+public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel {
 
-    private AttributeType type;
     private JFXPanel chartPanel;
 
-    public MainFramePieChartPanel(AttributeType type) {
-        this.type = type;
+    public MainFrameMainPieChartPanel() {
         this.init();
     }
 
@@ -38,11 +36,12 @@ public class MainFramePieChartPanel extends CatPanel {
         this.add(chartPanel, BorderLayout.CENTER);
     }
 
-    public void displayChart(MetricType metric, Map<String, Number> data) {
+    @Override
+    public void displayChart(MetricType metric, AttributeType attr, Map<String, Number> data) {
 
         Platform.runLater(() -> {
             PieChart chart = new PieChart();
-            chart.setTitle(metric.toString() + " by" + type.toString());
+            chart.setTitle(metric.toString() + " by" + attr.toString());
             ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
 
             data.forEach((name, number) -> {

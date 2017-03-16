@@ -2,6 +2,7 @@ package Views.CustomComponents;
 
 import Views.DashboardMainFrame;
 import Views.ViewPresets.ColorSettings;
+import Views.ViewPresets.FontSettings;
 import javafx.scene.*;
 
 import javax.swing.*;
@@ -27,7 +28,7 @@ public class CatButton extends JButton {
         this.setBorder(BorderFactory.createCompoundBorder(inside, outside));
         this.setFocusPainted(false);
         this.setBackground(ColorSettings.BUTTON_COLOR.getColor());
-        this.setFont(DashboardMainFrame.GLOB_FONT);
+        this.setFont(FontSettings.GLOB_FONT.getFont());
         this.setForeground(ColorSettings.TEXT_COLOR.getColor());
 
         this.setCursor(new Cursor(Cursor.HAND_CURSOR));

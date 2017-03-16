@@ -33,8 +33,10 @@ public class MainFrameMetricBox extends CatListPanel {
 
         CatLabel nameLabel = new CatLabel(type.toString());
         nameLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));
         metricDataLabel = new CatLabel(type.getErrorMessage());
         metricDataLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        metricDataLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 0));
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.add(Box.createRigidArea(new Dimension(0, 10)));

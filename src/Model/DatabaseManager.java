@@ -520,6 +520,23 @@ public class DatabaseManager {
 		}
 		
 	}
+
+	private Number getSingleMetric(String sql) {
+		ResultSet result;
+		Number numResult = 0;
+
+		if (sql != null) {
+			try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+				result = stmt.executeQuery(sql);
+				numResult = result.getDouble(1);
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return numResult;
+	}
 	
 	/**
 	 * Simple function to get a unique number of Header from a TableType
@@ -543,7 +560,85 @@ public class DatabaseManager {
 		}
 		return -1;
 	}
-	
+
+	//===============================================================================
+    //=====================SINGLE METRIC METHODS=====================================
+    //===============================================================================
+
+	public Number getTotalCampaignCost() {
+		String impressionSql = "SELECT SUM(impression_cost) FROM site_impression;";
+		String clickSql = "SELECT SUM(cost) FROM click;";
+
+		Number impressionCost = getSingleMetric(impressionSql);
+		Number clickCost = getSingleMetric(clickSql);
+
+		return impressionCost.doubleValue() + clickCost.doubleValue();
+	}
+
+	public Number getTotalImpressions() {
+	    String sql = "SELECT count(site_impression_id) FROM site_impression;";
+
+	    return getSingleMetric(sql);
+    }
+
+    public Number getTotalClicks() {
+	    String sql = "SELECT count(click_id) FROM click;";
+
+	    return getSingleMetric(sql);
+    }
+
+    public Number getTotalBounces() {
+	    String sql = "SELECT count(server_log_id) FROM server_log WHERE pages_viewed = 1;";
+
+	    return getSingleMetric(sql);
+    }
+
+    public Number getTotalConversions() {
+	    String sql = "SELECT count(server_log_id) FROM server_log WHERE conversion = 'Yes';";
+
+	    return getSingleMetric(sql);
+    }
+
+    public Number getTotalUniques() {
+	    String sql = "SELECT count(DISTINCT user_id) FROM click;";
+
+	    return getSingleMetric(sql);
+    }
+
+    public Number getCPA() {
+	    Number totalCost = getTotalCampaignCost();
+	    Number conversions = getTotalConversions();
+
+	    return totalCost.doubleValue() / conversions.doubleValue();
+    }
+
+    public Number getCPC() {
+	    Number totalClicks = getTotalClicks();
+	    Number totalCost = getTotalCampaignCost();
+
+	    return totalCost.doubleValue() / totalClicks.doubleValue();
+    }
+
+    public Number getCPM() {
+	    Number totalImpressions = getTotalImpressions();
+	    Number totalCost = getTotalCampaignCost();
+
+	    return (totalCost.doubleValue() / totalImpressions.doubleValue()) * 1000;
+    }
+
+    public Number getBounceRate() {
+	    Number totalBounces = getTotalBounces();
+	    Number totalClicks = getTotalClicks();
+
+	    return (totalBounces.doubleValue() / totalClicks.doubleValue());
+    }
+
+    public Number getCTR() {
+	    Number totalClicks = getTotalClicks();
+	    Number totalImpressions = getTotalImpressions();
+
+	    return (totalClicks.doubleValue() / totalImpressions.doubleValue());
+    }
 	/**
 	 * Takes a time period and returns map mapping each period of time period and a count for clicks in said period.
 	 * The instant returned for time will be the earliest time the database finds and will be the full date and time

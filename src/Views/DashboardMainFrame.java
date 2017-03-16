@@ -4,16 +4,12 @@ import Controllers.DashboardMainFrameController;
 
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
-import Views.CustomComponents.CatFileChooser;
 import Views.CustomComponents.CatFrame;
-import Views.CustomComponents.CatMenuBar;
 import Views.CustomComponents.CatPanel;
-import Views.MainFramePanels.MainFrameMainLineChartPanel;
-import Views.MainFramePanels.MainFrameMenu;
-import Views.MainFramePanels.MainFrameMetricList;
-import Views.MainFramePanels.MainFramePieChartPanel;
+import Views.MainFramePanels.*;
 import Views.ViewPresets.AttributeType;
-import Views.ViewPresets.ColorSettings;
+import Views.ViewPresets.ChartType;
+import javafx.scene.chart.Chart;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,15 +24,14 @@ import java.util.Map;
  */
 public class DashboardMainFrame extends CatFrame {
 
-    public static final Color BG_COLOR = new Color(146, 171, 185);
-    public static final Font GLOB_FONT = new Font("Tahoma", Font.BOLD, 14);
-
+    private MainFrameChartDisplayPanel chartPanel;
     private DashboardMainFrameController controller;
     private MainFrameMetricList metricList;
-    private MainFrameMainLineChartPanel chartPanel;
+    private ChartType requestedChart;
 
     public DashboardMainFrame(File homeDir) {
         this.homedir = homeDir;
+        this.requestedChart = ChartType.LINE;
         loading = false;
     }
 
@@ -54,11 +49,11 @@ public class DashboardMainFrame extends CatFrame {
         mainContentPane.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 20));
 
         metricList = new MainFrameMetricList(this);
-        chartPanel = new MainFrameMainLineChartPanel();
-        MainFramePieChartPanel piePanel = new MainFramePieChartPanel(AttributeType.AGE);
         this.setContentPane(mainContentPane);
-        mainContentPane.setLayout(new BorderLayout());
 
+        chartPanel = new MainFrameChartDisplayPanel(this);
+
+        mainContentPane.setLayout(new BorderLayout());
         CatPanel mainPanel = new CatPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
         mainPanel.add(metricList);
@@ -66,7 +61,6 @@ public class DashboardMainFrame extends CatFrame {
 
         this.initGlassPane();
         mainContentPane.add(mainPanel, BorderLayout.CENTER);
-
     }
 
     public void setController(DashboardMainFrameController controller) {
@@ -85,8 +79,16 @@ public class DashboardMainFrame extends CatFrame {
         controller.requestChart(type);
     }
 
-    public void displayChart(MetricType type, DateEnum granularity, Map<Instant, Number> data) {
-        chartPanel.displayChart(type, granularity, data);
+    public void displayTimeChart(MetricType type, DateEnum granularity, Map<Instant, Number> data) {
+        chartPanel.displayTimeChart(requestedChart, type, granularity, data);
+    }
+
+    public void requestAttributeChart(MetricType type, AttributeType attr) {
+        controller.requestAttributeChart(type, attr);
+    }
+
+    public void displayAttributeChart(MetricType type, AttributeType attr, Map<String, Number> data) {
+        chartPanel.displayAttributeChart(requestedChart, type, attr, data);
     }
 
     public void saveFileAs() {

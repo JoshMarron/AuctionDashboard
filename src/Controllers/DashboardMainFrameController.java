@@ -2,12 +2,10 @@ package Controllers;
 
 import Model.DBEnums.DateEnum;
 import Model.DatabaseManager;
-import Model.TableModels.Click;
-import Model.TableModels.Impression;
-import Model.TableModels.ServerVisit;
 import Views.DashboardMainFrame;
 import Model.DBEnums.LogType;
 import Views.MetricType;
+import Views.ViewPresets.AttributeType;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
@@ -16,7 +14,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 /**
  * DashboardMainFrameController is in charge of relaying events from the GUI to the backend
@@ -63,12 +60,21 @@ public class DashboardMainFrameController {
             frame.displayMetrics(data);
         });
         this.requestChart(MetricType.TOTAL_IMPRESSIONS);
+        this.requestAttributeChart(MetricType.TOTAL_IMPRESSIONS, AttributeType.AGE);
     }
 
     public void requestChart(MetricType type) {
         helpers.submit(() -> {
             Map<Instant, Number> data = getDataForChartFromType(type, DateEnum.DAYS);
-            SwingUtilities.invokeLater(() -> frame.displayChart(type, DateEnum.DAYS, data));
+            SwingUtilities.invokeLater(() -> frame.displayTimeChart(type, DateEnum.DAYS, data));
+        });
+    }
+
+    public void requestAttributeChart(MetricType type, AttributeType attr) {
+        helpers.submit(() -> {
+            Map<String, Number> data = getDataForChartFromAttribute(type, attr);
+            System.out.println(data);
+            SwingUtilities.invokeLater(() -> frame.displayAttributeChart(type, attr, data));
         });
     }
 
@@ -84,8 +90,49 @@ public class DashboardMainFrameController {
                 return model.getConversionNumberPer(granularity);
             case TOTAL_BOUNCES:
                 return model.getBounceNumberPer(granularity);
+            case BOUNCE_RATE:
+                return model.getBounceRatePer(granularity);
+            case CPA:
+                return model.getCPAPer(granularity);
+            case CPC:
+                return model.getCPCPer(granularity);
+            case TOTAL_COST:
+                return model.getTotalCostPer(granularity);
+            case CPM:
+                return model.getCPMPer(granularity);
+            case CTR:
+                return model.getCTRPer(granularity);
             default:
-                return model.getClickCountPer(granularity, false);
+                return null;
+        }
+    }
+
+    private Map<String, Number> getDataForChartFromAttribute(MetricType type, AttributeType attr) {
+        switch (type) {
+            case TOTAL_CLICKS:
+                return model.getTotalClicksForAttribute(attr);
+            case TOTAL_IMPRESSIONS:
+                return model.getTotalImpressionsForAttribute(attr);
+            case TOTAL_UNIQUES:
+                return model.getTotalUniquesForAttribute(attr);
+            case TOTAL_COST:
+                return model.getTotalCostForAttribute(attr);
+            case TOTAL_CONVERSIONS:
+                return model.getTotalConversionsForAttribute(attr);
+            case TOTAL_BOUNCES:
+                return model.getTotalBouncesForAttribute(attr);
+            case BOUNCE_RATE:
+                return model.getBounceRateForAttribute(attr);
+            case CPA:
+                return model.getCPAForAttribute(attr);
+            case CPC:
+                return model.getCPCForAttribute(attr);
+            case CPM:
+                return model.getCPMForAttribute(attr);
+            case CTR:
+                return model.getCTRForAttribute(attr);
+            default:
+                return null;
         }
     }
 
@@ -103,36 +150,28 @@ public class DashboardMainFrameController {
     private Map<MetricType, Number> calculateKeyMetrics() {
         Map<MetricType, Number> results = new HashMap<>();
 
-        List<Impression> impressionList = model.selectAllImpressions();
-        List<Click> clickList = model.selectAllClicks();
-        List<Double> clickCosts = clickList.stream().map(Click::getCost).collect(Collectors.toList());
-        List<ServerVisit> visits = model.getAllServerVisits();
-
         if (availableLogs.contains(LogType.IMPRESSION)) {
-            int impressionCount = MetricUtils.getImpressionCount(impressionList);
-            results.put(MetricType.TOTAL_IMPRESSIONS, impressionCount);
+            results.put(MetricType.TOTAL_IMPRESSIONS, model.getTotalImpressions());
         }
         if (availableLogs.contains(LogType.CLICK)) {
-            results.put(MetricType.TOTAL_COST, MetricUtils.calculateTotalCost(clickCosts));
-            results.put(MetricType.TOTAL_CLICKS, clickList.size());
-            results.put(MetricType.TOTAL_UNIQUES, clickList.size());
-            results.put(MetricType.CPC, MetricUtils.getCostPerClick(clickCosts, clickList.size()));
+            results.put(MetricType.TOTAL_CLICKS, model.getTotalClicks());
+            results.put(MetricType.TOTAL_UNIQUES, model.getTotalUniques());
         }
         if (availableLogs.contains(LogType.CLICK) && availableLogs.contains(LogType.IMPRESSION)) {
-            int clickCount = clickList.size();
-            int impressionCount = MetricUtils.getImpressionCount(impressionList);
-            results.put(MetricType.CTR, MetricUtils.calculateCTR(clickCount, impressionCount));
-            results.put(MetricType.CPM, MetricUtils.getCostPerImpression(impressionList, clickCosts));
+            results.put(MetricType.TOTAL_COST, model.getTotalCampaignCost());
+            results.put(MetricType.CPC, model.getCPC());
+            results.put(MetricType.CTR, model.getCTR());
+            results.put(MetricType.CPM, model.getCPM());
         }
 
         if(availableLogs.contains(LogType.SERVER_LOG)){
-            results.put(MetricType.TOTAL_BOUNCES, MetricUtils.getBounceCount(visits));
-            results.put(MetricType.TOTAL_CONVERSIONS, MetricUtils.getConversionCount(visits));
+            results.put(MetricType.TOTAL_BOUNCES, model.getTotalBounces());
+            results.put(MetricType.TOTAL_CONVERSIONS, model.getTotalConversions());
         }
 
         if(availableLogs.contains(LogType.SERVER_LOG) && availableLogs.contains(LogType.CLICK)){
-            results.put(MetricType.CPA, MetricUtils.getCostPerAcquisition(visits, clickCosts));
-            results.put(MetricType.BOUNCE_RATE, MetricUtils.getBounceRate(clickList, visits));
+            results.put(MetricType.CPA, model.getCPA());
+            results.put(MetricType.BOUNCE_RATE, model.getBounceRate());
         }
 
 

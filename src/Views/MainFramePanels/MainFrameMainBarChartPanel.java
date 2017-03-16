@@ -6,6 +6,7 @@ import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 import Views.ViewPresets.ColorSettings;
 import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
@@ -18,7 +19,7 @@ import java.util.Map;
 /**
  * MainFrameMainBarChartPanel displays a bar chart when given the correct data
  */
-public class MainFrameMainBarChartPanel extends CatPanel {
+public class MainFrameMainBarChartPanel extends MainFrameMainAttributeChartPanel {
 
     private JFXPanel chartPanel;
 
@@ -35,7 +36,7 @@ public class MainFrameMainBarChartPanel extends CatPanel {
         this.add(chartPanel, BorderLayout.CENTER);
     }
 
-    public void displayChart(MetricType type, AttributeType attribute, Map<Attribute, Number> data) {
+    public void displayChart(MetricType type, AttributeType attribute, Map<String, Number> data) {
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
 
@@ -47,10 +48,12 @@ public class MainFrameMainBarChartPanel extends CatPanel {
 
         XYChart.Series series = new XYChart.Series();
 
-        if (attribute.equals(AttributeType.AGE)) {
+        data.forEach((attr, num) -> series.getData().add(new XYChart.Data(attr, num)));
 
-        } else {
-            data.forEach((attr, value) -> series.getData().add(new XYChart.Data(attr, value)));
-        }
+        barChart.getData().add(series);
+        Scene scene = new Scene(barChart);
+        scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
+
+        chartPanel.setScene(scene);
     }
 }

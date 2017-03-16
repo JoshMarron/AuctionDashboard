@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * MainFrameMainLineChartPanel contains the main chart, whether it be a bar or line chart
  */
-public class MainFrameMainLineChartPanel extends CatPanel {
+public class MainFrameMainLineChartPanel extends MainFrameMainTimeChartPanel {
 
     private JFXPanel chartPanel;
 
