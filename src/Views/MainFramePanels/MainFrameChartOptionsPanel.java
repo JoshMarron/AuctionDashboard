@@ -1,6 +1,9 @@
 package Views.MainFramePanels;
 
-import Views.CustomComponents.*;
+import Views.CustomComponents.CatButton;
+import Views.CustomComponents.CatComboBox;
+import Views.CustomComponents.CatLabel;
+import Views.CustomComponents.CatPanel;
 import Views.DashboardMainFrame;
 import Views.ViewPresets.AttributeType;
 import Views.ViewPresets.ChartType;
@@ -11,7 +14,8 @@ import java.awt.*;
 import java.util.Arrays;
 
 /**
- * Created by marro on 16/03/2017.
+ * MainFrameChartOptionsPanel is a frame which allows the user to change the currently displayed chart to
+ * a different type, and choose which attribute to view an attribute chart by
  */
 public class MainFrameChartOptionsPanel extends CatPanel {
 
@@ -35,6 +39,7 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         CatComboBox<ChartType> timeChartPicker = new CatComboBox<>();
         timeChartPicker.addItem(ChartType.LINE);
         CatButton timeChartGoButton = new CatButton("Go!");
+        timeChartGoButton.addActionListener((e) -> this.requestNewTimeChart((ChartType) timeChartPicker.getSelectedItem()));
 
         timeChartOptionsPanel.add(Box.createRigidArea(new Dimension(20, 0)));
         timeChartOptionsPanel.add(timeChartLabel);
@@ -63,6 +68,12 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         Arrays.stream(AttributeType.values()).forEach(attributeTypePicker::addItem);
 
         CatButton attributeChartGoButton = new CatButton("Go!");
+        attributeChartGoButton.addActionListener((e) -> {
+            ChartType selectedChart = (ChartType) attributeChartPicker.getSelectedItem();
+            AttributeType selectedAttribute = (AttributeType) attributeTypePicker.getSelectedItem();
+
+            this.requestNewAttributeChart(selectedChart, selectedAttribute);
+        });
 
         attributeChartOptionsPanel.add(Box.createRigidArea(new Dimension(20, 0)));
         attributeChartOptionsPanel.add(attributeChartLabel);
@@ -81,7 +92,12 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         this.add(attributeChartOptionsPanel);
     }
 
-    public void requestNewTimeChart(ChartType chartType) {
+    private void requestNewTimeChart(ChartType chartType) {
+        parent.requestTimeChartTypeChange(chartType);
+    }
 
+    private void requestNewAttributeChart(ChartType chartType, AttributeType attr) {
+        System.out.println("Display " + chartType + " " + attr);
+        parent.requestAttributeChartTypeChange(chartType, attr);
     }
 }

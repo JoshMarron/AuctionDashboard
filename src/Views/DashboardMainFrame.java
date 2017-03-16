@@ -9,10 +9,8 @@ import Views.CustomComponents.CatPanel;
 import Views.MainFramePanels.*;
 import Views.ViewPresets.AttributeType;
 import Views.ViewPresets.ChartType;
-import javafx.scene.chart.Chart;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -106,8 +104,9 @@ public class DashboardMainFrame extends CatFrame {
     }
 
     private void requestNewChart() {
+        this.displayLoading();
         if (this.requestedChart.equals(ChartType.LINE)) {
-            controller.requestChart(currentMetric);
+            controller.requestTimeChart(currentMetric);
         } else {
             controller.requestAttributeChart(currentMetric, currentAttribute);
         }
@@ -115,10 +114,12 @@ public class DashboardMainFrame extends CatFrame {
 
     public void displayChart(MetricType type, DateEnum granularity, Map<Instant, Number> data) {
         chartPanel.displayTimeChart(requestedChart, type, granularity, data);
+        this.finishedLoading();
     }
 
     public void displayChart(MetricType type, AttributeType attr, Map<String, Number> data) {
         chartPanel.displayAttributeChart(requestedChart, type, attr, data);
+        this.finishedLoading();
     }
 
     public void saveFileAs() {
@@ -128,11 +129,10 @@ public class DashboardMainFrame extends CatFrame {
             try {
                 controller.saveProject(saveChooser.getSelectedFile());
             } catch (IOException e) {
-                /*JOptionPane.showMessageDialog(this,
+                JOptionPane.showMessageDialog(this,
                         "The file could not be saved at the selected location!",
                         "Saving error!",
-                        JOptionPane.ERROR_MESSAGE);*/
-                e.printStackTrace();
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }

@@ -59,10 +59,10 @@ public class DashboardMainFrameController {
         SwingUtilities.invokeLater(() -> {
             frame.displayMetrics(data);
         });
-        this.requestChart(MetricType.TOTAL_IMPRESSIONS);
+        this.requestTimeChart(MetricType.TOTAL_IMPRESSIONS);
     }
 
-    public void requestChart(MetricType type) {
+    public void requestTimeChart(MetricType type) {
         helpers.submit(() -> {
             Map<Instant, Number> data = getDataForChartFromType(type, DateEnum.DAYS);
             SwingUtilities.invokeLater(() -> frame.displayChart(type, DateEnum.DAYS, data));

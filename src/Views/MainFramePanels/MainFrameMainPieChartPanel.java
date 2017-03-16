@@ -41,7 +41,7 @@ public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel
 
         Platform.runLater(() -> {
             PieChart chart = new PieChart();
-            chart.setTitle(metric.toString() + " by" + attr.toString());
+            chart.setTitle(metric.toString() + " by " + attr.toString());
             ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
 
             data.forEach((name, number) -> {
