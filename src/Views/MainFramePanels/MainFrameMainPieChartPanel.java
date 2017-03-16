@@ -26,7 +26,7 @@ import java.util.Optional;
 public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel {
 
     private JFXPanel chartPanel;
-    ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
+    private ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
     private DecimalFormat df = new DecimalFormat("#.##");
     private final PieChart chart = new PieChart(pieData) {
         @Override
