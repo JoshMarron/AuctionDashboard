@@ -47,7 +47,8 @@ public class MainFrameMetricList extends CatPanel {
             metricList.add(metricBox);
         }
 
-        this.add(metricList, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(metricList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.add(scrollPane, BorderLayout.CENTER);
     }
 
     public void putMetricInBox(MetricType type, Number data) {

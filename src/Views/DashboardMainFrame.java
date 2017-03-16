@@ -94,14 +94,18 @@ public class DashboardMainFrame extends CatFrame {
     }
 
     public void requestTimeChartTypeChange(ChartType chartType) {
-        this.requestedChart = chartType;
-        requestNewChart();
+        if (!this.requestedChart.equals(chartType)) {
+            this.requestedChart = chartType;
+            requestNewChart();
+        }
     }
 
     public void requestAttributeChartTypeChange(ChartType chartType, AttributeType attr) {
-        this.requestedChart = chartType;
-        this.currentAttribute = attr;
-        requestNewChart();
+        if (!this.requestedChart.equals(chartType) || !this.currentAttribute.equals(attr)) {
+            this.requestedChart = chartType;
+            this.currentAttribute = attr;
+            requestNewChart();
+        }
     }
 
     private void requestNewChart() {
