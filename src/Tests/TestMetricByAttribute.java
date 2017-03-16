@@ -206,10 +206,81 @@ public class TestMetricByAttribute {
 
         Assert.assertEquals(2, testMap.size());
 
-        System.out.println(testMap);
-
         //2 clicks divided by 2 impressions
         Assert.assertEquals(1.0, testMap.get("Male").doubleValue(), 0.00001);
         Assert.assertEquals(0.0, testMap.get("Female").doubleValue(), 0.00001);
+
+        testMap = model.getCTRForAttribute(AttributeType.AGE);
+
+        Assert.assertEquals(4, testMap.size());
+
+        Assert.assertEquals(1.0, testMap.get("25-34").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, testMap.get("<25").doubleValue(), 0.00001);
+    }
+
+    @Test
+    public void testGetCPAForAttribute() {
+        Map<String, Number> testMap = model.getCPAForAttribute(AttributeType.CONTEXT);
+
+        Assert.assertEquals(3, testMap.size());
+
+        Assert.assertEquals(1900.0, testMap.get("Social Media").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, testMap.get("Blog").doubleValue(), 0.00001);
+
+        testMap = model.getCPAForAttribute(AttributeType.INCOME);
+
+        Assert.assertEquals(3, testMap.size());
+        Assert.assertEquals(3000.0, testMap.get("Low").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, testMap.get("High").doubleValue(), 0.00001);
+    }
+
+    @Test
+    public void testGetCPCForAttribute() {
+        Map<String, Number> testMap = model.getCPCForAttribute(AttributeType.GENDER);
+
+        Assert.assertEquals(2, testMap.size());
+
+        Assert.assertEquals(2200.0, testMap.get("Male").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, testMap.get("Female").doubleValue(), 0.00001);
+
+        testMap = model.getCPCForAttribute(AttributeType.CONTEXT);
+
+        Assert.assertEquals(3, testMap.size());
+
+        Assert.assertEquals(1400.0, testMap.get("Blog").doubleValue(), 0.00001);
+        Assert.assertEquals(3800.0, testMap.get("Social Media").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, testMap.get("Fashion").doubleValue(), 0.00001);
+    }
+
+    @Test
+    public void testGetCPMForAttribute() {
+        Map<String, Number> testMap = model.getCPMForAttribute(AttributeType.GENDER);
+
+        Assert.assertEquals(2, testMap.size());
+        Assert.assertEquals(2200000.0, testMap.get("Male").doubleValue(), 0.00001);
+        Assert.assertEquals(600000.0, testMap.get("Female").doubleValue(), 0.00001);
+
+        testMap = model.getCPMForAttribute(AttributeType.INCOME);
+
+        Assert.assertEquals(3, testMap.size());
+        Assert.assertEquals(900000.0, testMap.get("High").doubleValue(), 0.00001);
+        Assert.assertEquals(3000000.0, testMap.get("Low").doubleValue(), 0.00001);
+    }
+
+    @Test
+    public void testGetBounceRateForAttribute() {
+        Map<String, Number> testMap = model.getBounceRateForAttribute(AttributeType.GENDER);
+
+        System.out.println(testMap);
+
+        Assert.assertEquals(2, testMap.size());
+        Assert.assertEquals(0.5, testMap.get("Male").doubleValue(), 0.00001);
+        Assert.assertEquals(1.0, testMap.get("Female").doubleValue(), 0.00001);
+
+        testMap = model.getBounceRateForAttribute(AttributeType.INCOME);
+
+        Assert.assertEquals(2, testMap.size());
+        Assert.assertEquals(2.0, testMap.get("High").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, testMap.get("Low").doubleValue(), 0.00001);
     }
 }

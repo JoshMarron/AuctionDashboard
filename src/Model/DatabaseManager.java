@@ -998,8 +998,12 @@ public class DatabaseManager {
 		Map<String, Number> costMap = getTotalCostForAttribute(attributeType);
 		Map<String, Number> conversionMap = getTotalConversionsForAttribute(attributeType);
 
-		costMap.forEach((attr, value) -> {
-		    conversionMap.put(attr, (value.doubleValue() / conversionMap.get(attr).doubleValue()));
+        costMap.forEach((attr, value) -> {
+            if (conversionMap.containsKey(attr)) {
+                conversionMap.put(attr, (value.doubleValue() / conversionMap.get(attr).doubleValue()));
+            } else {
+                conversionMap.put(attr, 0.0);
+            }
         });
 
 		return conversionMap;
@@ -1010,7 +1014,11 @@ public class DatabaseManager {
 		Map<String, Number> clickMap = getTotalClicksForAttribute(attributeType);
 
 		costMap.forEach((attr, value) -> {
-		    clickMap.put(attr, (value.doubleValue() / clickMap.get(attr).doubleValue()));
+		    if (clickMap.containsKey(attr)) {
+                clickMap.put(attr, (value.doubleValue() / clickMap.get(attr).doubleValue()));
+            } else {
+		        clickMap.put(attr, 0.0);
+            }
         });
 
 		return clickMap;
@@ -1046,11 +1054,18 @@ public class DatabaseManager {
 		Map<String, Number> bounceMap = getTotalBouncesForAttribute(attributeType);
 		Map<String, Number> clickMap = getTotalClicksForAttribute(attributeType);
 
-        bounceMap.forEach((attr, value) -> {
-            clickMap.put(attr, (value.doubleValue() / clickMap.get(attr).doubleValue()));
+        System.out.println(bounceMap);
+        System.out.println(clickMap);
+
+        clickMap.forEach((attr, value) -> {
+            if (bounceMap.containsKey(attr)) {
+                bounceMap.put(attr, (bounceMap.get(attr).doubleValue() / value.doubleValue()));
+            } else {
+                bounceMap.put(attr, 0.0);
+            }
         });
 
-        return clickMap;
+        return bounceMap;
 	}
 	
 	/**
