@@ -27,7 +27,7 @@ public class TestMetricByAttribute {
         model.createDB(testDB.getAbsolutePath());
 
         String[] dummyImpression1 = {"2015-01-01 12:00:00", "1", "Male", "25-34", "High", "Blog", "200"};
-        String[] dummyImpression2 = {"2015-01-01 14:00:00", "2", "Female", "<25", "Low", "Fashion", "400"};
+        String[] dummyImpression2 = {"2015-01-01 14:00:00", "2", "Female", "<25", "High", "Fashion", "400"};
         String[] dummyImpression3 = {"2015-01-02 12:00:00", "3", "Male", "35-44", "Low", "Social Media", "600"};
         String[] dummyImpression4 = {"2015-01-03 15:00:00", "4", "Female", ">55", "Medium", "Social Media", "800"};
 
@@ -162,5 +162,54 @@ public class TestMetricByAttribute {
         Assert.assertEquals(1, testMap.get(">55").intValue());
         Assert.assertEquals(1, testMap.get("35-44").intValue());
         Assert.assertNull(testMap.get("<25"));
+    }
+
+    @Test
+    public void testGetBouncesByMatchingAttribute() {
+        Map<String, Number> testMap = model.getTotalBouncesForAttribute(AttributeType.INCOME);
+
+        Assert.assertEquals(1, testMap.size());
+        Assert.assertEquals(2, testMap.get("High").intValue());
+        Assert.assertNull(testMap.get("Low"));
+    }
+
+    @Test
+    public void testGetBouncesByDifferentAttributes() {
+        Map<String, Number> testMap = model.getTotalBouncesForAttribute(AttributeType.AGE);
+
+        Assert.assertEquals(2, testMap.size());
+        Assert.assertEquals(1, testMap.get("<25").intValue());
+        Assert.assertEquals(1, testMap.get("25-34").intValue());
+    }
+
+    @Test
+    public void testGetTotalCostForAttribute() {
+        Map<String, Number> testMap = model.getTotalCostForAttribute(AttributeType.GENDER);
+
+        Assert.assertEquals(2, testMap.size());
+
+        //Sum up both click and impression cost across genders
+        Assert.assertEquals(4400, testMap.get("Male").intValue());
+        Assert.assertEquals(1200, testMap.get("Female").intValue());
+
+        testMap = model.getTotalCostForAttribute(AttributeType.AGE);
+        Assert.assertEquals(4, testMap.size());
+
+        Assert.assertEquals(1400, testMap.get("25-34").intValue());
+        Assert.assertEquals(3000, testMap.get("35-44").intValue());
+        Assert.assertEquals(800, testMap.get(">55").intValue());
+    }
+
+    @Test
+    public void testGetCTRForAttribute() {
+        Map<String, Number> testMap = model.getCTRForAttribute(AttributeType.GENDER);
+
+        Assert.assertEquals(2, testMap.size());
+
+        System.out.println(testMap);
+
+        //2 clicks divided by 2 impressions
+        Assert.assertEquals(1.0, testMap.get("Male").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, testMap.get("Female").doubleValue(), 0.00001);
     }
 }

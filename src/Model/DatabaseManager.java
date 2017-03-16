@@ -1031,11 +1031,15 @@ public class DatabaseManager {
 		Map<String, Number> clickMap = getTotalClicksForAttribute(attributeType);
 		Map<String, Number> impressionMap = getTotalImpressionsForAttribute(attributeType);
 
-		clickMap.forEach((attr, value) -> {
-		    impressionMap.put(attr, (value.doubleValue() / impressionMap.get(attr).doubleValue()));
+        impressionMap.forEach((attr, value) -> {
+		    if (clickMap.containsKey(attr)) {
+		        clickMap.put(attr, clickMap.get(attr).doubleValue() / value.doubleValue());
+            } else {
+		        clickMap.put(attr, 0.0);
+            }
         });
 
-		return impressionMap;
+        return clickMap;
 	}
 
 	public Map<String, Number> getBounceRateForAttribute(AttributeType attributeType) {
