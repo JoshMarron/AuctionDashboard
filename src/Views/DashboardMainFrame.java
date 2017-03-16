@@ -12,6 +12,7 @@ import Views.ViewPresets.ChartType;
 import javafx.scene.chart.Chart;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -28,10 +29,15 @@ public class DashboardMainFrame extends CatFrame {
     private DashboardMainFrameController controller;
     private MainFrameMetricList metricList;
     private ChartType requestedChart;
+    private MetricType currentMetric;
+    private AttributeType currentAttribute;
+    private MainFrameChartOptionsPanel optionsPanel;
 
     public DashboardMainFrame(File homeDir) {
         this.homedir = homeDir;
         this.requestedChart = ChartType.LINE;
+        this.currentAttribute = AttributeType.CONTEXT;
+        this.currentMetric = MetricType.TOTAL_IMPRESSIONS;
         loading = false;
     }
 
@@ -48,16 +54,24 @@ public class DashboardMainFrame extends CatFrame {
 
         mainContentPane.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 20));
 
-        metricList = new MainFrameMetricList(this);
         this.setContentPane(mainContentPane);
-
-        chartPanel = new MainFrameChartDisplayPanel(this);
-
         mainContentPane.setLayout(new BorderLayout());
+
+        metricList = new MainFrameMetricList(this);
+        chartPanel = new MainFrameChartDisplayPanel(this);
+        optionsPanel = new MainFrameChartOptionsPanel(this);
+
+        CatPanel chartDisplay = new CatPanel();
+        chartDisplay.setBorder(BorderFactory.createEmptyBorder());
+        chartDisplay.setLayout(new BorderLayout());
+
+        chartDisplay.add(chartPanel, BorderLayout.CENTER);
+        chartDisplay.add(optionsPanel, BorderLayout.SOUTH);
+
         CatPanel mainPanel = new CatPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
         mainPanel.add(metricList);
-        mainPanel.add(chartPanel);
+        mainPanel.add(chartDisplay);
 
         this.initGlassPane();
         mainContentPane.add(mainPanel, BorderLayout.CENTER);
@@ -75,19 +89,35 @@ public class DashboardMainFrame extends CatFrame {
         data.forEach((type, value) -> metricList.putMetricInBox(type, value));
     }
 
-    public void requestChart(MetricType type) {
-        controller.requestChart(type);
+    public void requestMetricChange(MetricType type) {
+        this.currentMetric = type;
+        requestNewChart();
     }
 
-    public void displayTimeChart(MetricType type, DateEnum granularity, Map<Instant, Number> data) {
+    public void requestTimeChartTypeChange(ChartType chartType) {
+        this.requestedChart = chartType;
+        requestNewChart();
+    }
+
+    public void requestAttributeChartTypeChange(ChartType chartType, AttributeType attr) {
+        this.requestedChart = chartType;
+        this.currentAttribute = attr;
+        requestNewChart();
+    }
+
+    private void requestNewChart() {
+        if (this.requestedChart.equals(ChartType.LINE)) {
+            controller.requestChart(currentMetric);
+        } else {
+            controller.requestAttributeChart(currentMetric, currentAttribute);
+        }
+    }
+
+    public void displayChart(MetricType type, DateEnum granularity, Map<Instant, Number> data) {
         chartPanel.displayTimeChart(requestedChart, type, granularity, data);
     }
 
-    public void requestAttributeChart(MetricType type, AttributeType attr) {
-        controller.requestAttributeChart(type, attr);
-    }
-
-    public void displayAttributeChart(MetricType type, AttributeType attr, Map<String, Number> data) {
+    public void displayChart(MetricType type, AttributeType attr, Map<String, Number> data) {
         chartPanel.displayAttributeChart(requestedChart, type, attr, data);
     }
 

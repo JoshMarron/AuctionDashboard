@@ -60,21 +60,19 @@ public class DashboardMainFrameController {
             frame.displayMetrics(data);
         });
         this.requestChart(MetricType.TOTAL_IMPRESSIONS);
-        this.requestAttributeChart(MetricType.TOTAL_IMPRESSIONS, AttributeType.AGE);
     }
 
     public void requestChart(MetricType type) {
         helpers.submit(() -> {
             Map<Instant, Number> data = getDataForChartFromType(type, DateEnum.DAYS);
-            SwingUtilities.invokeLater(() -> frame.displayTimeChart(type, DateEnum.DAYS, data));
+            SwingUtilities.invokeLater(() -> frame.displayChart(type, DateEnum.DAYS, data));
         });
     }
 
     public void requestAttributeChart(MetricType type, AttributeType attr) {
         helpers.submit(() -> {
             Map<String, Number> data = getDataForChartFromAttribute(type, attr);
-            System.out.println(data);
-            SwingUtilities.invokeLater(() -> frame.displayAttributeChart(type, attr, data));
+            SwingUtilities.invokeLater(() -> frame.displayChart(type, attr, data));
         });
     }
 

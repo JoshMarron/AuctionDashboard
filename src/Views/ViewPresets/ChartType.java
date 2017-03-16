@@ -18,4 +18,8 @@ public enum ChartType {
     public String getName() {
         return this.name;
     }
+
+    public String toString() {
+        return this.name;
+    }
 }
