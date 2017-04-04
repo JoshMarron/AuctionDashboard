@@ -1,4 +1,4 @@
-package Controllers;
+package Controllers.Queries;
 
 import Views.MetricType;
 
