@@ -10,21 +10,18 @@ import java.util.Map;
 /**
  * Creates query objects for the cache to handle
  */
-public class TimeQueryBuilder implements QueryBuilder {
+public class TimeQueryBuilder extends QueryBuilder {
 
-    private MetricType metric;
     private DateEnum granularity;
     private Instant startDate;
     private Instant endDate;
-    private Map<AttributeType, String> filters;
 
     public TimeQueryBuilder(MetricType metric) {
-        this.metric = metric;
+        super(metric);
         //Set the default values of optional parameters
         this.granularity = DateEnum.DAYS;
         this.startDate = Instant.MIN;
         this.endDate = Instant.MAX;
-        this.filters = null;
     }
 
     public TimeDataQuery build() {
@@ -46,15 +43,6 @@ public class TimeQueryBuilder implements QueryBuilder {
         return this;
     }
 
-    public TimeQueryBuilder filters(Map<AttributeType, String> filters) {
-        this.filters = filters;
-        return this;
-    }
-
-    public MetricType getMetric() {
-        return metric;
-    }
-
     public DateEnum getGranularity() {
         return granularity;
     }
@@ -65,9 +53,5 @@ public class TimeQueryBuilder implements QueryBuilder {
 
     public Instant getEndDate() {
         return endDate;
-    }
-
-    public Map<AttributeType, String> getFilters() {
-        return filters;
     }
 }

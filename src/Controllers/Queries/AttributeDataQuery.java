@@ -10,13 +10,9 @@ public class AttributeDataQuery extends Query{
 
     private AttributeType attribute;
 
-    public AttributeDataQuery(MetricType metric, AttributeType attribute) {
-        super(metric);
-        this.attribute = attribute;
-    }
-
-    public MetricType getMetric() {
-        return metric;
+    public AttributeDataQuery(AttributeQueryBuilder b) {
+        super(b);
+        this.attribute = b.getAttribute();
     }
 
     public AttributeType getAttribute() {

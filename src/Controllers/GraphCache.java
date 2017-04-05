@@ -32,8 +32,8 @@ public class GraphCache {
     public void startCaching() {
         for (MetricType metric: MetricType.values()) {
             for (DateEnum gran: DateEnum.values()) {
-                TimeDataQuery query = TimeQueryBuilder.createTimeDataQuery(metric, gran);
-                //TODO process the query here
+                TimeQueryBuilder builder = new TimeQueryBuilder(metric);
+                TimeDataQuery query = builder.granularity(gran).build();
             }
         }
 
