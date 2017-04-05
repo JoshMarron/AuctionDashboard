@@ -538,6 +538,36 @@ public class DatabaseManager {
 
 		return numResult;
 	}
+
+	public Map<AttributeType, List<String>> getAllValuesOfAttributes() {
+	    Map<AttributeType, List<String>> resultMap = new HashMap<>();
+
+	    for (AttributeType attr: AttributeType.values()) {
+	        resultMap.put(attr, this.getValuesOfAttribute(attr));
+        }
+
+        return resultMap;
+    }
+
+	private List<String> getValuesOfAttribute(AttributeType attr) {
+	    List<String> values = new ArrayList<>();
+		ResultSet result;
+
+        String table = attr.equals(AttributeType.CONTEXT) ? TableType.SITE_IMPRESSION.toString() : TableType.USER.toString();
+
+		String sql = "SELECT DISTINCT " + attr.getQueryBit() + " FROM " + table + ";";
+
+		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+		    result = stmt.executeQuery(sql);
+		    while (result.next()) {
+		        values.add(result.getString(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return values;
+    }
 	
 	/**
 	 * Simple function to get a unique number of Header from a TableType

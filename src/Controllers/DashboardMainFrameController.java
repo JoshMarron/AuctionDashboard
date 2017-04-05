@@ -42,6 +42,8 @@ public class DashboardMainFrameController {
                 frame.setVisible(true);
                 frame.displayLoading();
             });
+            Map<AttributeType, List<String>> attributeValues = model.getAllValuesOfAttributes();
+            System.out.println(attributeValues);
             Map<MetricType, Number> results = this.calculateKeyMetrics();
             this.displayMetrics(results);
         });

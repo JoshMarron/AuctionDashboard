@@ -27,7 +27,19 @@ public class MainFrameChartOptionsPanel extends CatPanel {
     }
 
     private void init() {
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.setLayout(new BorderLayout());
+
+        //Panel with a single large button on it, needs to stand out
+        CatPanel filterButtonPanel = new CatPanel();
+        filterButtonPanel.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
+        filterButtonPanel.setLayout(new BorderLayout());
+        CatButton filterButton = new CatButton("Add filters...");
+        filterButtonPanel.add(filterButton, BorderLayout.CENTER);
+
+        //This panel contains the options which can be changed from the main panel
+        CatPanel embeddedOptions = new CatPanel();
+        embeddedOptions.setBorder(BorderFactory.createEmptyBorder());
+        embeddedOptions.setLayout(new BoxLayout(embeddedOptions, BoxLayout.Y_AXIS));
 
         CatPanel timeChartOptionsPanel = new CatPanel();
         timeChartOptionsPanel.setLayout(new BoxLayout(timeChartOptionsPanel, BoxLayout.X_AXIS));
@@ -87,9 +99,12 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         attributeChartOptionsPanel.add(attributeChartGoButton);
         attributeChartOptionsPanel.add(Box.createRigidArea(new Dimension(20, 0)));
 
-        this.add(timeChartOptionsPanel);
-        this.add(Box.createGlue());
-        this.add(attributeChartOptionsPanel);
+        embeddedOptions.add(timeChartOptionsPanel);
+        embeddedOptions.add(Box.createGlue());
+        embeddedOptions.add(attributeChartOptionsPanel);
+
+        this.add(embeddedOptions, BorderLayout.CENTER);
+        this.add(filterButtonPanel, BorderLayout.EAST);
     }
 
     private void requestNewTimeChart(ChartType chartType) {
