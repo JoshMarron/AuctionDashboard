@@ -1,9 +1,6 @@
 package Controllers;
 
-import Controllers.Queries.AttributeDataQuery;
-import Controllers.Queries.TimeQueryBuilder;
-import Controllers.Queries.TimeDataQuery;
-import Controllers.Queries.Query;
+import Controllers.Queries.*;
 import Model.DBEnums.DateEnum;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
@@ -34,12 +31,14 @@ public class GraphCache {
             for (DateEnum gran: DateEnum.values()) {
                 TimeQueryBuilder builder = new TimeQueryBuilder(metric);
                 TimeDataQuery query = builder.granularity(gran).build();
+                //TODO process the query and add the result to the map
             }
         }
 
         for (AttributeType attr: AttributeType.values()) {
             for (MetricType metric: MetricType.values()) {
-                AttributeDataQuery query = TimeQueryBuilder.createAttributeDataQuery(metric, attr);
+                AttributeQueryBuilder builder = new AttributeQueryBuilder(metric, attr);
+                AttributeDataQuery query = builder.build();
                 //TODO process
             }
         }

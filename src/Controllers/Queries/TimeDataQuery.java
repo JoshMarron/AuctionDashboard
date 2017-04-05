@@ -15,7 +15,7 @@ public class TimeDataQuery extends Query {
     private Instant endDate;
 
     public TimeDataQuery(TimeQueryBuilder b) {
-        super(b.getMetric());
+        super(b);
         this.granularity = b.getGranularity();
         this.startDate = b.getStartDate();
         this.endDate = b.getEndDate();

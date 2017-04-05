@@ -6,7 +6,7 @@ import Views.ViewPresets.AttributeType;
 import java.util.Map;
 
 /**
- * Created by Joshua on 04/04/2017.
+ * Abstract class to represent data shared by all queries
  */
 public abstract class Query {
 
@@ -22,4 +22,7 @@ public abstract class Query {
         return this.metric;
     }
 
+    public Map<AttributeType, String> getFilters() {
+        return filters;
+    }
 }
