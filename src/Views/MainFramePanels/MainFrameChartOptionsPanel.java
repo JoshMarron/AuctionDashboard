@@ -8,6 +8,7 @@ import Views.DashboardMainFrame;
 import Views.ViewPresets.AttributeType;
 import Views.ViewPresets.ChartType;
 import Views.ViewPresets.ColorSettings;
+import Views.ViewPresets.FontSettings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,13 +28,15 @@ public class MainFrameChartOptionsPanel extends CatPanel {
     }
 
     private void init() {
-        this.setLayout(new BorderLayout());
+        this.setLayout(new GridBagLayout());
 
         //Panel with a single large button on it, needs to stand out
         CatPanel filterButtonPanel = new CatPanel();
-        filterButtonPanel.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
         filterButtonPanel.setLayout(new BorderLayout());
+        filterButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
         CatButton filterButton = new CatButton("Add filters...");
+        filterButton.setFont(FontSettings.GLOB_FONT.getFont().deriveFont(20F));
+        filterButton.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
         filterButtonPanel.add(filterButton, BorderLayout.CENTER);
 
         //This panel contains the options which can be changed from the main panel
@@ -103,8 +106,22 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         embeddedOptions.add(Box.createGlue());
         embeddedOptions.add(attributeChartOptionsPanel);
 
-        this.add(embeddedOptions, BorderLayout.CENTER);
-        this.add(filterButtonPanel, BorderLayout.EAST);
+        GridBagConstraints embeddedCon = new GridBagConstraints();
+        embeddedCon.weighty = 1;
+        embeddedCon.weightx = 10;
+        embeddedCon.gridx = 0;
+        embeddedCon.gridy = 0;
+        embeddedCon.fill = GridBagConstraints.BOTH;
+
+        GridBagConstraints filterCon = new GridBagConstraints();
+        filterCon.weighty = 1;
+        filterCon.weightx = 6;
+        filterCon.gridx = 1;
+        filterCon.gridy = 0;
+        filterCon.fill = GridBagConstraints.BOTH;
+
+        this.add(embeddedOptions, embeddedCon);
+        this.add(filterButtonPanel, filterCon);
     }
 
     private void requestNewTimeChart(ChartType chartType) {
