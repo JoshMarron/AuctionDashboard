@@ -14,11 +14,11 @@ public class TimeDataQuery extends Query {
     private Instant startDate;
     private Instant endDate;
 
-    public TimeDataQuery(MetricType metric, DateEnum granularity, Instant startDate, Instant endDate) {
-        super(metric);
-        this.granularity = granularity;
-        this.startDate = startDate;
-        this.endDate = endDate;
+    public TimeDataQuery(TimeQueryBuilder b) {
+        super(b.getMetric());
+        this.granularity = b.getGranularity();
+        this.startDate = b.getStartDate();
+        this.endDate = b.getEndDate();
     }
 
     public DateEnum getGranularity() {

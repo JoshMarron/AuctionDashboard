@@ -1,7 +1,7 @@
 package Controllers;
 
 import Controllers.Queries.AttributeDataQuery;
-import Controllers.Queries.QueryFactory;
+import Controllers.Queries.TimeQueryBuilder;
 import Controllers.Queries.TimeDataQuery;
 import Controllers.Queries.Query;
 import Model.DBEnums.DateEnum;
@@ -32,14 +32,14 @@ public class GraphCache {
     public void startCaching() {
         for (MetricType metric: MetricType.values()) {
             for (DateEnum gran: DateEnum.values()) {
-                TimeDataQuery query = QueryFactory.createTimeDataQuery(metric, gran);
+                TimeDataQuery query = TimeQueryBuilder.createTimeDataQuery(metric, gran);
                 //TODO process the query here
             }
         }
 
         for (AttributeType attr: AttributeType.values()) {
             for (MetricType metric: MetricType.values()) {
-                AttributeDataQuery query = QueryFactory.createAttributeDataQuery(metric, attr);
+                AttributeDataQuery query = TimeQueryBuilder.createAttributeDataQuery(metric, attr);
                 //TODO process
             }
         }
