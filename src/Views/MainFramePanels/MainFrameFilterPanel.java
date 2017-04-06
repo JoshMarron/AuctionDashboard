@@ -54,4 +54,6 @@ public class MainFrameFilterPanel extends CatPanel {
 
         return selected;
     }
+
+    //when any checkbox is selected, should colour the panel
 }
