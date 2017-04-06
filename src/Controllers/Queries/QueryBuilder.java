@@ -4,6 +4,7 @@ import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Map;
 public abstract class QueryBuilder {
 
     private MetricType metric;
-    private Map<AttributeType, String> filters;
+    private Map<AttributeType, List<String>> filters;
 
     public QueryBuilder(MetricType metric) {
         this.metric = metric;
@@ -25,11 +26,11 @@ public abstract class QueryBuilder {
         return this.metric;
     }
 
-    public Map<AttributeType, String> getFilters() {
+    public Map<AttributeType, List<String>> getFilters() {
         return this.filters;
     }
 
-    public QueryBuilder filters(Map<AttributeType, String> filters) {
+    public QueryBuilder filters(Map<AttributeType, List<String>> filters) {
         this.filters = filters;
         return this;
     }
