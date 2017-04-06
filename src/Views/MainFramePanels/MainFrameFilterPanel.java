@@ -21,6 +21,8 @@ public class MainFrameFilterPanel extends CatPanel {
     public MainFrameFilterPanel(AttributeType attr, List<String> attributeValues) {
         this.attributeValues = attributeValues;
         this.attr = attr;
+        this.checkboxes = new ArrayList<>();
+        this.init();
     }
 
     private void init() {
@@ -31,6 +33,7 @@ public class MainFrameFilterPanel extends CatPanel {
         this.add(Box.createGlue());
 
         for (String val: attributeValues) {
+            //TODO create CatCheckBox for customisation
             JCheckBox checkBox = new JCheckBox(val);
             checkboxes.add(checkBox);
             this.add(checkBox);
@@ -48,7 +51,8 @@ public class MainFrameFilterPanel extends CatPanel {
 
         for (JCheckBox box: checkboxes) {
             if (box.isSelected()) {
-                selected.add(box.getName());
+                System.out.println(box.getText());
+                selected.add(box.getText());
             }
         }
 

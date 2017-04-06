@@ -1,5 +1,6 @@
 package Views;
 
+import Views.CustomComponents.CatButton;
 import Views.CustomComponents.CatPanel;
 import Views.MainFramePanels.MainFrameFilterPanel;
 import Views.ViewPresets.AttributeType;
@@ -15,7 +16,10 @@ import java.util.List;
  */
 public class DashboardFilterDialog extends JDialog {
 
+    public final static int APPROVE_OPTION = 1;
+    public final static int CANCEL_OPTION = 2;
     private List<MainFrameFilterPanel> filterPanels;
+    private int returnVal;
 
     public DashboardFilterDialog(Window parent, Map<AttributeType, List<String>> possibleVals) {
         super(parent, "Choose Filters", ModalityType.APPLICATION_MODAL);
@@ -24,6 +28,10 @@ public class DashboardFilterDialog extends JDialog {
     }
 
     private void init(Map<AttributeType, List<String>> possibleVals) {
+        this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        this.setSize(400, 400);
+        this.setLocationRelativeTo(null);
+
         CatPanel contentPane = new CatPanel();
         this.setContentPane(contentPane);
         contentPane.setLayout(new BorderLayout());
@@ -39,6 +47,20 @@ public class DashboardFilterDialog extends JDialog {
             filterListPanel.add(Box.createHorizontalGlue());
         });
 
+        CatButton confirmButton = new CatButton("Apply Filters");
+        confirmButton.addActionListener((e) -> {
+            this.returnVal = DashboardFilterDialog.APPROVE_OPTION;
+            this.setVisible(false);
+        });
+
+        this.add(filterListPanel, BorderLayout.CENTER);
+        this.add(confirmButton, BorderLayout.SOUTH);
+    }
+
+    public int showFilterDialog() {
+        this.returnVal = DashboardFilterDialog.CANCEL_OPTION; //Need to reset this or it might always approve
+        this.setVisible(true);
+        return this.returnVal;
     }
 
     public Map<AttributeType, List<String>> getFilters() {

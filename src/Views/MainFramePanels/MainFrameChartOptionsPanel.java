@@ -4,6 +4,7 @@ import Views.CustomComponents.CatButton;
 import Views.CustomComponents.CatComboBox;
 import Views.CustomComponents.CatLabel;
 import Views.CustomComponents.CatPanel;
+import Views.DashboardFilterDialog;
 import Views.DashboardMainFrame;
 import Views.ViewPresets.AttributeType;
 import Views.ViewPresets.ChartType;
@@ -13,6 +14,8 @@ import Views.ViewPresets.FontSettings;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.List;
 
 /**
  * MainFrameChartOptionsPanel is a frame which allows the user to change the currently displayed chart to
@@ -21,9 +24,12 @@ import java.util.Arrays;
 public class MainFrameChartOptionsPanel extends CatPanel {
 
     private DashboardMainFrame parent;
+    private Map<AttributeType, List<String>> possibleVals;
+    private DashboardFilterDialog filterDialog = null;
 
     public MainFrameChartOptionsPanel(DashboardMainFrame parent) {
         this.parent = parent;
+        this.possibleVals = possibleVals;
         this.init();
     }
 
@@ -37,6 +43,14 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         CatButton filterButton = new CatButton("Add filters...");
         filterButton.setFont(FontSettings.GLOB_FONT.getFont().deriveFont(20F));
         filterButton.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
+        filterButton.addActionListener((e) -> {
+            int returnVal = filterDialog.showFilterDialog();
+            System.out.println("closed");
+            System.out.println(returnVal);
+            if (returnVal == DashboardFilterDialog.APPROVE_OPTION) {
+                System.out.println(filterDialog.getFilters());
+            }
+        });
         filterButtonPanel.add(filterButton, BorderLayout.CENTER);
 
         //This panel contains the options which can be changed from the main panel
@@ -131,5 +145,10 @@ public class MainFrameChartOptionsPanel extends CatPanel {
     private void requestNewAttributeChart(ChartType chartType, AttributeType attr) {
         System.out.println("Display " + chartType + " " + attr);
         parent.requestAttributeChartTypeChange(chartType, attr);
+    }
+
+    public void setUpFilterOptions(Map<AttributeType, List<String>> possibleVals) {
+        this.possibleVals = possibleVals;
+        this.filterDialog = new DashboardFilterDialog(parent, possibleVals);
     }
 }
