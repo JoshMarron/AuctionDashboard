@@ -1,6 +1,7 @@
 package Views;
 
 import Views.CustomComponents.CatPanel;
+import Views.MainFramePanels.MainFrameFilterPanel;
 import Views.ViewPresets.AttributeType;
 
 import javax.swing.*;
@@ -14,20 +15,28 @@ import java.util.List;
  */
 public class DashboardFilterDialog extends JDialog {
 
-    private Map<AttributeType, List<String>> filters;
+    private List<MainFrameFilterPanel> filterPanels;
 
-    public DashboardFilterDialog() {
-        this.init();
+    public DashboardFilterDialog(Window parent, Map<AttributeType, List<String>> possibleVals) {
+        super(parent, "Choose Filters", ModalityType.APPLICATION_MODAL);
+        this.filterPanels = new ArrayList<>();
+        this.init(possibleVals);
     }
 
-    private void init() {
+    private void init(Map<AttributeType, List<String>> possibleVals) {
         CatPanel contentPane = new CatPanel();
         this.setContentPane(contentPane);
         contentPane.setLayout(new BorderLayout());
 
+        possibleVals.forEach((attr, vals) -> {
+
+        });
+
     }
 
     public Map<AttributeType, List<String>> getFilters() {
-        return this.filters;
+        Map<AttributeType, List<String>> filters = new HashMap<>();
+
+        return filters;
     }
 }
