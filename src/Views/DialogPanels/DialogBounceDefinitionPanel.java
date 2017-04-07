@@ -1,5 +1,8 @@
 package Views.DialogPanels;
 
+import Views.CustomComponents.CatCheckBox;
+import Views.CustomComponents.CatLabel;
+import Views.CustomComponents.CatNumberSpinner;
 import Views.CustomComponents.CatPanel;
 import Views.ViewPresets.ColorSettings;
 import Views.ViewPresets.FontSettings;
@@ -12,6 +15,11 @@ import javax.swing.border.TitledBorder;
  */
 public class DialogBounceDefinitionPanel extends CatPanel {
 
+    private CatCheckBox bouncePageBox;
+    private CatCheckBox bounceTimeBox;
+    private CatNumberSpinner bouncePageSpinner;
+    private CatNumberSpinner bounceTimeSpinner;
+
     public DialogBounceDefinitionPanel() {
         this.init();
     }
@@ -22,6 +30,34 @@ public class DialogBounceDefinitionPanel extends CatPanel {
                 "Bounce Definition", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
                 FontSettings.GLOB_FONT.getFont(), ColorSettings.TEXT_COLOR.getColor()));
 
+        CatLabel bounceTimeLabel = new CatLabel("Visit length (in minutes): ");
+        CatLabel bouncePageLabel = new CatLabel("Pages viewed: ");
 
+        bouncePageSpinner = new CatNumberSpinner(1);
+        bounceTimeSpinner = new CatNumberSpinner(1);
+
+        bouncePageBox = new CatCheckBox("Use");
+        bounceTimeBox = new CatCheckBox("Use");
+
+        bouncePageBox.setSelected(true);
+
+        this.add(Box.createHorizontalGlue());
+        this.add(bouncePageLabel);
+        this.add(bouncePageSpinner);
+        this.add(bouncePageBox);
+
+        this.add(Box.createHorizontalGlue());
+        this.add(bounceTimeLabel);
+        this.add(bounceTimeSpinner);
+        this.add(bounceTimeBox);
+        this.add(Box.createHorizontalGlue());
+    }
+
+    public int getBouncePages() {
+        return bouncePageBox.isSelected() ? bouncePageSpinner.getNumber() : Integer.MAX_VALUE;
+    }
+
+    public int getBounceTime() {
+        return bounceTimeBox.isSelected() ? bounceTimeSpinner.getNumber() : Integer.MAX_VALUE;
     }
 }

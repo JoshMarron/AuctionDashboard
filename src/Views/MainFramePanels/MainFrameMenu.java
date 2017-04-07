@@ -1,8 +1,10 @@
 package Views.MainFramePanels;
 
+import Controllers.ProjectSettings;
 import Views.CustomComponents.CatMenu;
 import Views.CustomComponents.CatMenuBar;
 import Views.DashboardMainFrame;
+import Views.DashboardSettingsDialog;
 
 import javax.swing.*;
 
@@ -12,9 +14,11 @@ import javax.swing.*;
 public class MainFrameMenu extends CatMenuBar {
 
     private DashboardMainFrame frame;
+    private DashboardSettingsDialog settingsDialog;
 
     public MainFrameMenu(DashboardMainFrame frame) {
         this.frame = frame;
+        this.settingsDialog = new DashboardSettingsDialog(frame);
         this.init();
     }
 
@@ -28,7 +32,16 @@ public class MainFrameMenu extends CatMenuBar {
         JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.addActionListener((e) -> System.exit(0));
 
+        JMenuItem settingsItem = new JMenuItem("Settings...");
+        settingsItem.addActionListener((e) -> {
+            int settingsVal = settingsDialog.showDialog();
+            if (settingsVal == DashboardSettingsDialog.APPROVE_OPTION) {
+                System.out.println(ProjectSettings.getBounceMinutes() + " -- " + ProjectSettings.getBouncePages());
+            }
+        });
+
         fileMenu.add(saveAsMenuItem);
+        fileMenu.add(settingsItem);
         fileMenu.add(closeProjectItem);
         fileMenu.add(exitItem);
 

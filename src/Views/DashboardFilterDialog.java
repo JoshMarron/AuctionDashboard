@@ -28,9 +28,10 @@ public class DashboardFilterDialog extends JDialog {
     }
 
     private void init(Map<AttributeType, List<String>> possibleVals) {
-        this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
         this.setSize(400, 400);
         this.setLocationRelativeTo(null);
+        this.setResizable(false);
 
         CatPanel contentPane = new CatPanel();
         this.setContentPane(contentPane);

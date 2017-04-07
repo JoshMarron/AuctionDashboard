@@ -1,6 +1,7 @@
 package Views;
 
 import Views.CustomComponents.CatPanel;
+import Views.DialogPanels.DialogBounceDefinitionPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,11 +22,16 @@ public class DashboardSettingsDialog extends JDialog {
     }
 
     private void init() {
+        this.setSize(800, 160);
+        this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+        this.setResizable(false);
+
         CatPanel contentPane = new CatPanel();
         this.setContentPane(contentPane);
         contentPane.setLayout(new BorderLayout());
 
-
+        DialogBounceDefinitionPanel bouncePanel = new DialogBounceDefinitionPanel();
+        contentPane.add(bouncePanel, BorderLayout.CENTER);
     }
 
     public int showDialog() {
