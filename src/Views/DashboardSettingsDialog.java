@@ -1,9 +1,12 @@
 package Views;
 
+import Controllers.ProjectSettings;
+import Views.CustomComponents.CatButton;
 import Views.CustomComponents.CatPanel;
 import Views.DialogPanels.DialogBounceDefinitionPanel;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 /**
@@ -15,6 +18,7 @@ public class DashboardSettingsDialog extends JDialog {
     public static final int CANCEL_OPTION = 2;
 
     private int returnVal;
+    private DialogBounceDefinitionPanel bouncePanel;
 
     public DashboardSettingsDialog(Window parent) {
         super(parent, "Change Settings", ModalityType.APPLICATION_MODAL);
@@ -22,7 +26,7 @@ public class DashboardSettingsDialog extends JDialog {
     }
 
     private void init() {
-        this.setSize(800, 160);
+        this.setSize(800, 200);
         this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
         this.setResizable(false);
 
@@ -30,13 +34,42 @@ public class DashboardSettingsDialog extends JDialog {
         this.setContentPane(contentPane);
         contentPane.setLayout(new BorderLayout());
 
-        DialogBounceDefinitionPanel bouncePanel = new DialogBounceDefinitionPanel();
+        bouncePanel = new DialogBounceDefinitionPanel();
+
+        CatButton applyButton = new CatButton("Apply");
+        applyButton.addActionListener((e) -> {
+            this.returnVal = DashboardSettingsDialog.APPROVE_OPTION;
+            this.setBounceVals();
+            this.setVisible(false);
+        });
+        CatButton cancelButton = new CatButton("Cancel");
+        cancelButton.addActionListener((e) -> {
+            this.returnVal = DashboardSettingsDialog.CANCEL_OPTION;
+            this.setVisible(false);
+        });
+
+        CatPanel buttonPanel = new CatPanel();
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+        buttonPanel.add(applyButton);
+        buttonPanel.add(Box.createHorizontalGlue());
+        buttonPanel.add(cancelButton);
+        buttonPanel.add(Box.createHorizontalGlue());
+
         contentPane.add(bouncePanel, BorderLayout.CENTER);
+        contentPane.add(buttonPanel, BorderLayout.SOUTH);
     }
 
     public int showDialog() {
         this.returnVal = DashboardSettingsDialog.CANCEL_OPTION; //Set the default each time so we do not accidentally approve
         this.setVisible(true); //Execution hangs here while dialog box is open
         return returnVal;
+    }
+
+    private void setBounceVals() {
+        ProjectSettings.setBouncePages(bouncePanel.getBouncePages());
+        ProjectSettings.setBounceMinutes(bouncePanel.getBounceTime());
     }
 }
