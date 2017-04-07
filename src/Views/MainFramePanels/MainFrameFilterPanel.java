@@ -39,7 +39,7 @@ public class MainFrameFilterPanel extends CatPanel {
 
         this.add(Box.createGlue());
 
-        for (String val: attributeValues) {
+        for (String val: AttributeType.sortAttributeValues(attr, attributeValues)) {
             //TODO create CatCheckBox for customisation
             CatCheckBox checkBox = new CatCheckBox(val);
             checkboxes.add(checkBox);
