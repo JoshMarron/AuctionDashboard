@@ -1,10 +1,14 @@
 package Views.MainFramePanels;
 
+import Views.CustomComponents.CatCheckBox;
 import Views.CustomComponents.CatPanel;
 import Views.ViewPresets.AttributeType;
 import Views.ViewPresets.ColorSettings;
+import Views.ViewPresets.FontSettings;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +31,17 @@ public class MainFrameFilterPanel extends CatPanel {
 
     private void init() {
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        this.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()),
-                attr.toString()));
+        Border innerBorder = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()),
+                attr.toString(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, FontSettings.GLOB_FONT.getFont(),
+                ColorSettings.TEXT_COLOR.getColor());
+        Border outerBorder = BorderFactory.createEmptyBorder(10, 0, 10, 0);
+        this.setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
 
         this.add(Box.createGlue());
 
         for (String val: attributeValues) {
             //TODO create CatCheckBox for customisation
-            JCheckBox checkBox = new JCheckBox(val);
+            CatCheckBox checkBox = new CatCheckBox(val);
             checkboxes.add(checkBox);
             this.add(checkBox);
             this.add(Box.createHorizontalGlue());
@@ -51,7 +58,6 @@ public class MainFrameFilterPanel extends CatPanel {
 
         for (JCheckBox box: checkboxes) {
             if (box.isSelected()) {
-                System.out.println(box.getText());
                 selected.add(box.getText());
             }
         }

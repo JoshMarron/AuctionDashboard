@@ -37,11 +37,12 @@ public class DashboardFilterDialog extends JDialog {
         contentPane.setLayout(new BorderLayout());
 
         CatPanel filterListPanel = new CatPanel();
+        filterListPanel.setBorder(BorderFactory.createEmptyBorder());
         filterListPanel.setLayout(new BoxLayout(filterListPanel, BoxLayout.Y_AXIS));
         filterListPanel.add(Box.createGlue());
 
-        possibleVals.forEach((attr, vals) -> {
-            MainFrameFilterPanel filterPanel = new MainFrameFilterPanel(attr, vals);
+        possibleVals.entrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(AttributeType::toString))).forEach((entry) -> {
+            MainFrameFilterPanel filterPanel = new MainFrameFilterPanel(entry.getKey(), entry.getValue());
             filterPanels.add(filterPanel);
             filterListPanel.add(filterPanel);
             filterListPanel.add(Box.createHorizontalGlue());
