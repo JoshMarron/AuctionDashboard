@@ -1,4 +1,4 @@
-package Views.MainFramePanels;
+package Views.DialogPanels;
 
 import Views.CustomComponents.CatCheckBox;
 import Views.CustomComponents.CatPanel;
@@ -9,20 +9,19 @@ import Views.ViewPresets.FontSettings;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * MainFrameFilterPanel, given a list of values for an attribute, displays all the values as checkboxes
+ * DialogFilterPanel, given a list of values for an attribute, displays all the values as checkboxes
  */
-public class MainFrameFilterPanel extends CatPanel {
+public class DialogFilterPanel extends CatPanel {
 
     private List<String> attributeValues;
     private AttributeType attr;
     private List<JCheckBox> checkboxes;
 
-    public MainFrameFilterPanel(AttributeType attr, List<String> attributeValues) {
+    public DialogFilterPanel(AttributeType attr, List<String> attributeValues) {
         this.attributeValues = attributeValues;
         this.attr = attr;
         this.checkboxes = new ArrayList<>();

@@ -2,7 +2,7 @@ package Views;
 
 import Views.CustomComponents.CatButton;
 import Views.CustomComponents.CatPanel;
-import Views.MainFramePanels.MainFrameFilterPanel;
+import Views.DialogPanels.DialogFilterPanel;
 import Views.ViewPresets.AttributeType;
 
 import javax.swing.*;
@@ -18,7 +18,7 @@ public class DashboardFilterDialog extends JDialog {
 
     public final static int APPROVE_OPTION = 1;
     public final static int CANCEL_OPTION = 2;
-    private List<MainFrameFilterPanel> filterPanels;
+    private List<DialogFilterPanel> filterPanels;
     private int returnVal;
 
     public DashboardFilterDialog(Window parent, Map<AttributeType, List<String>> possibleVals) {
@@ -42,7 +42,7 @@ public class DashboardFilterDialog extends JDialog {
         filterListPanel.add(Box.createGlue());
 
         possibleVals.entrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(AttributeType::toString))).forEach((entry) -> {
-            MainFrameFilterPanel filterPanel = new MainFrameFilterPanel(entry.getKey(), entry.getValue());
+            DialogFilterPanel filterPanel = new DialogFilterPanel(entry.getKey(), entry.getValue());
             filterPanels.add(filterPanel);
             filterListPanel.add(filterPanel);
             filterListPanel.add(Box.createHorizontalGlue());
@@ -67,7 +67,7 @@ public class DashboardFilterDialog extends JDialog {
     public Map<AttributeType, List<String>> getFilters() {
         Map<AttributeType, List<String>> filters = new HashMap<>();
 
-        for (MainFrameFilterPanel filterPanel: filterPanels) {
+        for (DialogFilterPanel filterPanel: filterPanels) {
             if (!filterPanel.getSelected().isEmpty()) {
                 filters.put(filterPanel.getAttribute(), filterPanel.getSelected());
             }
