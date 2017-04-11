@@ -10,7 +10,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 
 /**
- * Created by Joshua on 07/04/2017.
+ * A Dialog which will contain a number of ways to tweak the settings of the application
  */
 public class DashboardSettingsDialog extends JDialog {
 

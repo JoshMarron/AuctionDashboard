@@ -11,7 +11,7 @@ import javax.swing.*;
 public class CatNumberSpinner extends JSpinner {
 
     public CatNumberSpinner(int startingValue) {
-        int min = 0;
+        int min = 1;
         int max = 1440;
         int step = 1;
         SpinnerNumberModel model = new SpinnerNumberModel(startingValue, min, max, step);
