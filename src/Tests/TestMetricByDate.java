@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.sun.xml.internal.ws.dump.LoggingDumpTube.Position.Before;
+
 public class TestMetricByDate {
     DatabaseManager model;
     File testDB;
