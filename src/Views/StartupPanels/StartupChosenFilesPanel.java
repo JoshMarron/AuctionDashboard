@@ -31,7 +31,7 @@ public class StartupChosenFilesPanel extends CatPanel {
 
     private void initChosenFilesPanel() {
 
-        Border inside = BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor());
+        Border inside = BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR);
         this.setBorder(BorderFactory.createCompoundBorder(inside, BorderFactory.createEmptyBorder(0, 20, 20, 20)));
 
         this.setLayout(new BorderLayout());
@@ -39,7 +39,7 @@ public class StartupChosenFilesPanel extends CatPanel {
         CatTitlePanel title = new CatTitlePanel("Your chosen files");
 
         JPanel centrePanel = new JPanel();
-        centrePanel.setBackground(ColorSettings.BG_COLOR.getColor());
+        centrePanel.setBackground(ColorSettings.BG_COLOR);
         centrePanel.setLayout(new BoxLayout(centrePanel, BoxLayout.Y_AXIS));
 
         StartupFileViewPanel impressionPanel = new StartupFileViewPanel(LogType.IMPRESSION, this);

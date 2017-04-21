@@ -17,7 +17,7 @@ public class CatLabel extends JLabel {
     }
 
     private void initLab() {
-        this.setForeground(ColorSettings.TEXT_COLOR.getColor());
+        this.setForeground(ColorSettings.TEXT_COLOR);
         this.setFont(FontSettings.GLOB_FONT.getFont());
     }
 

@@ -16,8 +16,8 @@ public class CatCheckBox extends JCheckBox {
     }
 
     private void init() {
-        this.setBackground(ColorSettings.BG_COLOR.getColor());
+        this.setBackground(ColorSettings.BG_COLOR);
         this.setFont(FontSettings.GLOB_FONT.getFont());
-        this.setForeground(ColorSettings.TEXT_COLOR.getColor());
+        this.setForeground(ColorSettings.TEXT_COLOR);
     }
 }

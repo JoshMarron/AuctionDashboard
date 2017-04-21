@@ -30,9 +30,9 @@ public class DialogFilterPanel extends CatPanel {
 
     private void init() {
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        Border innerBorder = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()),
+        Border innerBorder = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR),
                 attr.toString(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, FontSettings.GLOB_FONT.getFont(),
-                ColorSettings.TEXT_COLOR.getColor());
+                ColorSettings.TEXT_COLOR);
         Border outerBorder = BorderFactory.createEmptyBorder(10, 0, 10, 0);
         this.setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
 

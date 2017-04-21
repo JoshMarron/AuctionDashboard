@@ -30,7 +30,7 @@ public class MainFrameMetricList extends CatPanel {
     private void initMetricList() {
         this.setLayout(new BorderLayout());
         Border outside = BorderFactory.createEmptyBorder(0, 0, 0, 0);
-        Border inside = BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor());
+        Border inside = BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR);
         this.setBorder(BorderFactory.createCompoundBorder(outside, inside));
         CatTitlePanel metricListTitle = new CatTitlePanel("Campaign Metrics");
         metricListTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));

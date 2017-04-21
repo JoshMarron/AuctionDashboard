@@ -29,7 +29,7 @@ public class RecentProjectsViewPanel extends CatPanel {
 
         this.setLayout(new BorderLayout());
         this.setMinimumSize(new Dimension(300, 0));
-        this.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
+        this.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR));
 
         CatTitlePanel titlePanel = new CatTitlePanel("Recent Projects");
 

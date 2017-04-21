@@ -23,9 +23,9 @@ public class DialogColourCustomisationPanel extends CatPanel{
 
     private void init() {
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        this.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()),
+        this.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR),
                 "Colour Settings", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-                FontSettings.GLOB_FONT.getFont(), ColorSettings.TEXT_COLOR.getColor()));
+                FontSettings.GLOB_FONT.getFont(), ColorSettings.TEXT_COLOR));
 
         CatLabel colourThemeLabel = new CatLabel("Use selected theme");
         CatLabel colourCustomLabel = new CatLabel ("Use custom colours");
