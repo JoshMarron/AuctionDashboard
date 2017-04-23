@@ -64,9 +64,11 @@ public class DashboardSettingsDialog extends JDialog {
 
         CatPanel settingsContentPanel = new CatPanel();
         settingsContentPanel.setLayout(new BoxLayout(settingsContentPanel, BoxLayout.Y_AXIS));
+        settingsContentPanel.add(Box.createVerticalGlue());
         settingsContentPanel.add(bouncePanel);
-        settingsContentPanel.add(Box.createHorizontalGlue());
+        settingsContentPanel.add(Box.createGlue());
         settingsContentPanel.add(colourPanel);
+        settingsContentPanel.add(Box.createVerticalGlue());
 
         contentPane.add(settingsContentPanel, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);

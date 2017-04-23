@@ -33,6 +33,7 @@ public class DialogColourCustomisationPanel extends CatPanel{
         useColourTheme = new CatCheckBox("Use");
         useCustomColours = new CatCheckBox("Use");
         themeSelector = new CatComboBox();
+        themeSelector.setMaximumSize(themeSelector.getPreferredSize());
         themeSelector.setSelectedItem("Default (Dark)");
 
         this.add(Box.createHorizontalGlue());
