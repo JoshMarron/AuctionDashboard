@@ -13,12 +13,12 @@ public class CatMenuBar extends JMenuBar {
     private Color bgColor;
 
     public CatMenuBar() {
-        bgColor = ColorSettings.BG_COLOR.getColor();
+        bgColor = ColorSettings.BG_COLOR;
         this.init();
     }
 
     private void init() {
-        this.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorSettings.PANEL_BORDER_COLOR.getColor()));
+        this.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorSettings.PANEL_BORDER_COLOR));
 
     }
 

@@ -17,7 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Map;
-
+import java.util.List;
 /**
  * DashboardMainFrame is the main frame visible during the running of the application, which contains all of the
  * GUI elements.
@@ -86,6 +86,10 @@ public class DashboardMainFrame extends CatFrame {
     public void displayMetrics(Map<MetricType, Number> data) {
         metricList.resetMetricBoxes();
         data.forEach((type, value) -> metricList.putMetricInBox(type, value));
+    }
+
+    public void setUpFilterOptions(Map<AttributeType, List<String>> possibleVals) {
+        optionsPanel.setUpFilterOptions(possibleVals);
     }
 
     public void requestMetricChange(MetricType type) {

@@ -15,7 +15,7 @@ public class CatPanel extends JPanel {
     }
 
     private void initCatPanel() {
-        this.setBackground(ColorSettings.BG_COLOR.getColor());
+        this.setBackground(ColorSettings.BG_COLOR);
         this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     }
 }

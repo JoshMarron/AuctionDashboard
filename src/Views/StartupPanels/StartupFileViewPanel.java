@@ -29,7 +29,7 @@ public class StartupFileViewPanel extends CatPanel {
 
     private void initPanel() {
         this.setLayout(new BorderLayout());
-        this.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
+        this.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR));
         this.setMinimumSize(new Dimension(300, 0));
 
         filename = new CatLabel("No " + logtype.prettyPrint() + " currently chosen.");
@@ -74,7 +74,7 @@ public class StartupFileViewPanel extends CatPanel {
         @Override
         public void mouseEntered(MouseEvent e) {
             if (StartupFileViewPanel.this.isFileSelected()) {
-                StartupFileViewPanel.this.setBackground(ColorSettings.BUTTON_HOVER_COLOR.getColor());
+                StartupFileViewPanel.this.setBackground(ColorSettings.BUTTON_HOVER_COLOR);
                 StartupFileViewPanel.this.setCursor(new Cursor(Cursor.HAND_CURSOR));
                 repaint();
             }
@@ -85,7 +85,7 @@ public class StartupFileViewPanel extends CatPanel {
 
         @Override
         public void mouseExited(MouseEvent e) {
-            StartupFileViewPanel.this.setBackground(ColorSettings.BG_COLOR.getColor());
+            StartupFileViewPanel.this.setBackground(ColorSettings.BG_COLOR);
             repaint();
         }
     }

@@ -17,8 +17,11 @@ import javafx.scene.text.Text;
 import javax.swing.*;
 import java.awt.*;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * MainFrameMainPieChartPanel displays a small pie chart of attributes as total shares
@@ -51,7 +54,7 @@ public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel
         this.setLayout(new BorderLayout());
 
         chartPanel = new JFXPanel();
-        chartPanel.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
+        chartPanel.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR));
 
         this.add(chartPanel, BorderLayout.CENTER);
     }
@@ -63,8 +66,10 @@ public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel
             pieData = FXCollections.observableArrayList();
             chart.setTitle(metric.toString() + " by " + attr.toString());
 
-            data.forEach((name, number) -> {
-                pieData.add(new PieChart.Data(name, number.doubleValue()));
+            List<String> sortedKeys = AttributeType.sortAttributeValues(attr, new ArrayList<>(data.keySet()));
+
+             sortedKeys.forEach((name) -> {
+                pieData.add(new PieChart.Data(name, data.get(name).doubleValue()));
             });
 
             chart.setData(pieData);
