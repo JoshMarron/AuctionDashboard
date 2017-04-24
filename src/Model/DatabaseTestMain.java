@@ -39,9 +39,9 @@ public class DatabaseTestMain {
 //        System.out.println(testModel2.values().stream().reduce((a, b) -> a.doubleValue() + b.doubleValue()));
 
 		HashMap<AttributeType, List<String>> map = new HashMap<>();
-		map.put(AttributeType.GENDER, Arrays.asList("Male", "Female"));
-		map.put(AttributeType.INCOME, Arrays.asList("Low"));
-		map.put(AttributeType.AGE, Arrays.asList("25-34", "35-44"));
+//		map.put(AttributeType.GENDER, Arrays.asList("Male", "Female"));
+//		map.put(AttributeType.INCOME, Arrays.asList("Low"));
+//		map.put(AttributeType.AGE, Arrays.asList("25-34", "35-44"));
 
 		TimeQueryBuilder qB = new TimeQueryBuilder(MetricType.TOTAL_CONVERSIONS);
 		qB = (TimeQueryBuilder) qB.filters(map);
