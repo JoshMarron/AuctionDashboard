@@ -1,10 +1,19 @@
 package Model;
 
+import Controllers.Queries.TimeDataQuery;
+import Controllers.Queries.TimeQueryBuilder;
 import Model.DBEnums.DateEnum;
+import Model.DBEnums.attributes.Attribute;
+import Model.DBEnums.attributes.IncomeAttribute;
+import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,17 +24,28 @@ public class DatabaseTestMain {
     public static void main(String[] args) {
         DatabaseManager model = new DatabaseManager();
         try {
-            model.loadDB("db/2weekcampaign2.cat");
+            model.loadDB("db/Project.cat");
         } catch (SQLException | CorruptTableException e) {
             e.printStackTrace();
         }
+//
+//        Map<String, Number> testModel = model.getBounceRateForAttribute(AttributeType.CONTEXT);
+//        Map<Instant, Number> testModel2 = model.getBounceRatePer(DateEnum.DAYS);
+//
+//        testModel.forEach((type, value) -> System.out.println(type + ": " + value));
+//        testModel2.forEach((type, value) -> System.out.println(type + ": " + value));
+//
+//        System.out.println(testModel2.values().stream().reduce((a, b) -> a.doubleValue() + b.doubleValue()));
 
-        Map<String, Number> testModel = model.getBounceRateForAttribute(AttributeType.CONTEXT);
-        Map<Instant, Number> testModel2 = model.getBounceRatePer(DateEnum.DAYS);
+		HashMap<AttributeType, List<String>> map = new HashMap<>();
+		map.put(AttributeType.GENDER, Arrays.asList("Male", "Female"));
+		map.put(AttributeType.INCOME, Arrays.asList(IncomeAttribute.LOW.toString()));
 
-        testModel.forEach((type, value) -> System.out.println(type + ": " + value));
-        testModel2.forEach((type, value) -> System.out.println(type + ": " + value));
+		TimeQueryBuilder qB = new TimeQueryBuilder(MetricType.TOTAL_IMPRESSIONS);
+		qB = (TimeQueryBuilder) qB.filters(map);
+		TimeDataQuery q = qB.build();
 
-        System.out.println(testModel2.values().stream().reduce((a, b) -> a.doubleValue() + b.doubleValue()));
-    }
+		System.out.println(model.setBetween(q, "impression_date"));
+		System.out.println(model.setFilters(q));
+	}
 }

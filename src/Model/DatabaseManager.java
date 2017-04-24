@@ -3,6 +3,9 @@ package Model;
 
 import Controllers.DashboardMainFrameController;
 import Controllers.Queries.Query;
+import Controllers.Queries.TimeDataQuery;
+import Controllers.Results.QueryResult;
+import Controllers.Results.TimeQueryResult;
 import DataStructures.ClickLog;
 import DataStructures.CsvInterfaces.Gender;
 import DataStructures.CsvInterfaces.Income;
@@ -1273,7 +1276,53 @@ public class DatabaseManager {
         return logs;
     }
 
-    public Result resolveQuery(Query q) {
+    public synchronized QueryResult resolveQuery(Query q) {
+
+		if (q instanceof TimeDataQuery) {
+			return resolveTimeDataQuery((TimeDataQuery) q);
+		}
+
 		return null;
+	}
+
+	private TimeQueryResult resolveTimeDataQuery(TimeDataQuery q) {
+
+		String sql;
+
+		switch (q.getMetric()) {
+			case TOTAL_IMPRESSIONS:
+				sql = "SELECT impression_date, count(site_impression_id) FROM site_impression JOIN user ON site_impression.user_id = user.user_id WHERE " + this.setBetween(q, "impression_date") + this.setFilters(q) + this.timeGroup(q) + " ORDER BY impression_date;";
+				break;
+		}
+
+
+		return null;
+	}
+
+	/* Relies on granualarity */
+	private String timeGroup(TimeDataQuery q) {
+		return null;
+	}
+
+	public String setFilters(Query q) {
+		StringBuilder builder = new StringBuilder();
+		for (Map.Entry<AttributeType, List<String>> entry : q.getFilters().entrySet()) {
+			builder.append(" AND ");
+			for (int i = 0; i < entry.getValue().size(); i++) {
+				builder.append(entry.getKey().getQueryBit() + " = '" + entry.getValue().get(i) + "'");
+				if (i < entry.getValue().size() - 1) {
+					builder.append(" OR ");
+				}
+			}
+		}
+		return builder.toString();
+	}
+
+	/* Only TimeDataQuery has time constraints */
+	public String setBetween(TimeDataQuery q, String dateString) {
+		String gran = q.getGranularity().getSql();
+		return "strftime(" + gran + "," + dateString + ") BETWEEN " +
+				"strftime(" + gran + ",'" + q.getStartDate().toString() + "') AND " +
+				"strftime(" + gran + ",'" + q.getEndDate().toString() + "') ";
 	}
 }
