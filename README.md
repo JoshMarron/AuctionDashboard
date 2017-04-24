@@ -1,7 +1,7 @@
 # Auction Dashboard
 ## Group 25
 ### Dependencies
-* JDBC-SQLite
-* Apache Commons I/O
+* JDBC-SQLite 3.16
+* Apache Commons I/O 2.5
 * JUnit 4
-* OpenCSV
+* OpenCSV 3.16
