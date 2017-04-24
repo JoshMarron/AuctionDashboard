@@ -57,14 +57,14 @@ public class RecentProjectInfoPanel extends CatListPanel {
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            RecentProjectInfoPanel.this.setBackground(ColorSettings.BUTTON_HOVER_COLOR.getColor());
+            RecentProjectInfoPanel.this.setBackground(ColorSettings.BUTTON_HOVER_COLOR);
             RecentProjectInfoPanel.this.setCursor(new Cursor(Cursor.HAND_CURSOR));
             repaint();
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
-            RecentProjectInfoPanel.this.setBackground(ColorSettings.BG_COLOR.getColor());
+            RecentProjectInfoPanel.this.setBackground(ColorSettings.BG_COLOR);
             repaint();
         }
     }

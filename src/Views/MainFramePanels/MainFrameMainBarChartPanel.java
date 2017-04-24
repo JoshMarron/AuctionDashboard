@@ -35,7 +35,7 @@ public class MainFrameMainBarChartPanel extends MainFrameMainAttributeChartPanel
         this.setLayout(new BorderLayout());
 
         chartPanel = new JFXPanel();
-        chartPanel.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
+        chartPanel.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR));
 
         this.add(chartPanel, BorderLayout.CENTER);
     }

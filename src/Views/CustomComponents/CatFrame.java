@@ -28,7 +28,7 @@ public class CatFrame extends JFrame {
                 Graphics2D g2 = (Graphics2D) g;
 
                 if (loading) {
-                    g2.setColor(ColorSettings.LOADING_COLOR.getColor());
+                    g2.setColor(ColorSettings.LOADING_COLOR);
                     g2.fillRect(0, 0, this.getWidth(), this.getHeight());
                 }
             }

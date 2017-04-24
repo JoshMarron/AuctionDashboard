@@ -20,8 +20,8 @@ public class CatNumberSpinner extends JSpinner {
     }
 
     private void init() {
-        this.setBackground(ColorSettings.TEXT_AREA_BG_COLOR.getColor());
-        this.setForeground(ColorSettings.TEXT_AREA_TEXT_COLOR.getColor());
+        this.setBackground(ColorSettings.TEXT_AREA_BG_COLOR);
+        this.setForeground(ColorSettings.TEXT_AREA_TEXT_COLOR);
         this.setFont(FontSettings.GLOB_FONT.getFont());
         this.setMaximumSize(this.getPreferredSize());
     }

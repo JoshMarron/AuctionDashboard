@@ -1,5 +1,7 @@
 package Controllers;
 
+import java.awt.*;
+
 /**
  * A non-initialisable class to store some settings of the application. All settings should go here
  */
@@ -33,4 +35,8 @@ public class ProjectSettings {
         ProjectSettings.bounceMinutes = Integer.MAX_VALUE;
         ProjectSettings.bouncePages = 1;
     }
+
+    //Colour Settings - Set to default values but overwritten when a new theme is chosen.
+
+
 }

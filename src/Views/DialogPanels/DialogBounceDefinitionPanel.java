@@ -26,9 +26,9 @@ public class DialogBounceDefinitionPanel extends CatPanel {
 
     private void init() {
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        this.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()),
+        this.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR),
                 "Bounce Definition", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-                FontSettings.GLOB_FONT.getFont(), ColorSettings.TEXT_COLOR.getColor()));
+                FontSettings.GLOB_FONT.getFont(), ColorSettings.TEXT_COLOR));
 
         CatLabel bounceTimeLabel = new CatLabel("Visit length (in minutes): ");
         CatLabel bouncePageLabel = new CatLabel("Pages viewed: ");
