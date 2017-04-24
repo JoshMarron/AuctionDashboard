@@ -2,6 +2,7 @@
 package Model;
 
 import Controllers.DashboardMainFrameController;
+import Controllers.Queries.Query;
 import DataStructures.ClickLog;
 import DataStructures.CsvInterfaces.Gender;
 import DataStructures.CsvInterfaces.Income;
@@ -1271,4 +1272,8 @@ public class DatabaseManager {
 
         return logs;
     }
+
+    public Result resolveQuery(Query q) {
+		return null;
+	}
 }
