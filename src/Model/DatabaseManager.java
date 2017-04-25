@@ -1515,11 +1515,11 @@ public class DatabaseManager {
 	}
 
 	/* Relies on granualarity */
-	public String timeGroup(TimeDataQuery q, String dateString) {
+	private String timeGroup(TimeDataQuery q, String dateString) {
 		return "GROUP BY strftime(" + q.getGranularity().getSql() + ", " + dateString + ")";
 	}
 
-	public String setFilters(Query q) {
+	private String setFilters(Query q) {
 		StringBuilder builder = new StringBuilder();
 		for (Map.Entry<AttributeType, List<String>> entry : q.getFilters().entrySet()) {
 			builder.append(" AND (");
@@ -1535,14 +1535,14 @@ public class DatabaseManager {
 	}
 
 	/* Only TimeDataQuery has time constraints */
-	public String setBetween(TimeDataQuery q, String dateString) {
+	private String setBetween(TimeDataQuery q, String dateString) {
 		String gran = q.getGranularity().getSql();
 		return "strftime(" + gran + "," + dateString + ") BETWEEN " +
 				"strftime(" + gran + ",'" + q.getStartDate().toString().replace("Z", "") + "') AND " +
 				"strftime(" + gran + ",'" + q.getEndDate().toString().replace("Z", "") + "') ";
 	}
 
-	public String setBetween(AttributeDataQuery q, String dateString) {
+	private String setBetween(AttributeDataQuery q, String dateString) {
 		return "strftime('%d,%m,%Y'," + dateString + ") BETWEEN " +
 				"strftime('%d,%m,%Y','" + q.getStartDate().toString().replace("Z", "") + "') AND " +
 				"strftime('%d,%m,%Y','" + q.getEndDate().toString().replace("Z", "") + "') ";
