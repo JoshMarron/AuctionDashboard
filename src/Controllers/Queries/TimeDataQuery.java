@@ -17,7 +17,6 @@ public class TimeDataQuery extends Query {
     private DateEnum granularity;
     private Instant startDate;
     private Instant endDate;
-    private Map<AttributeType, List<String>> filters;
 
     public TimeDataQuery(TimeQueryBuilder b) {
         super(b);
@@ -36,10 +35,6 @@ public class TimeDataQuery extends Query {
 
     public Instant getEndDate() {
         return endDate;
-    }
-
-    public Map<AttributeType, List<String>> getFilters() {
-        return this.filters;
     }
 
     public TimeDataQuery deriveQuery(MetricType metric) {
