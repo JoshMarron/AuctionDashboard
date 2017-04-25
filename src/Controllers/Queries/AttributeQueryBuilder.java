@@ -1,5 +1,6 @@
 package Controllers.Queries;
 
+import Controllers.ProjectSettings;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 
@@ -19,6 +20,8 @@ public class AttributeQueryBuilder extends QueryBuilder {
     public AttributeQueryBuilder(MetricType metric, AttributeType attr) {
         super(metric);
         this.attr = attr;
+        this.startDate = ProjectSettings.MIN_DATE;
+        this.endDate = ProjectSettings.MAX_DATE;
     }
 
     @Override
