@@ -5,11 +5,13 @@ import Views.ViewPresets.ColorSettings;
 import Views.ViewPresets.FontSettings;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import javax.swing.*;
@@ -25,6 +27,13 @@ public class DialogColourCustomisationPanel extends CatPanel{
 
     private CatPanel colorOptions;
     private CatPanel customColor;
+
+    private ColorPicker bgcolor;
+    private ColorPicker textcolor;
+    private ColorPicker buttoncolor;
+    private ColorPicker textAreaBg;
+    private ColorPicker textAreaText;
+
 
     public DialogColourCustomisationPanel(){this.init();}
 
@@ -77,20 +86,27 @@ public class DialogColourCustomisationPanel extends CatPanel{
         customColor.add(fxPanel);
     }
 
-    private static void initFx(JFXPanel panel){
+    private void initFx(JFXPanel panel){
         Scene scene = createScene();
         panel.setScene(scene);
     }
 
-    private static Scene createScene(){
+    private Scene createScene(){
         Group root = new Group();
         Scene scene = new Scene(root, Color.rgb(ColorSettings.BG_COLOR.getRed(), ColorSettings.BG_COLOR.getGreen(), ColorSettings.BG_COLOR.getBlue()));
+
+        VBox vbox = new VBox();
+        vbox.setSpacing(10);
+
+
         HBox hbox = new HBox();
-        ColorPicker bgcolor = new ColorPicker();
+        hbox.setSpacing(10);
+        hbox.setAlignment(Pos.BASELINE_CENTER);
+        bgcolor = new ColorPicker();
         bgcolor.setValue(Color.rgb(ColorSettings.BG_COLOR.getRed(), ColorSettings.BG_COLOR.getGreen(), ColorSettings.BG_COLOR.getBlue()));
-        ColorPicker textcolor = new ColorPicker();
+        textcolor = new ColorPicker();
         textcolor.setValue(Color.rgb(ColorSettings.TEXT_COLOR.getRed(), ColorSettings.TEXT_COLOR.getGreen(), ColorSettings.TEXT_COLOR.getBlue()));
-        ColorPicker buttoncolor = new ColorPicker();
+        buttoncolor = new ColorPicker();
         buttoncolor.setValue(Color.rgb(ColorSettings.BUTTON_COLOR.getRed(), ColorSettings.BUTTON_COLOR.getGreen(), ColorSettings.BUTTON_COLOR.getBlue()));
         hbox.getChildren().add(new CatLabelFx("Background:"));
         hbox.getChildren().add(bgcolor);
@@ -99,9 +115,48 @@ public class DialogColourCustomisationPanel extends CatPanel{
         hbox.getChildren().add(new CatLabelFx("Buttons:"));
         hbox.getChildren().add(buttoncolor);
 
-        root.getChildren().add(hbox);
+        HBox overflow = new HBox();
+        overflow.setAlignment(Pos.BASELINE_CENTER);
+        overflow.setSpacing(10);
+        textAreaBg = new ColorPicker();
+        textAreaBg.setValue(Color.rgb(ColorSettings.TEXT_AREA_BG_COLOR.getRed(), ColorSettings.TEXT_AREA_BG_COLOR.getGreen(), ColorSettings.TEXT_AREA_BG_COLOR.getBlue()));
+        textAreaText = new ColorPicker();
+        textAreaText.setValue(Color.rgb(ColorSettings.TEXT_AREA_TEXT_COLOR.getRed(), ColorSettings.TEXT_AREA_TEXT_COLOR.getGreen(), ColorSettings.TEXT_AREA_TEXT_COLOR.getBlue()));
+        overflow.getChildren().add(new CatLabelFx("Text Area Background:"));
+        overflow.getChildren().add(textAreaBg);
+        overflow.getChildren().add(new CatLabelFx("Text Area Text Color:"));
+        overflow.getChildren().add(textAreaText);
+
+        vbox.getChildren().add(hbox);
+        vbox.getChildren().add(overflow);
+
+        root.getChildren().add(vbox);
 
         return scene;
+    }
+
+    public java.awt.Color getChosenBgColor(){
+        return fxPickerToSwingColor(bgcolor);
+    }
+
+    public java.awt.Color getChosenTextColor(){
+        return fxPickerToSwingColor(textcolor);
+    }
+
+    public java.awt.Color getChosenButtonColor(){
+        return fxPickerToSwingColor(buttoncolor);
+    }
+
+    public java.awt.Color getChosenTextAreaBackgroundColor(){
+        return fxPickerToSwingColor(textAreaBg);
+    }
+
+    public java.awt.Color getChosenTextAreaTextColor(){
+        return fxPickerToSwingColor(textAreaText);
+    }
+
+    public static java.awt.Color fxPickerToSwingColor(ColorPicker picker){
+        return new java.awt.Color((int)picker.getValue().getRed()*255, (int)picker.getValue().getGreen()*255, (int)picker.getValue().getBlue()*255);
     }
 
 }

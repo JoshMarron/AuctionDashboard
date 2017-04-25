@@ -1,5 +1,6 @@
 package Views;
 
+import Controllers.ColorController;
 import Controllers.ProjectSettings;
 import Views.CustomComponents.CatButton;
 import Views.CustomComponents.CatPanel;
@@ -9,6 +10,8 @@ import Views.DialogPanels.DialogColourCustomisationPanel;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 /**
  * A Dialog which will contain a number of ways to tweak the settings of the application
@@ -41,6 +44,7 @@ public class DashboardSettingsDialog extends JDialog {
 
         CatButton applyButton = new CatButton("Apply");
         applyButton.addActionListener((e) -> {
+            this.applyColorChanges();
             this.returnVal = DashboardSettingsDialog.APPROVE_OPTION;
             this.setBounceVals();
             this.setVisible(false);
@@ -83,5 +87,16 @@ public class DashboardSettingsDialog extends JDialog {
     private void setBounceVals() {
         ProjectSettings.setBouncePages(bouncePanel.getBouncePages());
         ProjectSettings.setBounceMinutes(bouncePanel.getBounceTime());
+    }
+
+    private void applyColorChanges(){
+        java.util.ArrayList<Color> colors = new ArrayList<Color>();
+        colors.add(colourPanel.getChosenBgColor());
+        colors.add(colourPanel.getChosenTextColor());
+        colors.add(colourPanel.getChosenButtonColor());
+        colors.add(colourPanel.getChosenTextAreaBackgroundColor());
+        colors.add(colourPanel.getChosenTextAreaTextColor());
+        ColorController.applyColorChanges(colors);
+        repaint();
     }
 }
