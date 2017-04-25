@@ -1313,7 +1313,7 @@ public class DatabaseManager {
 				sql = "SELECT click_date, count( DISTINCT click_id) " +
 						"FROM click " +
 						"JOIN user ON click.user_id = user.user_id " +
-						"JOIN site_impression ON click.user_id = site_impression.user_id" +
+						"JOIN site_impression ON click.user_id = site_impression.user_id " +
 						"WHERE " + this.setBetween(q, "click_date") +
 						this.setFilters(q) +
 						this.timeGroup(q, "click_date") +
@@ -1323,7 +1323,7 @@ public class DatabaseManager {
 				sql = "SELECT entry_date, count(server_log_id) " +
 						"FROM server_log " +
 						"JOIN user ON server_log.user_id = user.user_id " +
-						"JOIN site_impression ON server_log.user_id = site_impression.user_id" +
+						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
 						"WHERE pages_viewed = 1 AND " +
 						this.setBetween(q, "entry_date") +
 						this.setFilters(q) +
@@ -1334,7 +1334,7 @@ public class DatabaseManager {
 				sql = "SELECT entry_date, count(server_log_id) " +
 						"FROM server_log " +
 						"JOIN user ON server_log.user_id = user.user_id " +
-						"JOIN site_impression ON server_log.user_id = site_impression.user_id" +
+						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
 						"WHERE conversion = 'Yes' AND " +
 						this.setBetween(q, "entry_date") +
 						this.setFilters(q) +
