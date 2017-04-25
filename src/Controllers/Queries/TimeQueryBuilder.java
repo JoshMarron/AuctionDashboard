@@ -17,7 +17,6 @@ public class TimeQueryBuilder extends QueryBuilder {
     private DateEnum granularity;
     private Instant startDate;
     private Instant endDate;
-    private Map<AttributeType, List<String>> filters;
 
     public TimeQueryBuilder(MetricType metric) {
         super(metric);
@@ -58,12 +57,8 @@ public class TimeQueryBuilder extends QueryBuilder {
         return endDate;
     }
 
-    public Map<AttributeType, List<String>> getFilters() {
-        return filters;
-    }
-
     public TimeQueryBuilder filters(Map<AttributeType, List<String>> filters) {
-        this.filters = filters;
+        this.setFilters(filters);
         return this;
     }
 

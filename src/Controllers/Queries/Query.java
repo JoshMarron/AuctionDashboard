@@ -12,13 +12,19 @@ import java.util.Map;
 public abstract class Query {
 
     private MetricType metric;
+    private Map<AttributeType, List<String>> filters;
 
     public Query(QueryBuilder b) {
         this.metric = b.getMetric();
+        this.filters = b.getFilters();
     }
 
     public MetricType getMetric() {
         return this.metric;
+    }
+
+    public Map<AttributeType, List<String>> getFilters() {
+        return this.filters;
     }
 
 }
