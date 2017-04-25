@@ -24,6 +24,7 @@ public class DashboardFilterDialog extends JDialog {
     private Instant startDate;
     private Instant endDate;
     private int returnVal;
+    private DialogDateFilterPanel datePanel;
 
     public DashboardFilterDialog(Window parent, Map<AttributeType, List<String>> possibleVals) {
         super(parent, "Choose Filters", ModalityType.APPLICATION_MODAL);
@@ -46,7 +47,7 @@ public class DashboardFilterDialog extends JDialog {
         filterListPanel.setLayout(new BoxLayout(filterListPanel, BoxLayout.Y_AXIS));
         filterListPanel.add(Box.createGlue());
 
-        DialogDateFilterPanel datePanel = new DialogDateFilterPanel();
+        datePanel = new DialogDateFilterPanel();
         filterListPanel.add(datePanel);
         filterListPanel.add(Box.createGlue());
 
@@ -86,10 +87,10 @@ public class DashboardFilterDialog extends JDialog {
     }
 
     public Instant getStartDate() {
-        return this.startDate;
+        return datePanel.getStartDate();
     }
 
     public Instant getEndDate() {
-        return this.endDate;
+        return datePanel.getEndDate();
     }
 }

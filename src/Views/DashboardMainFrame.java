@@ -2,6 +2,7 @@ package Views;
 
 import Controllers.DashboardMainFrameController;
 
+import Controllers.ProjectSettings;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Views.CustomComponents.CatFrame;
@@ -16,6 +17,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 /**
@@ -31,12 +33,18 @@ public class DashboardMainFrame extends CatFrame {
     private MetricType currentMetric;
     private AttributeType currentAttribute;
     private MainFrameChartOptionsPanel optionsPanel;
+    private Map<AttributeType, List<String>> filters;
+    private Instant startDate;
+    private Instant endDate;
 
     public DashboardMainFrame(File homeDir) {
         this.homedir = homeDir;
         this.requestedChart = ChartType.LINE;
         this.currentAttribute = AttributeType.CONTEXT;
         this.currentMetric = MetricType.TOTAL_IMPRESSIONS;
+        this.filters = new HashMap<>();
+        this.startDate = ProjectSettings.MIN_DATE;
+        this.endDate = ProjectSettings.MAX_DATE;
         loading = false;
     }
 
@@ -168,5 +176,17 @@ public class DashboardMainFrame extends CatFrame {
 
     public File getHomeDir() {
         return this.homedir;
+    }
+
+    public void setFilters(Map<AttributeType, List<String>> filters) {
+        this.filters = filters;
+    }
+
+    public void setStartDate(Instant startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(Instant endDate) {
+        this.endDate = endDate;
     }
 }
