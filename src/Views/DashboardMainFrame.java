@@ -30,6 +30,7 @@ public class DashboardMainFrame extends CatFrame {
     private DashboardMainFrameController controller;
     private MainFrameMetricList metricList;
     private ChartType requestedChart;
+    private DateEnum granularity;
     private MetricType currentMetric;
     private AttributeType currentAttribute;
     private MainFrameChartOptionsPanel optionsPanel;
@@ -40,6 +41,7 @@ public class DashboardMainFrame extends CatFrame {
     public DashboardMainFrame(File homeDir) {
         this.homedir = homeDir;
         this.requestedChart = ChartType.LINE;
+        this.granularity = DateEnum.DAYS;
         this.currentAttribute = AttributeType.CONTEXT;
         this.currentMetric = MetricType.TOTAL_IMPRESSIONS;
         this.filters = new HashMap<>();
@@ -105,9 +107,10 @@ public class DashboardMainFrame extends CatFrame {
         requestNewChart();
     }
 
-    public void requestTimeChartTypeChange(ChartType chartType) {
+    public void requestTimeChartTypeChange(ChartType chartType, DateEnum granularity) {
         if (!this.requestedChart.equals(chartType)) {
             this.requestedChart = chartType;
+            this.granularity = granularity;
             requestNewChart();
         }
     }
