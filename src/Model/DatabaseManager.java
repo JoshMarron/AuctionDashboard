@@ -45,7 +45,8 @@ public class DatabaseManager {
 	private String filename;
 	private String url;
 	private Map<Instant, Number> totalCostDaysMap;
-	
+	private TimeDataQuery tqrCostCPM;
+
 	public DatabaseManager() {
 
 //		filename = "db/model3.db";
@@ -1286,10 +1287,7 @@ public class DatabaseManager {
 	}
 
 	private TimeQueryResult resolveTimeDataQuery(TimeDataQuery q) {
-
-		Statement stmt;
 		String sql = null;
-		TimeQueryResult tqr;
 
 		switch (q.getMetric()) {
 			case TOTAL_IMPRESSIONS:
@@ -1339,23 +1337,103 @@ public class DatabaseManager {
 						this.timeGroup(q, "entry_date") +
 						" ORDER BY entry_date;";
 				break;
-			case CPA: //TODO work out how the hell you're going to combine a fuckton of statements
-				
-				break;
-			case CPC:
-				break;
-			case CPM:
-				break;
-			case BOUNCE_RATE:
-				break;
-			case CTR:
-				break;
+			case CPA: // total cost / total conversion
+				TimeDataQuery tqrCostCPA = q.deriveQuery(MetricType.TOTAL_COST);
+				TimeQueryResult costCPA = resolveTimeDataQuery(tqrCostCPA);
+
+				TimeDataQuery tqrConversionCPA = q.deriveQuery(MetricType.TOTAL_CONVERSIONS);
+				TimeQueryResult conversionCPA = resolveTimeDataQuery(tqrConversionCPA);
+
+				Map<Instant, Number> resultDataCPA = new HashMap<>();
+
+				costCPA.getData().forEach(resultDataCPA::put);
+
+				conversionCPA.getData().forEach((date, val) -> resultDataCPA.put(date, resultDataCPA.get(date).doubleValue() / val.doubleValue()));
+
+				return new TimeQueryResult(q.getMetric(), resultDataCPA);
+			case CPC: // total cost / total clicks
+				TimeDataQuery tqrCostCPC = q.deriveQuery(MetricType.TOTAL_COST);
+				TimeQueryResult costCPC = resolveTimeDataQuery(tqrCostCPC);
+
+				TimeDataQuery tqrClickCPC = q.deriveQuery(MetricType.TOTAL_CLICKS);
+				TimeQueryResult clickCPC = resolveTimeDataQuery(tqrClickCPC);
+
+				Map<Instant, Number> resultDataCPC = new HashMap<>();
+
+				costCPC.getData().forEach(resultDataCPC::put);
+
+				clickCPC.getData().forEach((date, val) -> resultDataCPC.put(date, resultDataCPC.get(date).doubleValue() / val.doubleValue()));
+
+				return new TimeQueryResult(q.getMetric(), resultDataCPC);
+			case CPM: // 1000 * ( total cost / total impressions )
+				TimeDataQuery tqrCostCPM = q.deriveQuery(MetricType.TOTAL_COST);
+				TimeQueryResult costCPM = resolveTimeDataQuery(tqrCostCPM);
+
+				TimeDataQuery tqrImpressionCPM = q.deriveQuery(MetricType.TOTAL_IMPRESSIONS);
+				TimeQueryResult impressionCPM = resolveTimeDataQuery(tqrImpressionCPM);
+
+				Map<Instant, Number> resultDataCPM = new HashMap<>();
+
+				costCPM.getData().forEach(resultDataCPM::put);
+
+				impressionCPM.getData().forEach((date, val) -> resultDataCPM.put(date, 1000 * (resultDataCPM.get(date).doubleValue() / val.doubleValue())));
+
+				return new TimeQueryResult(q.getMetric(), resultDataCPM);
+			case BOUNCE_RATE: // total bounces / total clicks
+				TimeDataQuery tqrBounceBR = q.deriveQuery(MetricType.BOUNCE_RATE);
+				TimeQueryResult bounceBR = resolveTimeDataQuery(tqrBounceBR);
+
+				TimeDataQuery tqrClickBR = q.deriveQuery(MetricType.TOTAL_CLICKS);
+				TimeQueryResult clickBR = resolveTimeDataQuery(tqrClickBR);
+
+				Map<Instant, Number> resultDataBR = new HashMap<>();
+
+				bounceBR.getData().forEach(resultDataBR::put);
+
+				clickBR.getData().forEach((date, val) -> resultDataBR.put(date, resultDataBR.get(date).doubleValue() / val.doubleValue()));
+
+				return new TimeQueryResult(q.getMetric(), resultDataBR);
+			case CTR: // total clicks / total impressions
+				TimeDataQuery tqrClickCTR = q.deriveQuery(MetricType.TOTAL_CLICKS);
+				TimeQueryResult clickCTR = resolveTimeDataQuery(tqrClickCTR);
+
+				TimeDataQuery tqrImpressionCTR = q.deriveQuery(MetricType.TOTAL_IMPRESSIONS);
+				TimeQueryResult impressionCTR = resolveTimeDataQuery(tqrImpressionCTR);
+
+				Map<Instant, Number> resultDataCTR = new HashMap<>();
+
+				clickCTR.getData().forEach(resultDataCTR::put);
+
+				impressionCTR.getData().forEach((date, val) -> resultDataCTR.put(date, resultDataCTR.get(date).doubleValue() / val.doubleValue()));
+
+				return new TimeQueryResult(q.getMetric(), resultDataCTR);
 			case TOTAL_COST:
-				break;
+				String impressionSql = "SELECT impression_date, SUM(impression_cost) " +
+						"FROM site_impression " +
+						"WHERE " + this.setBetween(q, "impression_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "impression_date") +
+						" ORDER BY impression_date;";
+				String clickSql = "SELECT click_date, SUM(click_cost) " +
+						"FROM click " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "click_date") +
+						" ORDER BY click_date;";
+				Map<Instant, Number> impressionCostMap = DBUtils.truncateInstantMap(createMap(impressionSql), q.getGranularity());
+				Map<Instant, Number> clickCostMap = DBUtils.truncateInstantMap(createMap(clickSql), q.getGranularity());
+
+				clickCostMap.forEach((date, val) -> {
+					if (impressionCostMap.containsKey(date)) {
+						clickCostMap.put(date, val.doubleValue() + impressionCostMap.get(date).doubleValue());
+					}
+				});
+
+				return new TimeQueryResult(q.getMetric(), clickCostMap);
 		}
 		System.out.println(sql);
 
-		return null;
+		return new TimeQueryResult(q.getMetric(), DBUtils.truncateInstantMap(createMap(sql), q.getGranularity()));
 	}
 
 	/* Relies on granualarity */
