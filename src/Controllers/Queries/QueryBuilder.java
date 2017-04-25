@@ -13,6 +13,7 @@ import java.util.Map;
 public abstract class QueryBuilder {
 
     private MetricType metric;
+    private Map<AttributeType, List<String>> filters;
 
     public QueryBuilder(MetricType metric) {
         this.metric = metric;
@@ -22,5 +23,13 @@ public abstract class QueryBuilder {
 
     public MetricType getMetric() {
         return this.metric;
+    }
+
+    public void setFilters(Map<AttributeType, List<String>> filters) {
+        this.filters = filters;
+    }
+
+    public Map<AttributeType, List<String>> getFilters() {
+        return this.filters;
     }
 }
