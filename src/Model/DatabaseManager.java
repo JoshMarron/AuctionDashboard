@@ -1289,6 +1289,7 @@ public class DatabaseManager {
 
 		Statement stmt;
 		String sql = null;
+		TimeQueryResult tqr;
 
 		switch (q.getMetric()) {
 			case TOTAL_IMPRESSIONS:
@@ -1339,14 +1340,7 @@ public class DatabaseManager {
 						" ORDER BY entry_date;";
 				break;
 			case CPA: //TODO work out how the hell you're going to combine a fuckton of statements
-				sql = "SELECT impression_date, count(site_impression_id) " +
-						"FROM site_impression " +
-						"JOIN user ON site_impression.user_id = user.user_id " +
-						"WHERE " + this.setBetween(q, "impression_date") +
-						this.setFilters(q) +
-						this.timeGroup(q, "impression_date") +
-						" ORDER BY impression_date;";
-				sql = "SELECT impression_date, count()";
+				
 				break;
 			case CPC:
 				break;

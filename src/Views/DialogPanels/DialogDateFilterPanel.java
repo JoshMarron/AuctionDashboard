@@ -22,6 +22,6 @@ public class DialogDateFilterPanel extends CatPanel {
         this.dateJFXPanel = new JFXPanel();
 
         Group root = new Group();
-        Scene scene = new Scene(root, Color.rgb(ColorSettings.BG_COLOR))
+//        Scene scene = new Scene(root, Color.rgb(ColorSettings.BG_COLOR))
     }
 }
