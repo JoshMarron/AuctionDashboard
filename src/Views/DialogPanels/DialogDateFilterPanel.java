@@ -1,21 +1,17 @@
 package Views.DialogPanels;
 
 import Controllers.ProjectSettings;
-import Views.CustomComponents.CatLabel;
 import Views.CustomComponents.CatLabelFx;
 import Views.CustomComponents.CatPanel;
 import Views.ViewPresets.ColorSettings;
 import Views.ViewPresets.FontSettings;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.DatePicker;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import javax.swing.*;
@@ -25,14 +21,13 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 
 /**
- * Created by marro on 24/04/2017.
+ * DialogDateFilterPanel allows the user to select the start and end dates for the chunk of campaign they wish to view
  */
 public class DialogDateFilterPanel extends CatPanel {
 
     private JFXPanel dateJFXPanel;
     private DatePicker startPicker;
     private DatePicker endPicker;
-    private CatLabelFx startLabel;
 
     public DialogDateFilterPanel() {
         this.init();

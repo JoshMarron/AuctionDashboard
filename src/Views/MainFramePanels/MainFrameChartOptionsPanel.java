@@ -1,5 +1,6 @@
 package Views.MainFramePanels;
 
+import Model.DBEnums.DateEnum;
 import Views.CustomComponents.CatButton;
 import Views.CustomComponents.CatComboBox;
 import Views.CustomComponents.CatLabel;
@@ -72,6 +73,12 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         timeChartTypeLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
         CatComboBox<ChartType> timeChartPicker = new CatComboBox<>();
         timeChartPicker.addItem(ChartType.LINE);
+        CatLabel timeChartGranularityLabel = new CatLabel("Granularity: ");
+        timeChartGranularityLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+        CatComboBox<DateEnum> timeChartGranularityPicker = new CatComboBox<>();
+        for (DateEnum dateEnum: DateEnum.values()) {
+            timeChartGranularityPicker.addItem(dateEnum);
+        }
         CatButton timeChartGoButton = new CatButton("Go!");
         timeChartGoButton.addActionListener((e) -> this.requestNewTimeChart((ChartType) timeChartPicker.getSelectedItem()));
 
@@ -81,6 +88,9 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         timeChartOptionsPanel.add(timeChartTypeLabel);
         timeChartOptionsPanel.add(timeChartPicker);
         timeChartOptionsPanel.add(Box.createHorizontalGlue());
+        timeChartOptionsPanel.add(timeChartGranularityLabel);
+        timeChartOptionsPanel.add(timeChartGranularityPicker);
+        timeChartOptionsPanel.add(Box.createGlue());
         timeChartOptionsPanel.add(timeChartGoButton);
         timeChartOptionsPanel.add(Box.createRigidArea(new Dimension(20, 0)));
 
