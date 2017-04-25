@@ -17,6 +17,7 @@ public abstract class QueryBuilder {
 
     public QueryBuilder(MetricType metric) {
         this.metric = metric;
+        this.filters = new HashMap<>();
     }
 
     public abstract Query build();

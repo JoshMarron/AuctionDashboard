@@ -27,4 +27,18 @@ public abstract class Query {
         return this.filters;
     }
 
+    @Override
+    public int hashCode() {
+        return metric.hashCode() + filters.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Query)) {
+            return false;
+        }
+
+        return this.filters.equals(((Query) o).getFilters()) && this.metric.equals(((Query) o).getMetric());
+    }
+
 }

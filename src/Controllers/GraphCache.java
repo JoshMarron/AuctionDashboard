@@ -34,8 +34,12 @@ public class GraphCache {
             for (DateEnum gran: DateEnum.values()) {
                 TimeQueryBuilder builder = new TimeQueryBuilder(metric);
                 TimeDataQuery query = builder.granularity(gran).build();
+
+                System.out.println(query);
                 QueryResult result = model.resolveQuery(query);
+                System.out.println("Resolved");
                 cacheMap.put(query, result);
+                System.out.println(cacheMap);
             }
         }
 

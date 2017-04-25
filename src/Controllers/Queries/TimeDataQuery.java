@@ -48,4 +48,23 @@ public class TimeDataQuery extends Query {
         return newQuery;
 
     }
+
+    @Override
+    public int hashCode() {
+        return granularity.hashCode() + startDate.hashCode() + endDate.hashCode() + super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o2) {
+        if (!(o2 instanceof TimeDataQuery)) {
+            return false;
+        }
+        TimeDataQuery query2 = (TimeDataQuery) o2;
+        boolean dateEquals = this.getStartDate().equals(query2.getStartDate()) && this.getEndDate().equals(query2.getEndDate());
+        boolean granularityEquals = this.granularity.equals(query2.getGranularity());
+        boolean filterEquals = this.getFilters().entrySet().equals(query2.getFilters().entrySet());
+        boolean metricEquals = this.getMetric().equals(query2.getMetric());
+
+        return dateEquals && granularityEquals && filterEquals && metricEquals;
+    }
 }

@@ -60,6 +60,7 @@ public class DashboardMainFrameController {
 
         if (future.isDone()) {
             SwingUtilities.invokeLater(() -> frame.finishedLoading());
+            helpers.submit(cache::startCaching);
         }
     }
 
@@ -84,12 +85,12 @@ public class DashboardMainFrameController {
             if (cache.isInCache(query)) {
                 TimeQueryResult result = (TimeQueryResult) cache.hitCache(query);
                 SwingUtilities.invokeLater(() -> frame.displayChart(query.getMetric(), query.getGranularity(), result.getData()));
+            } else {
+                TimeQueryResult result = (TimeQueryResult) model.resolveQuery(query);
+                cache.addToCache(query, result);
+                Map<Instant, Number> data = result.getData();
+                SwingUtilities.invokeLater(() -> frame.displayChart(query.getMetric(), query.getGranularity(), data));
             }
-
-            TimeQueryResult result = (TimeQueryResult) model.resolveQuery(query);
-            cache.addToCache(query, result);
-            Map<Instant, Number> data = result.getData();
-            SwingUtilities.invokeLater(() -> frame.displayChart(query.getMetric(), query.getGranularity(), data));
         });
     }
 

@@ -32,4 +32,23 @@ public class AttributeDataQuery extends Query{
     public Instant getEndDate() {
         return endDate;
     }
+
+    @Override
+    public int hashCode() {
+        return attribute.hashCode() + startDate.hashCode() + endDate.hashCode() + super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o2) {
+        if (!(o2 instanceof AttributeDataQuery)) {
+            return false;
+        }
+        AttributeDataQuery query2 = (AttributeDataQuery) o2;
+        boolean dateEquals = this.getStartDate().equals(query2.getStartDate()) && this.getEndDate().equals(query2.getEndDate());
+        boolean attributeEquals = this.getAttribute().equals(query2.getAttribute());
+        boolean filterEquals = this.getFilters().entrySet().equals(query2.getFilters().entrySet());
+        boolean metricEquals = this.getMetric().equals(query2.getMetric());
+
+        return dateEquals && attributeEquals && filterEquals && metricEquals;
+    }
 }

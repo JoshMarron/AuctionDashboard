@@ -1279,10 +1279,13 @@ public class DatabaseManager {
 
     public synchronized QueryResult resolveQuery(Query q) {
 
+		System.out.println(q);
+
 		if (q instanceof TimeDataQuery) {
 			return resolveTimeDataQuery((TimeDataQuery) q);
 		}
 
+		System.out.println("failed");
 		return null;
 	}
 
