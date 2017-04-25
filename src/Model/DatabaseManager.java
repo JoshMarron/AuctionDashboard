@@ -1291,25 +1291,54 @@ public class DatabaseManager {
 	}
 
 	private AttributeQueryResult resolveAttributeDataQuery(AttributeDataQuery q) {
-		String sql;
-		String att = q.getAttribute().toString();
+		String sql = null;
+		String att = q.getAttribute().getQueryBit();
 
 		switch (q.getMetric()) {
 			case TOTAL_IMPRESSIONS:
 				sql = "SELECT " + att + ", count(site_impression_id) " +
 						"FROM site_impression " +
-						"JOIN user ON site_impression_id = user.user_id " +
+						"JOIN user ON site_impression.user_id = user.user_id " +
 						"WHERE " + this.setBetween(q, "impression_date") +
 						this.setFilters(q) +
-						"GROUP BY " + att;
+						" GROUP BY " + att + ";";
 				break;
 			case TOTAL_CLICKS:
+				sql = "SELECT " + att + ", count(click_id) " +
+						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"JOIN site_impression ON click.user_id = site_impression.user_id " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) +
+						" GROUP BY " + att + ";";
 				break;
 			case TOTAL_UNIQUES:
+				sql = "SELECT " + att + ", count( DISTINCT click_id) " +
+						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"JOIN site_impression ON click.user_id = site_impression.user_id " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) +
+						" GROUP BY " + att + ";";
 				break;
 			case TOTAL_BOUNCES:
+				sql = "SELECT " + att + ", count(server_log_id) " +
+						"FROM server_log " +
+						"JOIN user ON server_log.user_id = user.user_id " +
+						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
+						"WHERE " + this.setBetween(q, "entry_date") +
+						this.setFilters(q) +
+						" GROUP BY " + att + ";";
 				break;
 			case TOTAL_CONVERSIONS:
+				sql = "SELECT " + att + ", count(server_log_id) " +
+						"FROM server_log " +
+						"JOIN user ON server_log.user_id = user.user_id " +
+						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
+						"WHERE conversion = 'Yes' AND " +
+						this.setBetween(q, "entry_date") +
+						this.setFilters(q) +
+						" GROUP BY " + att + ";";
 				break;
 			case CPA:
 				break;
@@ -1514,8 +1543,8 @@ public class DatabaseManager {
 	}
 
 	public String setBetween(AttributeDataQuery q, String dateString) {
-		return "strftime(''," + dateString + ") BETWEEN " +
-				"strftime('','" + q.getStartDate().toString().replace("Z", "") + "') AND " +
-				"strftime('','" + q.getEndDate().toString().replace("Z", "") + "') ";
+		return "strftime('%d,%m,%Y'," + dateString + ") BETWEEN " +
+				"strftime('%d,%m,%Y','" + q.getStartDate().toString().replace("Z", "") + "') AND " +
+				"strftime('%d,%m,%Y','" + q.getEndDate().toString().replace("Z", "") + "') ";
 	}
 }
