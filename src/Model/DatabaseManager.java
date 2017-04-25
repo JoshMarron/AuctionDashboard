@@ -2,8 +2,10 @@
 package Model;
 
 import Controllers.DashboardMainFrameController;
+import Controllers.Queries.AttributeDataQuery;
 import Controllers.Queries.Query;
 import Controllers.Queries.TimeDataQuery;
+import Controllers.Results.AttributeQueryResult;
 import Controllers.Results.QueryResult;
 import Controllers.Results.TimeQueryResult;
 import DataStructures.ClickLog;
@@ -1281,7 +1283,48 @@ public class DatabaseManager {
 
 		if (q instanceof TimeDataQuery) {
 			return resolveTimeDataQuery((TimeDataQuery) q);
+		} else if (q instanceof AttributeDataQuery) {
+			return resolveAttributeDataQuery((AttributeDataQuery) q);
 		}
+
+		return null;
+	}
+
+	private AttributeQueryResult resolveAttributeDataQuery(AttributeDataQuery q) {
+		String sql;
+		String att = q.getAttribute().toString();
+
+		switch (q.getMetric()) {
+			case TOTAL_IMPRESSIONS:
+				sql = "SELECT " + att + ", count(site_impression_id) " +
+						"FROM site_impression " +
+						"JOIN user ON site_impression_id = user.user_id " +
+						"WHERE " + this.setBetween(q, "impression_date") +
+						this.setFilters(q) +
+						"GROUP BY " + att;
+				break;
+			case TOTAL_CLICKS:
+				break;
+			case TOTAL_UNIQUES:
+				break;
+			case TOTAL_BOUNCES:
+				break;
+			case TOTAL_CONVERSIONS:
+				break;
+			case CPA:
+				break;
+			case CPC:
+				break;
+			case CPM:
+				break;
+			case BOUNCE_RATE:
+				break;
+			case CTR:
+				break;
+			case TOTAL_COST:
+				break;
+		}
+		System.out.println(sql);
 
 		return null;
 	}
@@ -1468,5 +1511,11 @@ public class DatabaseManager {
 		return "strftime(" + gran + "," + dateString + ") BETWEEN " +
 				"strftime(" + gran + ",'" + q.getStartDate().toString().replace("Z", "") + "') AND " +
 				"strftime(" + gran + ",'" + q.getEndDate().toString().replace("Z", "") + "') ";
+	}
+
+	public String setBetween(AttributeDataQuery q, String dateString) {
+		return "strftime(''," + dateString + ") BETWEEN " +
+				"strftime('','" + q.getStartDate().toString().replace("Z", "") + "') AND " +
+				"strftime('','" + q.getEndDate().toString().replace("Z", "") + "') ";
 	}
 }

@@ -47,7 +47,8 @@ public class DatabaseTestMain {
 		map.put(AttributeType.CONTEXT, Arrays.asList("Social Media"));
 		System.out.println("map: " + map);
 
-		TimeDataQuery q = new TimeQueryBuilder(MetricType.TOTAL_CONVERSIONS).filters(map).build();
+		//TODO fix weeks working
+		TimeDataQuery q = new TimeQueryBuilder(MetricType.TOTAL_CONVERSIONS).filters(map).granularity(DateEnum.WEEKS).build();
 		System.out.println("query: " + q.getFilters());
 //
 //		System.out.println(model.setBetween(q, "click_date"));
