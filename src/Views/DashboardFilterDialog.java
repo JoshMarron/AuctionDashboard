@@ -2,11 +2,13 @@ package Views;
 
 import Views.CustomComponents.CatButton;
 import Views.CustomComponents.CatPanel;
+import Views.DialogPanels.DialogDateFilterPanel;
 import Views.DialogPanels.DialogFilterPanel;
 import Views.ViewPresets.AttributeType;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.List;
 
@@ -19,6 +21,8 @@ public class DashboardFilterDialog extends JDialog {
     public final static int APPROVE_OPTION = 1;
     public final static int CANCEL_OPTION = 2;
     private List<DialogFilterPanel> filterPanels;
+    private Instant startDate;
+    private Instant endDate;
     private int returnVal;
 
     public DashboardFilterDialog(Window parent, Map<AttributeType, List<String>> possibleVals) {
@@ -29,7 +33,7 @@ public class DashboardFilterDialog extends JDialog {
 
     private void init(Map<AttributeType, List<String>> possibleVals) {
         this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-        this.setSize(400, 400);
+        this.setSize(600, 600);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
 
@@ -40,6 +44,10 @@ public class DashboardFilterDialog extends JDialog {
         CatPanel filterListPanel = new CatPanel();
         filterListPanel.setBorder(BorderFactory.createEmptyBorder());
         filterListPanel.setLayout(new BoxLayout(filterListPanel, BoxLayout.Y_AXIS));
+        filterListPanel.add(Box.createGlue());
+
+        DialogDateFilterPanel datePanel = new DialogDateFilterPanel();
+        filterListPanel.add(datePanel);
         filterListPanel.add(Box.createGlue());
 
         possibleVals.entrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(AttributeType::toString))).forEach((entry) -> {
@@ -75,5 +83,13 @@ public class DashboardFilterDialog extends JDialog {
         }
 
         return filters;
+    }
+
+    public Instant getStartDate() {
+        return this.startDate;
+    }
+
+    public Instant getEndDate() {
+        return this.endDate;
     }
 }
