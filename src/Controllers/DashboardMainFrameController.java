@@ -28,6 +28,7 @@ public class DashboardMainFrameController {
     private DashboardMainFrame frame;
     private DatabaseManager model;
     private List<LogType> availableLogs;
+    private GraphCache cache;
 
     //TODO allow this to be set based on the device?
     private ExecutorService helpers = Executors.newFixedThreadPool(4);
@@ -35,6 +36,7 @@ public class DashboardMainFrameController {
     public DashboardMainFrameController(DashboardMainFrame frame, DatabaseManager model) {
         this.frame = frame;
         this.model = model;
+        this.cache = new GraphCache(model);
         availableLogs = new ArrayList<>();
     }
 
@@ -79,7 +81,13 @@ public class DashboardMainFrameController {
 
     public void requestTimeChart(TimeDataQuery query) {
         helpers.submit(() -> {
+            if (cache.isInCache(query)) {
+                TimeQueryResult result = (TimeQueryResult) cache.hitCache(query);
+                SwingUtilities.invokeLater(() -> frame.displayChart(query.getMetric(), query.getGranularity(), result.getData()));
+            }
+
             TimeQueryResult result = (TimeQueryResult) model.resolveQuery(query);
+            cache.addToCache(query, result);
             Map<Instant, Number> data = result.getData();
             SwingUtilities.invokeLater(() -> frame.displayChart(query.getMetric(), query.getGranularity(), data));
         });
@@ -90,35 +98,6 @@ public class DashboardMainFrameController {
             Map<String, Number> data = getDataForChartFromAttribute(type, attr);
             SwingUtilities.invokeLater(() -> frame.displayChart(type, attr, data));
         });
-    }
-
-    private Map<Instant, Number> getDataForChartFromType(MetricType type, DateEnum granularity) {
-        switch(type) {
-            case TOTAL_CLICKS:
-                return model.getClickCountPer(granularity, false);
-            case TOTAL_UNIQUES:
-                return model.getClickCountPer(granularity, true);
-            case TOTAL_IMPRESSIONS:
-                return model.getImpressionCountPer(granularity);
-            case TOTAL_CONVERSIONS:
-                return model.getConversionNumberPer(granularity);
-            case TOTAL_BOUNCES:
-                return model.getBounceNumberPer(granularity);
-            case BOUNCE_RATE:
-                return model.getBounceRatePer(granularity);
-            case CPA:
-                return model.getCPAPer(granularity);
-            case CPC:
-                return model.getCPCPer(granularity);
-            case TOTAL_COST:
-                return model.getTotalCostPer(granularity);
-            case CPM:
-                return model.getCPMPer(granularity);
-            case CTR:
-                return model.getCTRPer(granularity);
-            default:
-                return null;
-        }
     }
 
     private Map<String, Number> getDataForChartFromAttribute(MetricType type, AttributeType attr) {
