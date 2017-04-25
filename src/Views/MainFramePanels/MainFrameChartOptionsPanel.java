@@ -80,7 +80,8 @@ public class MainFrameChartOptionsPanel extends CatPanel {
             timeChartGranularityPicker.addItem(dateEnum);
         }
         CatButton timeChartGoButton = new CatButton("Go!");
-        timeChartGoButton.addActionListener((e) -> this.requestNewTimeChart((ChartType) timeChartPicker.getSelectedItem()));
+        timeChartGoButton.addActionListener((e) -> this.requestNewTimeChart((ChartType) timeChartPicker.getSelectedItem(),
+                (DateEnum) timeChartGranularityPicker.getSelectedItem()));
 
         timeChartOptionsPanel.add(Box.createRigidArea(new Dimension(20, 0)));
         timeChartOptionsPanel.add(timeChartLabel);
@@ -153,8 +154,8 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         this.add(filterButtonPanel, filterCon);
     }
 
-    private void requestNewTimeChart(ChartType chartType) {
-        parent.requestTimeChartTypeChange(chartType);
+    private void requestNewTimeChart(ChartType chartType, DateEnum granularity) {
+        parent.requestTimeChartTypeChange(chartType, granularity);
     }
 
     private void requestNewAttributeChart(ChartType chartType, AttributeType attr) {
