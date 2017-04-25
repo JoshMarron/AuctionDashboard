@@ -6,6 +6,7 @@ import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,6 +17,7 @@ public class TimeQueryBuilder extends QueryBuilder {
     private DateEnum granularity;
     private Instant startDate;
     private Instant endDate;
+    private Map<AttributeType, List<String>> filters;
 
     public TimeQueryBuilder(MetricType metric) {
         super(metric);
@@ -55,4 +57,14 @@ public class TimeQueryBuilder extends QueryBuilder {
     public Instant getEndDate() {
         return endDate;
     }
+
+    public Map<AttributeType, List<String>> getFilters() {
+        return filters;
+    }
+
+    public TimeQueryBuilder filters(Map<AttributeType, List<String>> filters) {
+        this.filters = filters;
+        return this;
+    }
+
 }

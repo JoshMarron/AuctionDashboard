@@ -4,6 +4,7 @@ import Controllers.ProjectSettings;
 import Views.CustomComponents.CatButton;
 import Views.CustomComponents.CatPanel;
 import Views.DialogPanels.DialogBounceDefinitionPanel;
+import Views.DialogPanels.DialogColourCustomisationPanel;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -19,6 +20,7 @@ public class DashboardSettingsDialog extends JDialog {
 
     private int returnVal;
     private DialogBounceDefinitionPanel bouncePanel;
+    private DialogColourCustomisationPanel colourPanel;
 
     public DashboardSettingsDialog(Window parent) {
         super(parent, "Change Settings", ModalityType.APPLICATION_MODAL);
@@ -26,7 +28,7 @@ public class DashboardSettingsDialog extends JDialog {
     }
 
     private void init() {
-        this.setSize(800, 200);
+        this.setSize(800, 500);
         this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
         this.setResizable(false);
 
@@ -35,6 +37,7 @@ public class DashboardSettingsDialog extends JDialog {
         contentPane.setLayout(new BorderLayout());
 
         bouncePanel = new DialogBounceDefinitionPanel();
+        colourPanel = new DialogColourCustomisationPanel();
 
         CatButton applyButton = new CatButton("Apply");
         applyButton.addActionListener((e) -> {
@@ -58,7 +61,16 @@ public class DashboardSettingsDialog extends JDialog {
         buttonPanel.add(cancelButton);
         buttonPanel.add(Box.createHorizontalGlue());
 
-        contentPane.add(bouncePanel, BorderLayout.CENTER);
+
+        CatPanel settingsContentPanel = new CatPanel();
+        settingsContentPanel.setLayout(new BoxLayout(settingsContentPanel, BoxLayout.Y_AXIS));
+        settingsContentPanel.add(Box.createVerticalGlue());
+        settingsContentPanel.add(bouncePanel);
+        settingsContentPanel.add(Box.createGlue());
+        settingsContentPanel.add(colourPanel);
+        settingsContentPanel.add(Box.createVerticalGlue());
+
+        contentPane.add(settingsContentPanel, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
     }
 

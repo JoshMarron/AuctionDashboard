@@ -42,7 +42,7 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         filterButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
         CatButton filterButton = new CatButton("Add filters...");
         filterButton.setFont(FontSettings.GLOB_FONT.getFont().deriveFont(20F));
-        filterButton.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
+        filterButton.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR));
         filterButton.addActionListener((e) -> {
             int returnVal = filterDialog.showFilterDialog();
             System.out.println("closed");
@@ -60,7 +60,7 @@ public class MainFrameChartOptionsPanel extends CatPanel {
 
         CatPanel timeChartOptionsPanel = new CatPanel();
         timeChartOptionsPanel.setLayout(new BoxLayout(timeChartOptionsPanel, BoxLayout.X_AXIS));
-        timeChartOptionsPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()), timeChartOptionsPanel.getBorder()));
+        timeChartOptionsPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR), timeChartOptionsPanel.getBorder()));
 
         CatLabel timeChartLabel = new CatLabel("Metrics over time");
         CatLabel timeChartTypeLabel = new CatLabel("Chart Type: ");
@@ -81,7 +81,7 @@ public class MainFrameChartOptionsPanel extends CatPanel {
 
         CatPanel attributeChartOptionsPanel = new CatPanel();
         attributeChartOptionsPanel.setLayout(new BoxLayout(attributeChartOptionsPanel, BoxLayout.X_AXIS));
-        attributeChartOptionsPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()), attributeChartOptionsPanel.getBorder()));
+        attributeChartOptionsPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR), attributeChartOptionsPanel.getBorder()));
 
         CatLabel attributeChartLabel = new CatLabel("Metrics by Attribute");
         CatLabel attributeChartTypeLabel = new CatLabel("Chart Type: ");
