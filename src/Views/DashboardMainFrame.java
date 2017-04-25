@@ -3,6 +3,8 @@ package Views;
 import Controllers.DashboardMainFrameController;
 
 import Controllers.ProjectSettings;
+import Controllers.Queries.TimeDataQuery;
+import Controllers.Queries.TimeQueryBuilder;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Views.CustomComponents.CatFrame;
@@ -126,7 +128,13 @@ public class DashboardMainFrame extends CatFrame {
     private void requestNewChart() {
         this.displayLoading();
         if (this.requestedChart.equals(ChartType.LINE)) {
-            controller.requestTimeChart(currentMetric);
+            TimeDataQuery query = new TimeQueryBuilder(currentMetric)
+                                        .filters(filters)
+                                        .granularity(granularity)
+                                        .startDate(startDate)
+                                        .endDate(endDate)
+                                        .build();
+            controller.requestTimeChart(query);
         } else {
             controller.requestAttributeChart(currentMetric, currentAttribute);
         }

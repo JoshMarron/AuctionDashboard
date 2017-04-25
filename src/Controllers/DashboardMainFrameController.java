@@ -1,5 +1,8 @@
 package Controllers;
 
+import Controllers.Queries.TimeDataQuery;
+import Controllers.Queries.TimeQueryBuilder;
+import Controllers.Results.TimeQueryResult;
 import Model.DBEnums.DateEnum;
 import Model.DatabaseManager;
 import Views.DashboardMainFrame;
@@ -63,18 +66,22 @@ public class DashboardMainFrameController {
             frame.displayMetrics(data);
         });
         if (availableLogs.contains(LogType.IMPRESSION)) {
-            requestTimeChart(MetricType.TOTAL_IMPRESSIONS);
+            TimeDataQuery q = new TimeQueryBuilder(MetricType.TOTAL_IMPRESSIONS).build();
+            requestTimeChart(q);
         } else if (availableLogs.contains(LogType.CLICK)) {
-            requestTimeChart(MetricType.TOTAL_CLICKS);
+            TimeDataQuery q = new TimeQueryBuilder(MetricType.TOTAL_CLICKS).build();
+            requestTimeChart(q);
         } else if (availableLogs.contains(LogType.SERVER_LOG)) {
-            requestTimeChart(MetricType.TOTAL_CONVERSIONS);
+            TimeDataQuery q = new TimeQueryBuilder(MetricType.TOTAL_BOUNCES).build();
+            requestTimeChart(q);
         }
     }
 
-    public void requestTimeChart(MetricType type) {
+    public void requestTimeChart(TimeDataQuery query) {
         helpers.submit(() -> {
-            Map<Instant, Number> data = getDataForChartFromType(type, DateEnum.DAYS);
-            SwingUtilities.invokeLater(() -> frame.displayChart(type, DateEnum.DAYS, data));
+            TimeQueryResult result = (TimeQueryResult) model.resolveQuery(query);
+            Map<Instant, Number> data = result.getData();
+            SwingUtilities.invokeLater(() -> frame.displayChart(query.getMetric(), query.getGranularity(), data));
         });
     }
 
