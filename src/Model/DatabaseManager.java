@@ -1287,33 +1287,91 @@ public class DatabaseManager {
 
 	private TimeQueryResult resolveTimeDataQuery(TimeDataQuery q) {
 
-		String sql;
+		Statement stmt;
+		String sql = null;
 
 		switch (q.getMetric()) {
 			case TOTAL_IMPRESSIONS:
-				sql = "SELECT impression_date, count(site_impression_id) FROM site_impression JOIN user ON site_impression.user_id = user.user_id WHERE " + this.setBetween(q, "impression_date") + this.setFilters(q) + this.timeGroup(q) + " ORDER BY impression_date;";
+				sql = "SELECT impression_date, count(site_impression_id) " +
+						"FROM site_impression " +
+						"JOIN user ON site_impression.user_id = user.user_id " +
+						"WHERE " + this.setBetween(q, "impression_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "impression_date") +
+						" ORDER BY impression_date;";
+				break;
+			case TOTAL_CLICKS:
+				sql = "SELECT click_date, count(click_id) " +
+						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "click_date") +
+						" ORDER BY click_date;";
+				break;
+			case TOTAL_UNIQUES:
+				sql = "SELECT click_date, count( DISTINCT click_id) " +
+						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "click_date") +
+						" ORDER BY click_date;";
+				break;
+			case TOTAL_BOUNCES:  //TODO set custom bounce rate definition
+				sql = "SELECT entry_date, count(server_log_id) " +
+						"FROM server_log " +
+						"JOIN user ON server_log.user_id = user.user_id " +
+						"WHERE pages_viewed = 1 AND " +
+						this.setBetween(q, "entry_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "entry_date") +
+						" ORDER BY entry_date;";
+				break;
+			case TOTAL_CONVERSIONS:
+				sql = "SELECT entry_date, count(server_log_id) " +
+						"FROM server_log " +
+						"JOIN user ON server_log.user_id = user.user_id " +
+						"WHERE conversion = 'Yes' AND " +
+						this.setBetween(q, "entry_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "entry_date") +
+						" ORDER BY entry_date;";
+				break;
+			case CPA:
+				break;
+			case CPC:
+				break;
+			case CPM:
+				break;
+			case BOUNCE_RATE:
+				break;
+			case CTR:
+				break;
+			case TOTAL_COST:
 				break;
 		}
-
+		System.out.println(sql);
 
 		return null;
 	}
 
 	/* Relies on granualarity */
-	private String timeGroup(TimeDataQuery q) {
-		return null;
+	public String timeGroup(TimeDataQuery q, String dateString) {
+		return "GROUP BY strftime(" + q.getGranularity().getSql() + ", " + dateString + ")";
 	}
 
 	public String setFilters(Query q) {
 		StringBuilder builder = new StringBuilder();
 		for (Map.Entry<AttributeType, List<String>> entry : q.getFilters().entrySet()) {
-			builder.append(" AND ");
+			builder.append(" AND (");
 			for (int i = 0; i < entry.getValue().size(); i++) {
 				builder.append(entry.getKey().getQueryBit() + " = '" + entry.getValue().get(i) + "'");
 				if (i < entry.getValue().size() - 1) {
 					builder.append(" OR ");
 				}
 			}
+			builder.append(")");
 		}
 		return builder.toString();
 	}
@@ -1322,7 +1380,7 @@ public class DatabaseManager {
 	public String setBetween(TimeDataQuery q, String dateString) {
 		String gran = q.getGranularity().getSql();
 		return "strftime(" + gran + "," + dateString + ") BETWEEN " +
-				"strftime(" + gran + ",'" + q.getStartDate().toString() + "') AND " +
-				"strftime(" + gran + ",'" + q.getEndDate().toString() + "') ";
+				"strftime(" + gran + ",'" + q.getStartDate().toString().replace("Z", "") + "') AND " +
+				"strftime(" + gran + ",'" + q.getEndDate().toString().replace("Z", "") + "') ";
 	}
 }

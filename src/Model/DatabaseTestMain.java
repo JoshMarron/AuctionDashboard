@@ -3,6 +3,7 @@ package Model;
 import Controllers.Queries.TimeDataQuery;
 import Controllers.Queries.TimeQueryBuilder;
 import Model.DBEnums.DateEnum;
+import Model.DBEnums.attributes.AgeAttribute;
 import Model.DBEnums.attributes.Attribute;
 import Model.DBEnums.attributes.IncomeAttribute;
 import Views.MetricType;
@@ -39,13 +40,17 @@ public class DatabaseTestMain {
 
 		HashMap<AttributeType, List<String>> map = new HashMap<>();
 		map.put(AttributeType.GENDER, Arrays.asList("Male", "Female"));
-		map.put(AttributeType.INCOME, Arrays.asList(IncomeAttribute.LOW.toString()));
+		map.put(AttributeType.INCOME, Arrays.asList("Low"));
+		map.put(AttributeType.AGE, Arrays.asList("25-34", "35-44"));
 
-		TimeQueryBuilder qB = new TimeQueryBuilder(MetricType.TOTAL_IMPRESSIONS);
+		TimeQueryBuilder qB = new TimeQueryBuilder(MetricType.TOTAL_CONVERSIONS);
 		qB = (TimeQueryBuilder) qB.filters(map);
 		TimeDataQuery q = qB.build();
 
-		System.out.println(model.setBetween(q, "impression_date"));
+		System.out.println(model.setBetween(q, "click_date"));
 		System.out.println(model.setFilters(q));
+		System.out.println(model.timeGroup(q, "click_date"));
+
+		model.resolveQuery(q);
 	}
 }

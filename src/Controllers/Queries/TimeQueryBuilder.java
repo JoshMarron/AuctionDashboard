@@ -1,6 +1,7 @@
 package Controllers.Queries;
 
 import Model.DBEnums.DateEnum;
+import Model.DatabaseManager;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 
@@ -20,8 +21,8 @@ public class TimeQueryBuilder extends QueryBuilder {
         super(metric);
         //Set the default values of optional parameters
         this.granularity = DateEnum.DAYS;
-        this.startDate = Instant.MIN;
-        this.endDate = Instant.MAX;
+        this.startDate = Instant.EPOCH;
+        this.endDate = Instant.parse("2999-12-31T23:59:59Z");
     }
 
     public TimeDataQuery build() {
