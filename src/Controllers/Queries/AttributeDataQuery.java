@@ -24,4 +24,12 @@ public class AttributeDataQuery extends Query{
     public AttributeType getAttribute() {
         return attribute;
     }
+
+    public Instant getStartDate() {
+        return startDate;
+    }
+
+    public Instant getEndDate() {
+        return endDate;
+    }
 }
