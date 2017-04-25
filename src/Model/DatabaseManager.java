@@ -1380,7 +1380,7 @@ public class DatabaseManager {
 
 				return new TimeQueryResult(q.getMetric(), resultDataCPM);
 			case BOUNCE_RATE: // total bounces / total clicks
-				TimeDataQuery tqrBounceBR = q.deriveQuery(MetricType.BOUNCE_RATE);
+				TimeDataQuery tqrBounceBR = q.deriveQuery(MetricType.TOTAL_BOUNCES);
 				TimeQueryResult bounceBR = resolveTimeDataQuery(tqrBounceBR);
 
 				TimeDataQuery tqrClickBR = q.deriveQuery(MetricType.TOTAL_CLICKS);
@@ -1431,7 +1431,6 @@ public class DatabaseManager {
 
 				return new TimeQueryResult(q.getMetric(), clickCostMap);
 		}
-		System.out.println(sql);
 
 		return new TimeQueryResult(q.getMetric(), DBUtils.truncateInstantMap(createMap(sql), q.getGranularity()));
 	}
