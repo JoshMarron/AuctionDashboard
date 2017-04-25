@@ -1303,7 +1303,7 @@ public class DatabaseManager {
 				sql = "SELECT click_date, count(click_id) " +
 						"FROM click " +
 						"JOIN user ON click.user_id = user.user_id " +
-						"JOIN site_impression ON click.user_id = impression.user_id " +
+						"JOIN site_impression ON click.user_id = site_impression.user_id " +
 						"WHERE " + this.setBetween(q, "click_date") +
 						this.setFilters(q) +
 						this.timeGroup(q, "click_date") +
