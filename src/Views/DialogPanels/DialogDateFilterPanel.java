@@ -5,6 +5,7 @@ import Views.CustomComponents.CatLabel;
 import Views.CustomComponents.CatLabelFx;
 import Views.CustomComponents.CatPanel;
 import Views.ViewPresets.ColorSettings;
+import Views.ViewPresets.FontSettings;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.geometry.Pos;
@@ -17,6 +18,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -37,6 +40,9 @@ public class DialogDateFilterPanel extends CatPanel {
 
     private void init() {
         this.setLayout(new BorderLayout());
+        this.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR),
+                "Date Settings", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, FontSettings.GLOB_FONT.getFont(),
+                ColorSettings.TEXT_COLOR));
         this.dateJFXPanel = new JFXPanel();
         Platform.runLater(this::prepFXPanel);
         this.add(dateJFXPanel, BorderLayout.CENTER);
