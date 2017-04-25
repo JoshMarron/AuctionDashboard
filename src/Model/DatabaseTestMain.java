@@ -47,7 +47,7 @@ public class DatabaseTestMain {
 		map.put(AttributeType.CONTEXT, Arrays.asList("Social Media"));
 		System.out.println("map: " + map);
 
-		TimeDataQuery q = new TimeQueryBuilder(MetricType.CPM).filters(map).build();
+		TimeDataQuery q = new TimeQueryBuilder(MetricType.TOTAL_CLICKS).filters(map).build();
 		System.out.println("query: " + q.getFilters());
 //
 //		System.out.println(model.setBetween(q, "click_date"));
