@@ -1303,6 +1303,7 @@ public class DatabaseManager {
 				sql = "SELECT click_date, count(click_id) " +
 						"FROM click " +
 						"JOIN user ON click.user_id = user.user_id " +
+						"JOIN site_impression ON click.user_id = impression.user_id " +
 						"WHERE " + this.setBetween(q, "click_date") +
 						this.setFilters(q) +
 						this.timeGroup(q, "click_date") +
@@ -1312,6 +1313,7 @@ public class DatabaseManager {
 				sql = "SELECT click_date, count( DISTINCT click_id) " +
 						"FROM click " +
 						"JOIN user ON click.user_id = user.user_id " +
+						"JOIN site_impression ON click.user_id = site_impression.user_id" +
 						"WHERE " + this.setBetween(q, "click_date") +
 						this.setFilters(q) +
 						this.timeGroup(q, "click_date") +
@@ -1321,6 +1323,7 @@ public class DatabaseManager {
 				sql = "SELECT entry_date, count(server_log_id) " +
 						"FROM server_log " +
 						"JOIN user ON server_log.user_id = user.user_id " +
+						"JOIN site_impression ON server_log.user_id = site_impression.user_id" +
 						"WHERE pages_viewed = 1 AND " +
 						this.setBetween(q, "entry_date") +
 						this.setFilters(q) +
@@ -1331,6 +1334,7 @@ public class DatabaseManager {
 				sql = "SELECT entry_date, count(server_log_id) " +
 						"FROM server_log " +
 						"JOIN user ON server_log.user_id = user.user_id " +
+						"JOIN site_impression ON server_log.user_id = site_impression.user_id" +
 						"WHERE conversion = 'Yes' AND " +
 						this.setBetween(q, "entry_date") +
 						this.setFilters(q) +
@@ -1380,7 +1384,7 @@ public class DatabaseManager {
 
 				return new TimeQueryResult(q.getMetric(), resultDataCPM);
 			case BOUNCE_RATE: // total bounces / total clicks
-				TimeDataQuery tqrBounceBR = q.deriveQuery(MetricType.BOUNCE_RATE);
+				TimeDataQuery tqrBounceBR = q.deriveQuery(MetricType.TOTAL_BOUNCES);
 				TimeQueryResult bounceBR = resolveTimeDataQuery(tqrBounceBR);
 
 				TimeDataQuery tqrClickBR = q.deriveQuery(MetricType.TOTAL_CLICKS);
@@ -1410,12 +1414,15 @@ public class DatabaseManager {
 			case TOTAL_COST:
 				String impressionSql = "SELECT impression_date, SUM(impression_cost) " +
 						"FROM site_impression " +
+						"JOIN user ON site_impression.user_id = user.user_id " +
 						"WHERE " + this.setBetween(q, "impression_date") +
 						this.setFilters(q) +
 						this.timeGroup(q, "impression_date") +
 						" ORDER BY impression_date;";
-				String clickSql = "SELECT click_date, SUM(click_cost) " +
+				String clickSql = "SELECT click_date, SUM(cost) " +
 						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"JOIN site_impression ON click.user_id = site_impression.user_id " +
 						"WHERE " + this.setBetween(q, "click_date") +
 						this.setFilters(q) +
 						this.timeGroup(q, "click_date") +
@@ -1431,7 +1438,6 @@ public class DatabaseManager {
 
 				return new TimeQueryResult(q.getMetric(), clickCostMap);
 		}
-		System.out.println(sql);
 
 		return new TimeQueryResult(q.getMetric(), DBUtils.truncateInstantMap(createMap(sql), q.getGranularity()));
 	}

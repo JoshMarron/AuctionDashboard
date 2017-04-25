@@ -2,12 +2,14 @@ package Model;
 
 import Controllers.Queries.TimeDataQuery;
 import Controllers.Queries.TimeQueryBuilder;
+import Controllers.Results.TimeQueryResult;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.attributes.AgeAttribute;
 import Model.DBEnums.attributes.Attribute;
 import Model.DBEnums.attributes.IncomeAttribute;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
+import org.w3c.dom.Attr;
 
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
@@ -39,18 +41,20 @@ public class DatabaseTestMain {
 //        System.out.println(testModel2.values().stream().reduce((a, b) -> a.doubleValue() + b.doubleValue()));
 
 		HashMap<AttributeType, List<String>> map = new HashMap<>();
-//		map.put(AttributeType.GENDER, Arrays.asList("Male", "Female"));
-//		map.put(AttributeType.INCOME, Arrays.asList("Low"));
-//		map.put(AttributeType.AGE, Arrays.asList("25-34", "35-44"));
+		map.put(AttributeType.GENDER, Arrays.asList("Male", "Female"));
+		map.put(AttributeType.INCOME, Arrays.asList("Low"));
+		map.put(AttributeType.AGE, Arrays.asList("25-34", "35-44"));
+		map.put(AttributeType.CONTEXT, Arrays.asList("Social Media"));
+		System.out.println("map: " + map);
 
-		TimeQueryBuilder qB = new TimeQueryBuilder(MetricType.TOTAL_CONVERSIONS);
-		qB = (TimeQueryBuilder) qB.filters(map);
-		TimeDataQuery q = qB.build();
+		TimeDataQuery q = new TimeQueryBuilder(MetricType.CPM).filters(map).build();
+		System.out.println("query: " + q.getFilters());
+//
+//		System.out.println(model.setBetween(q, "click_date"));
+//		System.out.println(model.setFilters(q));
+//		System.out.println(model.timeGroup(q, "click_date"));
 
-		System.out.println(model.setBetween(q, "click_date"));
-		System.out.println(model.setFilters(q));
-		System.out.println(model.timeGroup(q, "click_date"));
-
-		model.resolveQuery(q);
+		TimeQueryResult result = (TimeQueryResult) model.resolveQuery(q);
+		System.out.println(result.getData());
 	}
 }

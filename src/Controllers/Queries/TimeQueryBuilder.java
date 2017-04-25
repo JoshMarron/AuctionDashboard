@@ -28,6 +28,7 @@ public class TimeQueryBuilder extends QueryBuilder {
     }
 
     public TimeDataQuery build() {
+        System.out.println("builder: " + this.getFilters());
         return new TimeDataQuery(this);
     }
 
@@ -60,6 +61,8 @@ public class TimeQueryBuilder extends QueryBuilder {
 
     public TimeQueryBuilder filters(Map<AttributeType, List<String>> filters) {
         this.setFilters(filters);
+        System.out.println("param: " + filters);
+        System.out.println("f: " + this.getFilters());
         return this;
     }
 
