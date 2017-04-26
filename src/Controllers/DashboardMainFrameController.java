@@ -229,6 +229,17 @@ public class DashboardMainFrameController {
 
     }
 
+    public void refreshKeyMetrics(TotalQuery query) {
+        Map<MetricType, Number> results;
+        if (query.getFilters().isEmpty()) {
+            results = fastNoFilterKeyMetrics();
+        } else {
+            results = calculateKeyMetrics(query);
+        }
+
+        frame.displayMetrics(results);
+    }
+
     public DashboardMainFrame getFrame() {
         return frame;
     }

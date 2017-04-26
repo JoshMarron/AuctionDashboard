@@ -3,10 +3,7 @@ package Views;
 import Controllers.DashboardMainFrameController;
 
 import Controllers.ProjectSettings;
-import Controllers.Queries.AttributeDataQuery;
-import Controllers.Queries.AttributeQueryBuilder;
-import Controllers.Queries.TimeDataQuery;
-import Controllers.Queries.TimeQueryBuilder;
+import Controllers.Queries.*;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Views.CustomComponents.CatFrame;
@@ -210,6 +207,13 @@ public class DashboardMainFrame extends CatFrame {
 
     // This should refresh all the metrics + the current chart
     public void refresh() {
+        TotalQuery query = new TotalQueryBuilder(MetricType.TOTAL_IMPRESSIONS).startDate(startDate)
+                                                    .endDate(endDate)
+                                                    .filters(filters)
+                                                    .build();
+        System.out.println(ProjectSettings.getBouncePages());
+        controller.refreshKeyMetrics(query);
+        this.requestNewChart();
 
     }
 
