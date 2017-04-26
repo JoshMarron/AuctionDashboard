@@ -29,9 +29,25 @@ import java.util.stream.Collectors;
 public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel {
 
     private JFXPanel chartPanel;
+    private JFXPanel secondChartPanel;
     private ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
     private DecimalFormat df = new DecimalFormat("#.##");
     private final PieChart chart = new PieChart(pieData) {
+        @Override
+        protected void layoutChartChildren(double top, double left, double contentWidth, double contentHeight) {
+            if (getLabelsVisible()) {
+                getData().forEach(d -> {
+                    Optional<Node> opTextNode = chart.lookupAll(".chart-pie-label").stream().filter(n -> n instanceof Text && ((Text) n).getText().contains(d.getName())).findAny();
+                    if (opTextNode.isPresent()) {
+                        ((Text) opTextNode.get()).setText(d.getName() + ": " + df.format(d.getPieValue()));
+                    }
+                });
+            }
+            super.layoutChartChildren(top, left, contentWidth, contentHeight);
+        }
+    };
+
+    private final PieChart secondPie = new PieChart(pieData) {
         @Override
         protected void layoutChartChildren(double top, double left, double contentWidth, double contentHeight) {
             if (getLabelsVisible()) {
@@ -54,9 +70,10 @@ public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel
         this.setLayout(new BorderLayout());
 
         chartPanel = new JFXPanel();
+        secondChartPanel = new JFXPanel();
         chartPanel.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR));
+        secondChartPanel.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR));
 
-        this.add(chartPanel, BorderLayout.CENTER);
     }
 
     @Override
@@ -82,5 +99,18 @@ public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel
             }
 
         });
+
+        this.removeAll();
+        this.setLayout(new BorderLayout());
+        this.add(chartPanel, BorderLayout.CENTER);
     }
+
+    @Override
+    public void displayDoubleChart(MetricType type, AttributeType attr, Map<String, Number> data1, Map<String, Number> data2) {
+        Platform.runLater(() -> {
+
+        });
+    }
+
+
 }

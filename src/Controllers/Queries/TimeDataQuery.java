@@ -39,7 +39,7 @@ public class TimeDataQuery extends Query {
 
     @Override
     public int hashCode() {
-        return granularity.hashCode() + startDate.hashCode() + endDate.hashCode() + super.hashCode();
+        return granularity.hashCode() + super.hashCode();
     }
 
     @Override

@@ -68,6 +68,17 @@ public class MainFrameChartDisplayPanel extends CatPanel {
         chart.displayChart(type, attr, data);
     }
 
+    public void displayDoubleTimeChart(ChartType chartType, MetricType type, DateEnum granularity, Map<Instant, Number> data1, Map<Instant, Number> data2) {
+        cards.show(this, chartType.getName());
+        this.currentChart = chartType;
+        MainFrameMainTimeChartPanel chart = timeChartMap.get(chartType);
+        chart.displayDoubleChart(type, granularity, data1, data2);
+    }
+
+    public void displayDoubleAttributeChart(ChartType chartType, MetricType type, AttributeType attr, Map<String, Number> data1, Map<String, Number> data2) {
+
+    }
+
     public ChartType getCurrentChart() {
         return this.currentChart;
     }

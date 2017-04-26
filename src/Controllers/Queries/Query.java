@@ -3,6 +3,7 @@ package Controllers.Queries;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -13,10 +14,14 @@ public abstract class Query {
 
     private MetricType metric;
     private Map<AttributeType, List<String>> filters;
+    private Instant startDate;
+    private Instant endDate;
 
     public Query(QueryBuilder b) {
         this.metric = b.getMetric();
         this.filters = b.getFilters();
+        this.startDate = b.getStartDate();
+        this.endDate = b.getEndDate();
     }
 
     public MetricType getMetric() {
@@ -27,4 +32,25 @@ public abstract class Query {
         return this.filters;
     }
 
+    @Override
+    public int hashCode() {
+        return metric.hashCode() + filters.hashCode() + startDate.hashCode() + endDate.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Query)) {
+            return false;
+        }
+
+        return this.filters.equals(((Query) o).getFilters()) && this.metric.equals(((Query) o).getMetric()) && this.startDate.equals(((Query) o).getStartDate()) && this.endDate.equals(((Query) o).getEndDate());
+    }
+
+    public Instant getStartDate() {
+        return startDate;
+    }
+
+    public Instant getEndDate() {
+        return endDate;
+    }
 }

@@ -47,7 +47,7 @@ public class DashboardDoubleMainFrameController extends DashboardMainFrameContro
             }
 
             // Display the chart
-            // TODO fill this in
+            this.getFrame().displayDoubleChart(query.getMetric(), query.getGranularity(), mainResult.getData(), secondResult.getData());
         });
     }
 
