@@ -6,15 +6,22 @@ import Views.CustomComponents.CatPanel;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 import Views.ViewPresets.ColorSettings;
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.image.WritableImage;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -62,5 +69,23 @@ public class MainFrameMainBarChartPanel extends MainFrameMainAttributeChartPanel
         scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
 
         chartPanel.setScene(scene);
+
+        saveChart(barChart);
+    }
+
+    public void saveChart(BarChart chart){
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                WritableImage image = chart.snapshot(new SnapshotParameters(), null);
+                File file = new File("chart.png");
+                try{
+                    ImageIO.write(SwingFXUtils.fromFXImage(image, null),"png", file);
+                } catch (IOException e){
+
+                }
+            }
+        });
+
     }
 }
