@@ -72,6 +72,9 @@ public class DashboardDoubleMainFrameController extends DashboardMainFrameContro
             }
 
             // TODO fill in the display for the chart
+            System.out.println("I'm here");
+            System.out.println(secondResult.getData());
+            this.getFrame().displayDoubleChart(query.getMetric(), query.getAttribute(), mainResult.getData(), secondResult.getData());
         });
     }
 }

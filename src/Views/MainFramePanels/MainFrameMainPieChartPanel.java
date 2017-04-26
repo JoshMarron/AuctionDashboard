@@ -31,6 +31,7 @@ public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel
     private JFXPanel chartPanel;
     private JFXPanel secondChartPanel;
     private ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
+    private ObservableList<PieChart.Data> pieData2 = FXCollections.observableArrayList();
     private DecimalFormat df = new DecimalFormat("#.##");
     private final PieChart chart = new PieChart(pieData) {
         @Override
@@ -108,8 +109,40 @@ public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel
     @Override
     public void displayDoubleChart(MetricType type, AttributeType attr, Map<String, Number> data1, Map<String, Number> data2) {
         Platform.runLater(() -> {
+            pieData = FXCollections.observableArrayList();
+            chart.setTitle(type.toString() + " by " + attr.toString() + " (Series 1)");
 
+            pieData2 = FXCollections.observableArrayList();
+            secondPie.setTitle(type.toString() + " by " + attr.toString() + " (Series 2)");
+
+            List<String> sortedKeys = AttributeType.sortAttributeValues(attr, new ArrayList<>(data1.keySet()));
+
+            sortedKeys.forEach((name) -> {
+                pieData.add(new PieChart.Data(name, data1.get(name).doubleValue()));
+                pieData2.add(new PieChart.Data(name, data2.get(name).doubleValue()));
+            });
+
+            chart.setData(pieData);
+            secondPie.setData(pieData2);
+
+            if (chartPanel.getScene() == null) {
+
+                Scene scene = new Scene(chart);
+                scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
+                chartPanel.setScene(scene);
+            }
+            if (secondChartPanel.getScene() == null) {
+
+                Scene scene = new Scene(secondPie);
+                scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
+                secondChartPanel.setScene(scene);
+            }
         });
+
+        this.removeAll();
+        this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        this.add(chartPanel);
+        this.add(secondChartPanel);
     }
 
 

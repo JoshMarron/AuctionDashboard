@@ -5,6 +5,7 @@
 .chart-title {
     -fx-text-fill: #E1E6EF;
     -fx-font: bold 40px "Tahoma";
+    -fx-wrap-text : true;
 }
 
 .chart-bar {

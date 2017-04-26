@@ -61,6 +61,7 @@ public class StartupFileImportPanel extends CatPanel {
         this.add(buttonPanel, BorderLayout.NORTH);
 
         previewText = new CatTextArea(200, 200);
+        previewText.setEditable(false);
         this.add(previewText, BorderLayout.CENTER);
 
         CatPanel submitPanel = new CatPanel();

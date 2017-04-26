@@ -76,7 +76,10 @@ public class MainFrameChartDisplayPanel extends CatPanel {
     }
 
     public void displayDoubleAttributeChart(ChartType chartType, MetricType type, AttributeType attr, Map<String, Number> data1, Map<String, Number> data2) {
-
+        cards.show(this, chartType.getName());
+        this.currentChart = chartType;
+        MainFrameMainAttributeChartPanel chart = attributeChartMap.get(chartType);
+        chart.displayDoubleChart(type, attr, data1, data2);
     }
 
     public ChartType getCurrentChart() {

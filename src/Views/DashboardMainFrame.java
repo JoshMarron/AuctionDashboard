@@ -170,6 +170,11 @@ public class DashboardMainFrame extends CatFrame {
         this.finishedLoading();
     }
 
+    public void displayDoubleChart(MetricType type, AttributeType attr, Map<String, Number> data1, Map<String, Number> data2) {
+        chartPanel.displayDoubleAttributeChart(requestedChart, type, attr, data1, data2);
+        this.finishedLoading();
+    }
+
     public void saveFileAs() {
         JFileChooser saveChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("CAT CatAnalysis Files", "cat");
