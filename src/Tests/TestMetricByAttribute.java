@@ -1,7 +1,11 @@
 package Tests;
 
+import Controllers.Queries.AttributeDataQuery;
+import Controllers.Queries.AttributeQueryBuilder;
+import Controllers.Results.AttributeQueryResult;
 import Model.DBEnums.LogType;
 import Model.DatabaseManager;
+import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 import org.junit.After;
 import org.junit.Assert;
@@ -72,13 +76,16 @@ public class TestMetricByAttribute {
     @Test
     public void testGetImpressionsByDifferentAttributes() {
         Map<String, Number> testMap = model.getTotalImpressionsForAttribute(AttributeType.AGE);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_IMPRESSIONS, AttributeType.AGE).build();
+
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
 
         //We expect 4 entries because all 4 users have different ages
-        Assert.assertEquals(testMap.size(), 4);
+        Assert.assertEquals(result.getData().size(), 4);
 
         //Test some of the actual values
-        Assert.assertEquals(1, testMap.get("<25").intValue());
-        Assert.assertEquals(1, testMap.get("25-34").intValue());
+        Assert.assertEquals(1, result.getData().get("<25").intValue());
+        Assert.assertEquals(1, result.getData().get("25-34").intValue());
     }
 
     @Test
