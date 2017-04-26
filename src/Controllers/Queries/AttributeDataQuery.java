@@ -12,26 +12,14 @@ import java.time.Instant;
 public class AttributeDataQuery extends Query{
 
     private AttributeType attribute;
-    private Instant startDate;
-    private Instant endDate;
 
     public AttributeDataQuery(AttributeQueryBuilder b) {
         super(b);
         this.attribute = b.getAttribute();
-        this.startDate = b.getStartDate();
-        this.endDate = b.getEndDate();
     }
 
     public AttributeType getAttribute() {
         return attribute;
-    }
-
-    public Instant getStartDate() {
-        return startDate;
-    }
-
-    public Instant getEndDate() {
-        return endDate;
     }
 
     @Override
@@ -55,8 +43,8 @@ public class AttributeDataQuery extends Query{
 
     public AttributeDataQuery deriveQuery(MetricType metric, AttributeType attribute) {
         AttributeQueryBuilder newBuilder = new AttributeQueryBuilder(metric, attribute);
-        return newBuilder.startDate(this.startDate)
-                .endDate(this.endDate)
+        return newBuilder.startDate(this.getStartDate())
+                .endDate(this.getEndDate())
                 .filters(this.getFilters())
                 .build();
     }

@@ -3,6 +3,7 @@ package Controllers.Queries;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +21,18 @@ public class TotalQueryBuilder extends QueryBuilder {
         return this;
     }
 
+    public TotalQueryBuilder startDate(Instant startDate) {
+        this.setStartDate(startDate);
+        return this;
+    }
+
+    public TotalQueryBuilder endDate(Instant endDate) {
+        this.setEndDate(endDate);
+        return this;
+    }
+
     @Override
-    public Query build() {
+    public TotalQuery build() {
         return new TotalQuery(this);
     }
 }

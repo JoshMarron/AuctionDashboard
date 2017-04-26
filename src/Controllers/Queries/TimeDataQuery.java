@@ -15,33 +15,21 @@ import java.util.Map;
 public class TimeDataQuery extends Query {
 
     private DateEnum granularity;
-    private Instant startDate;
-    private Instant endDate;
 
     public TimeDataQuery(TimeQueryBuilder b) {
         super(b);
         this.granularity = b.getGranularity();
-        this.startDate = b.getStartDate();
-        this.endDate = b.getEndDate();
     }
 
     public DateEnum getGranularity() {
         return granularity;
     }
 
-    public Instant getStartDate() {
-        return startDate;
-    }
-
-    public Instant getEndDate() {
-        return endDate;
-    }
-
     public TimeDataQuery deriveQuery(MetricType metric) {
         TimeQueryBuilder newBuilder = new TimeQueryBuilder(metric);
         TimeDataQuery newQuery = newBuilder.granularity(this.granularity)
-                .startDate(this.startDate)
-                .endDate(this.endDate)
+                .startDate(this.getStartDate())
+                .endDate(this.getEndDate())
                 .filters(this.getFilters())
                 .build();
 
