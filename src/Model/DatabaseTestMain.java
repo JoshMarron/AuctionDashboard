@@ -4,6 +4,7 @@ import Controllers.Queries.AttributeDataQuery;
 import Controllers.Queries.AttributeQueryBuilder;
 import Controllers.Queries.TimeDataQuery;
 import Controllers.Queries.TimeQueryBuilder;
+import Controllers.Results.AttributeQueryResult;
 import Controllers.Results.TimeQueryResult;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.attributes.AgeAttribute;
@@ -50,18 +51,18 @@ public class DatabaseTestMain {
 		System.out.println("map: " + map);
 
 		//TODO fix weeks working
-		TimeDataQuery timeQ = new TimeQueryBuilder(MetricType.TOTAL_CONVERSIONS).filters(map).granularity(DateEnum.WEEKS).build();
+		TimeDataQuery timeQ = new TimeQueryBuilder(MetricType.TOTAL_BOUNCES).filters(map).granularity(DateEnum.DAYS).build();
 //		System.out.println("query: " + timeQ.getFilters());
 //
 //		System.out.println(model.setBetween(q, "click_date"));
 //		System.out.println(model.setFilters(q));
 //		System.out.println(model.timeGroup(q, "click_date"));
 
-//		TimeQueryResult result = (TimeQueryResult) model.resolveQuery(timeQ);
-//		System.out.println(result.getData());
+		TimeQueryResult result = (TimeQueryResult) model.resolveQuery(timeQ);
+		System.out.println(result.getData());
 
-		AttributeDataQuery attQ = new AttributeQueryBuilder(MetricType.TOTAL_BOUNCES, AttributeType.GENDER).filters(map).build();
-		TimeQueryResult result = (TimeQueryResult) model.resolveQuery(attQ);
+		AttributeDataQuery attQ = new AttributeQueryBuilder(MetricType.CPA, AttributeType.GENDER).filters(map).build();
+//		AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(attQ);
 //		System.out.println(result.getData());
 	}
 }

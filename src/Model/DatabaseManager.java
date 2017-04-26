@@ -1474,9 +1474,9 @@ public class DatabaseManager {
 						"JOIN user ON server_log.user_id = user.user_id " +
 						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
 						"WHERE pages_viewed = 1 AND " +
-						"( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')))\n" +
-						"            - ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) ) <= " + ProjectSettings.getBounceSeconds() +
-						this.setBetween(q, "entry_date") +
+						"( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
+						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= " + ProjectSettings.getBounceSeconds() +
+						" AND " + this.setBetween(q, "entry_date") +
 						this.setFilters(q) +
 						this.timeGroup(q, "entry_date") +
 						" ORDER BY entry_date;";
