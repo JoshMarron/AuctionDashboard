@@ -1,7 +1,9 @@
 package Controllers;
 
+import Controllers.Queries.AttributeDataQuery;
 import Controllers.Queries.TimeDataQuery;
 import Controllers.Queries.TimeQueryBuilder;
+import Controllers.Results.AttributeQueryResult;
 import Controllers.Results.TimeQueryResult;
 import Model.DBEnums.DateEnum;
 import Model.DatabaseManager;
@@ -60,7 +62,6 @@ public class DashboardMainFrameController {
 
         if (future.isDone()) {
             SwingUtilities.invokeLater(() -> frame.finishedLoading());
-            helpers.submit(cache::startCaching);
         }
     }
 
@@ -94,10 +95,17 @@ public class DashboardMainFrameController {
         });
     }
 
-    public void requestAttributeChart(MetricType type, AttributeType attr) {
+    public void requestAttributeChart(AttributeDataQuery query) {
         helpers.submit(() -> {
-            Map<String, Number> data = getDataForChartFromAttribute(type, attr);
-            SwingUtilities.invokeLater(() -> frame.displayChart(type, attr, data));
+            if (cache.isInCache(query)) {
+                AttributeQueryResult result = (AttributeQueryResult) cache.hitCache(query);
+                SwingUtilities.invokeLater(() -> frame.displayChart(query.getMetric(), query.getAttribute(), result.getData()));
+            } else {
+                AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
+                cache.addToCache(query, result);
+                Map<String, Number> data = result.getData();
+                SwingUtilities.invokeLater(() -> frame.displayChart(query.getMetric(), query.getAttribute(), data));
+            }
         });
     }
 

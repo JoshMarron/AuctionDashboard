@@ -9,6 +9,7 @@ import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,11 +19,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class GraphCache {
 
-    private ConcurrentHashMap<Query, QueryResult> cacheMap;
+    private Map<Query, QueryResult> cacheMap;
     private DatabaseManager model;
 
     public GraphCache(DatabaseManager model) {
-        cacheMap = new ConcurrentHashMap<>();
+        cacheMap = new HashMap<>();
         this.model = model;
     }
 

@@ -3,6 +3,8 @@ package Views;
 import Controllers.DashboardMainFrameController;
 
 import Controllers.ProjectSettings;
+import Controllers.Queries.AttributeDataQuery;
+import Controllers.Queries.AttributeQueryBuilder;
 import Controllers.Queries.TimeDataQuery;
 import Controllers.Queries.TimeQueryBuilder;
 import Model.DBEnums.DateEnum;
@@ -136,7 +138,13 @@ public class DashboardMainFrame extends CatFrame {
                                         .build();
             controller.requestTimeChart(query);
         } else {
-            controller.requestAttributeChart(currentMetric, currentAttribute);
+            AttributeDataQuery query = new AttributeQueryBuilder(currentMetric, currentAttribute)
+                                            .filters(filters)
+                                            .startDate(startDate)
+                                            .endDate(endDate)
+                                            .build();
+
+            controller.requestAttributeChart(query);
         }
     }
 
