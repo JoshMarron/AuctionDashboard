@@ -240,6 +240,12 @@ public class DashboardMainFrameController {
         frame.displayMetrics(results);
     }
 
+    public void startMultiFilter() {
+        DashboardMultiFilterController newController = new DashboardMultiFilterController(frame, model);
+        newController.setAvailableLogs(availableLogs);
+        frame.setController(newController);
+    }
+
     public DashboardMainFrame getFrame() {
         return frame;
     }
@@ -250,5 +256,9 @@ public class DashboardMainFrameController {
 
     public GraphCache getCache() {
         return cache;
+    }
+
+    public void setAvailableLogs(List<LogType> availableLogs) {
+        this.availableLogs = availableLogs;
     }
 }

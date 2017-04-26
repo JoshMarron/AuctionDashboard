@@ -45,7 +45,14 @@ public class MainFrameMenu extends CatMenuBar {
             frame.addSecondCampaign();
         });
 
+        JMenuItem multiFilterModeItem = new JMenuItem("Start multi filter mode");
+        multiFilterModeItem.addActionListener((e) -> {
+            JOptionPane.showMessageDialog(frame, "Multi filter mode started, choose the filters with the Add Filter button", "Multi Filter Mode", JOptionPane.INFORMATION_MESSAGE);
+            frame.startMultiFilter();
+        });
+
         fileMenu.add(addSecondCampaignItem);
+        fileMenu.add(multiFilterModeItem);
         fileMenu.add(saveAsMenuItem);
         fileMenu.add(settingsItem);
         fileMenu.add(closeProjectItem);

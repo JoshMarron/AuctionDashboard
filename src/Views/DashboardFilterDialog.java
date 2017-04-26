@@ -86,8 +86,16 @@ public class DashboardFilterDialog extends JDialog {
         return filters;
     }
 
+    public List<DialogFilterPanel> getFilterPanels() {
+        return filterPanels;
+    }
+
     public Instant getStartDate() {
         return datePanel.getStartDate();
+    }
+
+    public void setReturnVal(int returnVal) {
+        this.returnVal = returnVal;
     }
 
     public Instant getEndDate() {

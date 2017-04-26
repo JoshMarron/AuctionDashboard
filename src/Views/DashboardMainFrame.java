@@ -2,6 +2,7 @@ package Views;
 
 import Controllers.DashboardMainFrameController;
 
+import Controllers.DashboardMultiFilterController;
 import Controllers.ProjectSettings;
 import Controllers.Queries.*;
 import Model.DBEnums.DateEnum;
@@ -38,6 +39,8 @@ public class DashboardMainFrame extends CatFrame {
     private AttributeType currentAttribute;
     private MainFrameChartOptionsPanel optionsPanel;
     private Map<AttributeType, List<String>> filters;
+    private Map<AttributeType, List<String>> filters2;
+    private boolean multiChart;
     private Instant startDate;
     private Instant endDate;
 
@@ -50,6 +53,7 @@ public class DashboardMainFrame extends CatFrame {
         this.filters = new HashMap<>();
         this.startDate = ProjectSettings.MIN_DATE;
         this.endDate = ProjectSettings.MAX_DATE;
+        this.multiChart = false;
         loading = false;
     }
 
@@ -133,24 +137,64 @@ public class DashboardMainFrame extends CatFrame {
         requestNewChart();
     }
 
+    public void requestMultiFilterRefresh(Instant startDate, Instant endDate, Map<AttributeType, List<String>> filters1, Map<AttributeType, List<String>> filters2) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.filters = filters1;
+        this.filters2 = filters2;
+        requestNewChart();
+    }
+
     private void requestNewChart() {
         this.displayLoading();
-        if (this.requestedChart.equals(ChartType.LINE)) {
-            TimeDataQuery query = new TimeQueryBuilder(currentMetric)
-                                        .filters(filters)
-                                        .granularity(granularity)
-                                        .startDate(startDate)
-                                        .endDate(endDate)
-                                        .build();
-            controller.requestTimeChart(query);
-        } else {
-            AttributeDataQuery query = new AttributeQueryBuilder(currentMetric, currentAttribute)
-                                            .filters(filters)
-                                            .startDate(startDate)
-                                            .endDate(endDate)
-                                            .build();
+        if (!this.multiChart) {
+            if (this.requestedChart.equals(ChartType.LINE)) {
+                TimeDataQuery query = new TimeQueryBuilder(currentMetric)
+                        .filters(filters)
+                        .granularity(granularity)
+                        .startDate(startDate)
+                        .endDate(endDate)
+                        .build();
+                controller.requestTimeChart(query);
+            } else {
+                AttributeDataQuery query = new AttributeQueryBuilder(currentMetric, currentAttribute)
+                        .filters(filters)
+                        .startDate(startDate)
+                        .endDate(endDate)
+                        .build();
 
-            controller.requestAttributeChart(query);
+                controller.requestAttributeChart(query);
+            }
+        } else {
+            if (this.requestedChart.equals(ChartType.LINE)) {
+                TimeDataQuery query1 = new TimeQueryBuilder(currentMetric)
+                        .filters(filters)
+                        .granularity(granularity)
+                        .startDate(startDate)
+                        .endDate(endDate)
+                        .build();
+                TimeDataQuery query2 = new TimeQueryBuilder(currentMetric)
+                        .filters(filters2)
+                        .granularity(granularity)
+                        .startDate(startDate)
+                        .endDate(endDate)
+                        .build();
+
+                ((DashboardMultiFilterController) controller).requestMultiTimeChart(query1, query2);
+            } else {
+                AttributeDataQuery query1 = new AttributeQueryBuilder(currentMetric, currentAttribute)
+                        .filters(filters)
+                        .startDate(startDate)
+                        .endDate(endDate)
+                        .build();
+                AttributeDataQuery query2 = new AttributeQueryBuilder(currentMetric, currentAttribute)
+                        .filters(filters2)
+                        .startDate(startDate)
+                        .endDate(endDate)
+                        .build();
+
+                ((DashboardMultiFilterController) controller).requestMultiAttributeChart(query1, query2);
+            }
         }
     }
 
@@ -227,12 +271,26 @@ public class DashboardMainFrame extends CatFrame {
         if (chooserVal == JFileChooser.APPROVE_OPTION) {
             File chosenCampaign = chooser.getSelectedFile();
             controller.addSecondCampaign(chosenCampaign);
+            JOptionPane.showMessageDialog(this, "Added second campaign!", "Second campaign mode", JOptionPane.INFORMATION_MESSAGE);
+            this.refresh();
         }
     }
 
     public void closeProject() {
         this.requestedChart = ChartType.LINE;
         controller.closeProject();
+    }
+
+    public void startMultiFilter() {
+        filters2 = new HashMap<>();
+        controller.startMultiFilter();
+        this.switchToMultiFilterDialog();
+        this.multiChart = true;
+        this.refresh();
+    }
+
+    public void switchToMultiFilterDialog() {
+        this.optionsPanel.switchToMultiFilterDialog();
     }
 
     public File getHomeDir() {

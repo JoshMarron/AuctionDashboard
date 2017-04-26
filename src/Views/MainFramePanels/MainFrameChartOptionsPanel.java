@@ -7,6 +7,7 @@ import Views.CustomComponents.CatLabel;
 import Views.CustomComponents.CatPanel;
 import Views.DashboardFilterDialog;
 import Views.DashboardMainFrame;
+import Views.DashboardMultiFilterDialog;
 import Views.ViewPresets.AttributeType;
 import Views.ViewPresets.ChartType;
 import Views.ViewPresets.ColorSettings;
@@ -30,7 +31,6 @@ public class MainFrameChartOptionsPanel extends CatPanel {
 
     public MainFrameChartOptionsPanel(DashboardMainFrame parent) {
         this.parent = parent;
-        this.possibleVals = possibleVals;
         this.init();
     }
 
@@ -45,12 +45,17 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         filterButton.setFont(FontSettings.GLOB_FONT.getFont().deriveFont(20F));
         filterButton.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR));
         filterButton.addActionListener((e) -> {
-            int returnVal = filterDialog.showFilterDialog();
-            System.out.println("closed");
-            System.out.println(returnVal);
-            if (returnVal == DashboardFilterDialog.APPROVE_OPTION) {
-                parent.requestFilterRefresh(filterDialog.getStartDate(), filterDialog.getEndDate(), filterDialog.getFilters());
-
+            if (filterDialog instanceof DashboardMultiFilterDialog) {
+                int returnVal = filterDialog.showFilterDialog();
+                if (returnVal == DashboardFilterDialog.APPROVE_OPTION) {
+                    parent.requestMultiFilterRefresh(filterDialog.getStartDate(), filterDialog.getEndDate(),
+                            filterDialog.getFilters(), ((DashboardMultiFilterDialog) filterDialog).getSecondFilters());
+                }
+            } else {
+                int returnVal = filterDialog.showFilterDialog();
+                if (returnVal == DashboardFilterDialog.APPROVE_OPTION) {
+                    parent.requestFilterRefresh(filterDialog.getStartDate(), filterDialog.getEndDate(), filterDialog.getFilters());
+                }
             }
         });
         filterButtonPanel.add(filterButton, BorderLayout.CENTER);
@@ -162,5 +167,9 @@ public class MainFrameChartOptionsPanel extends CatPanel {
     public void setUpFilterOptions(Map<AttributeType, List<String>> possibleVals) {
         this.possibleVals = possibleVals;
         this.filterDialog = new DashboardFilterDialog(parent, possibleVals);
+    }
+
+    public void switchToMultiFilterDialog() {
+        this.filterDialog = new DashboardMultiFilterDialog(parent, possibleVals);
     }
 }
