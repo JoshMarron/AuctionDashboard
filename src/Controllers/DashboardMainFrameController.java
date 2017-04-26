@@ -5,7 +5,7 @@ import Controllers.Queries.TimeDataQuery;
 import Controllers.Queries.TimeQueryBuilder;
 import Controllers.Results.AttributeQueryResult;
 import Controllers.Results.TimeQueryResult;
-import Model.DBEnums.DateEnum;
+import Model.CorruptTableException;
 import Model.DatabaseManager;
 import Views.DashboardMainFrame;
 import Model.DBEnums.LogType;
@@ -13,10 +13,10 @@ import Views.DashboardStartupFrame;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 import org.apache.commons.io.FileUtils;
-
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
@@ -109,35 +109,6 @@ public class DashboardMainFrameController {
         });
     }
 
-    private Map<String, Number> getDataForChartFromAttribute(MetricType type, AttributeType attr) {
-        switch (type) {
-            case TOTAL_CLICKS:
-                return model.getTotalClicksForAttribute(attr);
-            case TOTAL_IMPRESSIONS:
-                return model.getTotalImpressionsForAttribute(attr);
-            case TOTAL_UNIQUES:
-                return model.getTotalUniquesForAttribute(attr);
-            case TOTAL_COST:
-                return model.getTotalCostForAttribute(attr);
-            case TOTAL_CONVERSIONS:
-                return model.getTotalConversionsForAttribute(attr);
-            case TOTAL_BOUNCES:
-                return model.getTotalBouncesForAttribute(attr);
-            case BOUNCE_RATE:
-                return model.getBounceRateForAttribute(attr);
-            case CPA:
-                return model.getCPAForAttribute(attr);
-            case CPC:
-                return model.getCPCForAttribute(attr);
-            case CPM:
-                return model.getCPMForAttribute(attr);
-            case CTR:
-                return model.getCTRForAttribute(attr);
-            default:
-                return null;
-        }
-    }
-
     public void saveProject(File filename) throws IOException {
         File savedProjects = new File("data/saved.txt");
         savedProjects.getParentFile().mkdirs();
@@ -187,5 +158,31 @@ public class DashboardMainFrameController {
 
         return results;
 
+    }
+
+    public void addSecondCampaign(File campaign) {
+        DatabaseManager secondModel = new DatabaseManager();
+        try {
+            secondModel.loadDB(campaign.getAbsolutePath());
+        } catch (SQLException | CorruptTableException e) {
+            // TODO display a warning on the frame that the second project couldn't be loaded
+            e.printStackTrace();
+        }
+
+        DashboardDoubleMainFrameController newController = new DashboardDoubleMainFrameController(frame, model, secondModel);
+        frame.setController(newController);
+
+    }
+
+    public DashboardMainFrame getFrame() {
+        return frame;
+    }
+
+    public DatabaseManager getModel() {
+        return model;
+    }
+
+    public GraphCache getCache() {
+        return cache;
     }
 }

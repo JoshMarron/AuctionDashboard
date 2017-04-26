@@ -195,6 +195,24 @@ public class DashboardMainFrame extends CatFrame {
 
     }
 
+    // This should refresh all the metrics + the current chart
+    public void refresh() {
+
+    }
+
+    public void addSecondCampaign() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Choose a project file...");
+        FileNameExtensionFilter catFilter = new FileNameExtensionFilter("CAT Files", "cat");
+        chooser.setFileFilter(catFilter);
+
+        int chooserVal = chooser.showOpenDialog(this);
+        if (chooserVal == JFileChooser.APPROVE_OPTION) {
+            File chosenCampaign = chooser.getSelectedFile();
+            controller.addSecondCampaign(chosenCampaign);
+        }
+    }
+
     public void closeProject() {
         this.requestedChart = ChartType.LINE;
         controller.closeProject();
