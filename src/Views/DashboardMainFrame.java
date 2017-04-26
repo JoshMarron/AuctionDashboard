@@ -169,4 +169,12 @@ public class DashboardMainFrame extends CatFrame {
     public File getHomeDir() {
         return this.homedir;
     }
+
+    public MainFrameChartDisplayPanel getChartPanel(){
+        return chartPanel;
+    }
+
+    public ChartType getRequestedChart(){
+        return requestedChart;
+    }
 }

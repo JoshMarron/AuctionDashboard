@@ -24,6 +24,7 @@ import java.util.Map;
 public class MainFrameMainLineChartPanel extends MainFrameMainTimeChartPanel {
 
     private JFXPanel chartPanel;
+    private LineChart<String, Number> chart;
 
     public MainFrameMainLineChartPanel() {
         this.init();
@@ -46,7 +47,7 @@ public class MainFrameMainLineChartPanel extends MainFrameMainTimeChartPanel {
             xAxis.setLabel("Date");
             yAxis.setLabel(type.toString());
 
-            LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
+            chart = new LineChart<>(xAxis, yAxis);
             chart.setTitle(type.toString() + " over time");
             XYChart.Series series = new XYChart.Series();
             series.setName(type.toString());
@@ -72,5 +73,9 @@ public class MainFrameMainLineChartPanel extends MainFrameMainTimeChartPanel {
             chartPanel.setScene(scene);
 
         });
+    }
+
+    public LineChart<String, Number> getChart(){
+        return chart;
     }
 }

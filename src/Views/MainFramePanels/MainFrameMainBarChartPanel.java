@@ -11,10 +11,7 @@ import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.image.WritableImage;
 
 import javax.imageio.ImageIO;
@@ -33,6 +30,7 @@ import java.util.ArrayList;
 public class MainFrameMainBarChartPanel extends MainFrameMainAttributeChartPanel {
 
     private JFXPanel chartPanel;
+    private BarChart<String, Number> barChart;
 
     public MainFrameMainBarChartPanel() {
         this.init();
@@ -54,7 +52,7 @@ public class MainFrameMainBarChartPanel extends MainFrameMainAttributeChartPanel
         xAxis.setLabel(attribute.toString());
         yAxis.setLabel(type.toString());
 
-        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+        barChart = new BarChart<>(xAxis, yAxis);
         barChart.setTitle(type.toString() + " by " + attribute.toString());
         barChart.setLegendVisible(false);
 
@@ -70,22 +68,9 @@ public class MainFrameMainBarChartPanel extends MainFrameMainAttributeChartPanel
 
         chartPanel.setScene(scene);
 
-        saveChart(barChart);
     }
 
-    public void saveChart(BarChart chart){
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                WritableImage image = chart.snapshot(new SnapshotParameters(), null);
-                File file = new File("chart.png");
-                try{
-                    ImageIO.write(SwingFXUtils.fromFXImage(image, null),"png", file);
-                } catch (IOException e){
-
-                }
-            }
-        });
-
+    public BarChart getChart(){
+        return barChart;
     }
 }

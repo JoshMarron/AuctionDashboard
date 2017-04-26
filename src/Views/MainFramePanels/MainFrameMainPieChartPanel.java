@@ -83,4 +83,8 @@ public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel
 
         });
     }
+
+    public PieChart getChart(){
+        return chart;
+    }
 }
