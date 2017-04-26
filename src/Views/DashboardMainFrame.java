@@ -112,7 +112,7 @@ public class DashboardMainFrame extends CatFrame {
     }
 
     public void requestTimeChartTypeChange(ChartType chartType, DateEnum granularity) {
-        if (!this.requestedChart.equals(chartType)) {
+        if (!this.requestedChart.equals(chartType) || !this.granularity.equals(granularity)) {
             this.requestedChart = chartType;
             this.granularity = granularity;
             requestNewChart();
@@ -125,6 +125,13 @@ public class DashboardMainFrame extends CatFrame {
             this.currentAttribute = attr;
             requestNewChart();
         }
+    }
+
+    public void requestFilterRefresh(Instant startDate, Instant endDate, Map<AttributeType, List<String>> filters) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.filters = filters;
+        requestNewChart();
     }
 
     private void requestNewChart() {
