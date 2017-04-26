@@ -32,7 +32,7 @@ public class TotalQueryBuilder extends QueryBuilder {
     }
 
     @Override
-    public Query build() {
+    public TotalQuery build() {
         return new TotalQuery(this);
     }
 }
