@@ -2,6 +2,7 @@
 package Model;
 
 import Controllers.DashboardMainFrameController;
+import Controllers.ProjectSettings;
 import Controllers.Queries.AttributeDataQuery;
 import Controllers.Queries.Query;
 import Controllers.Queries.TimeDataQuery;
@@ -1326,7 +1327,10 @@ public class DatabaseManager {
 						"FROM server_log " +
 						"JOIN user ON server_log.user_id = user.user_id " +
 						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
-						"WHERE " + this.setBetween(q, "entry_date") +
+						"WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
+						" AND ( strftime('%M', exit_date) - strftime('%M', entry_date) ) <= " + ProjectSettings.getBounceMinutes() +
+						" AND " +
+						"" + this.setBetween(q, "entry_date") +
 						this.setFilters(q) +
 						" GROUP BY " + att + ";";
 				break;

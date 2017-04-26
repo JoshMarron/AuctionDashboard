@@ -8,7 +8,7 @@ import java.time.Instant;
  */
 public class ProjectSettings {
 
-    private static int bounceMinutes = Integer.MAX_VALUE; //Default assumes no timeout for bounces
+    private static int bounceMinutes = 525600; //Default assumes no timeout for bounces
     private static int bouncePages = 1; //Default bounce definition is one page viewed
     public static final Instant MIN_DATE = Instant.EPOCH;
     public static final Instant MAX_DATE = Instant.parse("2999-12-31T23:59:59Z");

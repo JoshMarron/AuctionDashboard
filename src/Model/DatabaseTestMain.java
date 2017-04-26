@@ -60,8 +60,8 @@ public class DatabaseTestMain {
 //		TimeQueryResult result = (TimeQueryResult) model.resolveQuery(timeQ);
 //		System.out.println(result.getData());
 
-		AttributeDataQuery attQ = new AttributeQueryBuilder(MetricType.TOTAL_CONVERSIONS, AttributeType.GENDER).filters(map).build();
+		AttributeDataQuery attQ = new AttributeQueryBuilder(MetricType.TOTAL_BOUNCES, AttributeType.GENDER).filters(map).build();
 		TimeQueryResult result = (TimeQueryResult) model.resolveQuery(attQ);
-		System.out.println(result.getData());
+//		System.out.println(result.getData());
 	}
 }
