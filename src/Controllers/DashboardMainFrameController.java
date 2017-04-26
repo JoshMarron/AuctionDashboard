@@ -7,8 +7,11 @@ import Model.DBEnums.LogType;
 import Views.DashboardStartupFrame;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.WritableImage;
 import org.apache.commons.io.FileUtils;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
@@ -191,6 +194,15 @@ public class DashboardMainFrameController {
 
 
         return results;
+
+    }
+
+    public void saveChartExport(WritableImage image, File saveLocation){
+        try{
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", saveLocation);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }

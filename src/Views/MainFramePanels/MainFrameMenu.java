@@ -43,7 +43,6 @@ public class MainFrameMenu extends CatMenuBar {
 
         JMenuItem exportItem = new JMenuItem("Export Chart");
         exportItem.addActionListener((e)-> {
-            frame.getChartPanel().saveTimeChart(frame.getChartPanel().getTimeChartMap());
             if(frame.getRequestedChart() == ChartType.LINE){
                 frame.getChartPanel().saveTimeChart(frame.getChartPanel().getTimeChartMap());
             } else {

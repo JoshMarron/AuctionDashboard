@@ -9,6 +9,7 @@ import Views.CustomComponents.CatPanel;
 import Views.MainFramePanels.*;
 import Views.ViewPresets.AttributeType;
 import Views.ViewPresets.ChartType;
+import javafx.scene.image.WritableImage;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -176,5 +177,9 @@ public class DashboardMainFrame extends CatFrame {
 
     public ChartType getRequestedChart(){
         return requestedChart;
+    }
+
+    public void saveExport(WritableImage image, File file){
+        controller.saveChartExport(image, file);
     }
 }

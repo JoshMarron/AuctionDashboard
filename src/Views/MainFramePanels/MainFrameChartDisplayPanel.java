@@ -14,6 +14,8 @@ import javafx.scene.image.WritableImage;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.time.Instant;
@@ -89,11 +91,10 @@ public class MainFrameChartDisplayPanel extends CatPanel {
             public void run() {
                 try{
                     MainFrameMainLineChartPanel line = (MainFrameMainLineChartPanel)chartMap.get(ChartType.LINE);
-                    File file = new File("chart.png");
                     WritableImage image = line.getChart().snapshot(new SnapshotParameters(), null);
-                    ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+                    saveExportedChart(image);
                 } catch(Exception e) {
-
+                    e.printStackTrace();
                 }
             }
         });
@@ -104,6 +105,7 @@ public class MainFrameChartDisplayPanel extends CatPanel {
             @Override
             public void run() {
                 try{
+
                     ChartType type = null;
                     MainFrameMainPieChartPanel pieChart = null;
                     MainFrameMainBarChartPanel barChart = null;
@@ -115,17 +117,35 @@ public class MainFrameChartDisplayPanel extends CatPanel {
                         type = ChartType.PIE;
                     }
 
-                    File file = new File("chart.png");
+
+
+
+
                     WritableImage image = null;
                     if(type == ChartType.PIE) {image = pieChart.getChart().snapshot(new SnapshotParameters(), null);}
                     if(type == ChartType.BAR) {image = barChart.getChart().snapshot(new SnapshotParameters(), null);}
-                    ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+                    saveExportedChart(image);
 
 
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
         });
+    }
+
+    public void saveExportedChart(WritableImage image){
+        File file = null;
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Export chart...");
+        chooser.setFileFilter(new FileNameExtensionFilter("PNG File", "png"));
+        int userSelection = chooser.showSaveDialog(parent);
+
+        if(userSelection == JFileChooser.APPROVE_OPTION){
+            file = chooser.getSelectedFile();
+
+            File fileToSave = new File(file.toString() + ".png");
+            parent.saveExport(image, fileToSave);
+        }
     }
 }
