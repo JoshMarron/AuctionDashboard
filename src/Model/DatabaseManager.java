@@ -1271,6 +1271,8 @@ public class DatabaseManager {
 
     public synchronized QueryResult resolveQuery(Query q) {
 
+		System.out.println(q);
+
 		if (q instanceof TimeDataQuery) {
 			return resolveTimeDataQuery((TimeDataQuery) q);
 		} else if (q instanceof AttributeDataQuery) {
@@ -1279,6 +1281,7 @@ public class DatabaseManager {
 			return resolveTotalQuery((TotalQuery) q);
 		}
 
+		System.out.println("failed");
 		return null;
 	}
 

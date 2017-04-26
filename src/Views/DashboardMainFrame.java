@@ -3,6 +3,10 @@ package Views;
 import Controllers.DashboardMainFrameController;
 
 import Controllers.ProjectSettings;
+import Controllers.Queries.AttributeDataQuery;
+import Controllers.Queries.AttributeQueryBuilder;
+import Controllers.Queries.TimeDataQuery;
+import Controllers.Queries.TimeQueryBuilder;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Views.CustomComponents.CatFrame;
@@ -108,7 +112,7 @@ public class DashboardMainFrame extends CatFrame {
     }
 
     public void requestTimeChartTypeChange(ChartType chartType, DateEnum granularity) {
-        if (!this.requestedChart.equals(chartType)) {
+        if (!this.requestedChart.equals(chartType) || !this.granularity.equals(granularity)) {
             this.requestedChart = chartType;
             this.granularity = granularity;
             requestNewChart();
@@ -123,12 +127,31 @@ public class DashboardMainFrame extends CatFrame {
         }
     }
 
+    public void requestFilterRefresh(Instant startDate, Instant endDate, Map<AttributeType, List<String>> filters) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.filters = filters;
+        requestNewChart();
+    }
+
     private void requestNewChart() {
         this.displayLoading();
         if (this.requestedChart.equals(ChartType.LINE)) {
-            controller.requestTimeChart(currentMetric);
+            TimeDataQuery query = new TimeQueryBuilder(currentMetric)
+                                        .filters(filters)
+                                        .granularity(granularity)
+                                        .startDate(startDate)
+                                        .endDate(endDate)
+                                        .build();
+            controller.requestTimeChart(query);
         } else {
-            controller.requestAttributeChart(currentMetric, currentAttribute);
+            AttributeDataQuery query = new AttributeQueryBuilder(currentMetric, currentAttribute)
+                                            .filters(filters)
+                                            .startDate(startDate)
+                                            .endDate(endDate)
+                                            .build();
+
+            controller.requestAttributeChart(query);
         }
     }
 
@@ -170,6 +193,24 @@ public class DashboardMainFrame extends CatFrame {
             }
         }
 
+    }
+
+    // This should refresh all the metrics + the current chart
+    public void refresh() {
+
+    }
+
+    public void addSecondCampaign() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Choose a project file...");
+        FileNameExtensionFilter catFilter = new FileNameExtensionFilter("CAT Files", "cat");
+        chooser.setFileFilter(catFilter);
+
+        int chooserVal = chooser.showOpenDialog(this);
+        if (chooserVal == JFileChooser.APPROVE_OPTION) {
+            File chosenCampaign = chooser.getSelectedFile();
+            controller.addSecondCampaign(chosenCampaign);
+        }
     }
 
     public void closeProject() {

@@ -1,6 +1,11 @@
 package Controllers;
 
-import Model.DBEnums.DateEnum;
+import Controllers.Queries.AttributeDataQuery;
+import Controllers.Queries.TimeDataQuery;
+import Controllers.Queries.TimeQueryBuilder;
+import Controllers.Results.AttributeQueryResult;
+import Controllers.Results.TimeQueryResult;
+import Model.CorruptTableException;
 import Model.DatabaseManager;
 import Views.DashboardMainFrame;
 import Model.DBEnums.LogType;
@@ -8,10 +13,10 @@ import Views.DashboardStartupFrame;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 import org.apache.commons.io.FileUtils;
-
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
@@ -25,6 +30,7 @@ public class DashboardMainFrameController {
     private DashboardMainFrame frame;
     private DatabaseManager model;
     private List<LogType> availableLogs;
+    private GraphCache cache;
 
     //TODO allow this to be set based on the device?
     private ExecutorService helpers = Executors.newFixedThreadPool(4);
@@ -32,6 +38,7 @@ public class DashboardMainFrameController {
     public DashboardMainFrameController(DashboardMainFrame frame, DatabaseManager model) {
         this.frame = frame;
         this.model = model;
+        this.cache = new GraphCache(model);
         availableLogs = new ArrayList<>();
     }
 
@@ -63,84 +70,43 @@ public class DashboardMainFrameController {
             frame.displayMetrics(data);
         });
         if (availableLogs.contains(LogType.IMPRESSION)) {
-            requestTimeChart(MetricType.TOTAL_IMPRESSIONS);
+            TimeDataQuery q = new TimeQueryBuilder(MetricType.TOTAL_IMPRESSIONS).build();
+            requestTimeChart(q);
         } else if (availableLogs.contains(LogType.CLICK)) {
-            requestTimeChart(MetricType.TOTAL_CLICKS);
+            TimeDataQuery q = new TimeQueryBuilder(MetricType.TOTAL_CLICKS).build();
+            requestTimeChart(q);
         } else if (availableLogs.contains(LogType.SERVER_LOG)) {
-            requestTimeChart(MetricType.TOTAL_CONVERSIONS);
+            TimeDataQuery q = new TimeQueryBuilder(MetricType.TOTAL_BOUNCES).build();
+            requestTimeChart(q);
         }
     }
 
-    public void requestTimeChart(MetricType type) {
+    public void requestTimeChart(TimeDataQuery query) {
         helpers.submit(() -> {
-            Map<Instant, Number> data = getDataForChartFromType(type, DateEnum.DAYS);
-            SwingUtilities.invokeLater(() -> frame.displayChart(type, DateEnum.DAYS, data));
+            if (cache.isInCache(query)) {
+                TimeQueryResult result = (TimeQueryResult) cache.hitCache(query);
+                SwingUtilities.invokeLater(() -> frame.displayChart(query.getMetric(), query.getGranularity(), result.getData()));
+            } else {
+                TimeQueryResult result = (TimeQueryResult) model.resolveQuery(query);
+                cache.addToCache(query, result);
+                Map<Instant, Number> data = result.getData();
+                SwingUtilities.invokeLater(() -> frame.displayChart(query.getMetric(), query.getGranularity(), data));
+            }
         });
     }
 
-    public void requestAttributeChart(MetricType type, AttributeType attr) {
+    public void requestAttributeChart(AttributeDataQuery query) {
         helpers.submit(() -> {
-            Map<String, Number> data = getDataForChartFromAttribute(type, attr);
-            SwingUtilities.invokeLater(() -> frame.displayChart(type, attr, data));
+            if (cache.isInCache(query)) {
+                AttributeQueryResult result = (AttributeQueryResult) cache.hitCache(query);
+                SwingUtilities.invokeLater(() -> frame.displayChart(query.getMetric(), query.getAttribute(), result.getData()));
+            } else {
+                AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
+                cache.addToCache(query, result);
+                Map<String, Number> data = result.getData();
+                SwingUtilities.invokeLater(() -> frame.displayChart(query.getMetric(), query.getAttribute(), data));
+            }
         });
-    }
-
-    private Map<Instant, Number> getDataForChartFromType(MetricType type, DateEnum granularity) {
-        switch(type) {
-            case TOTAL_CLICKS:
-                return model.getClickCountPer(granularity, false);
-            case TOTAL_UNIQUES:
-                return model.getClickCountPer(granularity, true);
-            case TOTAL_IMPRESSIONS:
-                return model.getImpressionCountPer(granularity);
-            case TOTAL_CONVERSIONS:
-                return model.getConversionNumberPer(granularity);
-            case TOTAL_BOUNCES:
-                return model.getBounceNumberPer(granularity);
-            case BOUNCE_RATE:
-                return model.getBounceRatePer(granularity);
-            case CPA:
-                return model.getCPAPer(granularity);
-            case CPC:
-                return model.getCPCPer(granularity);
-            case TOTAL_COST:
-                return model.getTotalCostPer(granularity);
-            case CPM:
-                return model.getCPMPer(granularity);
-            case CTR:
-                return model.getCTRPer(granularity);
-            default:
-                return null;
-        }
-    }
-
-    private Map<String, Number> getDataForChartFromAttribute(MetricType type, AttributeType attr) {
-        switch (type) {
-            case TOTAL_CLICKS:
-                return model.getTotalClicksForAttribute(attr);
-            case TOTAL_IMPRESSIONS:
-                return model.getTotalImpressionsForAttribute(attr);
-            case TOTAL_UNIQUES:
-                return model.getTotalUniquesForAttribute(attr);
-            case TOTAL_COST:
-                return model.getTotalCostForAttribute(attr);
-            case TOTAL_CONVERSIONS:
-                return model.getTotalConversionsForAttribute(attr);
-            case TOTAL_BOUNCES:
-                return model.getTotalBouncesForAttribute(attr);
-            case BOUNCE_RATE:
-                return model.getBounceRateForAttribute(attr);
-            case CPA:
-                return model.getCPAForAttribute(attr);
-            case CPC:
-                return model.getCPCForAttribute(attr);
-            case CPM:
-                return model.getCPMForAttribute(attr);
-            case CTR:
-                return model.getCTRForAttribute(attr);
-            default:
-                return null;
-        }
     }
 
     public void saveProject(File filename) throws IOException {
@@ -192,5 +158,31 @@ public class DashboardMainFrameController {
 
         return results;
 
+    }
+
+    public void addSecondCampaign(File campaign) {
+        DatabaseManager secondModel = new DatabaseManager();
+        try {
+            secondModel.loadDB(campaign.getAbsolutePath());
+        } catch (SQLException | CorruptTableException e) {
+            // TODO display a warning on the frame that the second project couldn't be loaded
+            e.printStackTrace();
+        }
+
+        DashboardDoubleMainFrameController newController = new DashboardDoubleMainFrameController(frame, model, secondModel);
+        frame.setController(newController);
+
+    }
+
+    public DashboardMainFrame getFrame() {
+        return frame;
+    }
+
+    public DatabaseManager getModel() {
+        return model;
+    }
+
+    public GraphCache getCache() {
+        return cache;
     }
 }

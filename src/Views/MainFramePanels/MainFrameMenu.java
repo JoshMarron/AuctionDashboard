@@ -36,8 +36,13 @@ public class MainFrameMenu extends CatMenuBar {
         settingsItem.addActionListener((e) -> {
             int settingsVal = settingsDialog.showDialog();
             if (settingsVal == DashboardSettingsDialog.APPROVE_OPTION) {
-                System.out.println(ProjectSettings.getBounceSeconds() + " -- " + ProjectSettings.getBouncePages());
+                frame.refresh();
             }
+        });
+
+        JMenuItem addSecondCampaignItem = new JMenuItem("Add second campaign...");
+        addSecondCampaignItem.addActionListener((e) -> {
+            JFileChooser chooser = new JFileChooser();
         });
 
         fileMenu.add(saveAsMenuItem);

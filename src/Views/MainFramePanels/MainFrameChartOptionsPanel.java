@@ -49,12 +49,8 @@ public class MainFrameChartOptionsPanel extends CatPanel {
             System.out.println("closed");
             System.out.println(returnVal);
             if (returnVal == DashboardFilterDialog.APPROVE_OPTION) {
-                System.out.println(filterDialog.getFilters());
-                System.out.println(filterDialog.getStartDate());
-                System.out.println(filterDialog.getEndDate());
-                parent.setFilters(filterDialog.getFilters());
-                parent.setStartDate(filterDialog.getStartDate());
-                parent.setEndDate(filterDialog.getEndDate());
+                parent.requestFilterRefresh(filterDialog.getStartDate(), filterDialog.getEndDate(), filterDialog.getFilters());
+
             }
         });
         filterButtonPanel.add(filterButton, BorderLayout.CENTER);
