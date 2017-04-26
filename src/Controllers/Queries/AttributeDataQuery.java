@@ -1,5 +1,6 @@
 package Controllers.Queries;
 
+import Model.DBEnums.attributes.Attribute;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 
@@ -50,5 +51,13 @@ public class AttributeDataQuery extends Query{
         boolean metricEquals = this.getMetric().equals(query2.getMetric());
 
         return dateEquals && attributeEquals && filterEquals && metricEquals;
+    }
+
+    public AttributeDataQuery deriveQuery(MetricType metric, AttributeType attribute) {
+        AttributeQueryBuilder newBuilder = new AttributeQueryBuilder(metric, attribute);
+        return newBuilder.startDate(this.startDate)
+                .endDate(this.endDate)
+                .filters(this.getFilters())
+                .build();
     }
 }
