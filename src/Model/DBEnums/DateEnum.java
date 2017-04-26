@@ -6,7 +6,7 @@ package Model.DBEnums;
 public enum DateEnum {
 	HOURS("'%H,%d,%m,%Y'"),
 	DAYS("'%d,%m,%Y'"),
-	WEEKS("'%W,%m,%Y'");
+	WEEKS("'%W,%Y'");
 
 	private String sql;
 

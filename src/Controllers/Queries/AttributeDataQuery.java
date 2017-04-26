@@ -1,5 +1,6 @@
 package Controllers.Queries;
 
+import Model.DBEnums.attributes.Attribute;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 
@@ -31,5 +32,13 @@ public class AttributeDataQuery extends Query{
 
     public Instant getEndDate() {
         return endDate;
+    }
+
+    public AttributeDataQuery deriveQuery(MetricType metric, AttributeType attribute) {
+        AttributeQueryBuilder newBuilder = new AttributeQueryBuilder(metric, attribute);
+        return newBuilder.startDate(this.startDate)
+                .endDate(this.endDate)
+                .filters(this.getFilters())
+                .build();
     }
 }

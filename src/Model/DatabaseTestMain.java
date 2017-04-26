@@ -1,5 +1,7 @@
 package Model;
 
+import Controllers.Queries.AttributeDataQuery;
+import Controllers.Queries.AttributeQueryBuilder;
 import Controllers.Queries.TimeDataQuery;
 import Controllers.Queries.TimeQueryBuilder;
 import Controllers.Results.TimeQueryResult;
@@ -47,14 +49,19 @@ public class DatabaseTestMain {
 		map.put(AttributeType.CONTEXT, Arrays.asList("Social Media"));
 		System.out.println("map: " + map);
 
-		TimeDataQuery q = new TimeQueryBuilder(MetricType.TOTAL_CONVERSIONS).filters(map).build();
-		System.out.println("query: " + q.getFilters());
+		//TODO fix weeks working
+		TimeDataQuery timeQ = new TimeQueryBuilder(MetricType.TOTAL_CONVERSIONS).filters(map).granularity(DateEnum.WEEKS).build();
+//		System.out.println("query: " + timeQ.getFilters());
 //
 //		System.out.println(model.setBetween(q, "click_date"));
 //		System.out.println(model.setFilters(q));
 //		System.out.println(model.timeGroup(q, "click_date"));
 
-		TimeQueryResult result = (TimeQueryResult) model.resolveQuery(q);
-		System.out.println(result.getData());
+//		TimeQueryResult result = (TimeQueryResult) model.resolveQuery(timeQ);
+//		System.out.println(result.getData());
+
+		AttributeDataQuery attQ = new AttributeQueryBuilder(MetricType.TOTAL_BOUNCES, AttributeType.GENDER).filters(map).build();
+		TimeQueryResult result = (TimeQueryResult) model.resolveQuery(attQ);
+//		System.out.println(result.getData());
 	}
 }
