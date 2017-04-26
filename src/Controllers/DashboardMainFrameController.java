@@ -110,7 +110,7 @@ public class DashboardMainFrameController {
     }
 
     public void saveProject(File filename) throws IOException {
-        System.out.println(filename);
+        System.out.println(filename.getAbsolutePath());
         File savedProjects = new File("data/saved.txt");
         savedProjects.getParentFile().mkdirs();
         savedProjects.createNewFile();

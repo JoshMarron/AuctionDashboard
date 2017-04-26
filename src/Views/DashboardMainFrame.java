@@ -20,6 +20,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -183,12 +185,14 @@ public class DashboardMainFrame extends CatFrame {
         if (saveChooserVal == JFileChooser.APPROVE_OPTION) {
             try {
                 File saved = saveChooser.getSelectedFile();
-                String savedFileName = saved.getName();
+                String savedFileName = saved.getAbsolutePath();
                 if (!savedFileName.contains(".")) {
                     savedFileName = savedFileName.split("\\.")[0] + ".cat";
                 } else {
                     savedFileName = savedFileName + ".cat";
                 }
+                //Path savedPath = Paths.get(saved.getAbsolutePath());
+                //savedPath.resolveSibling(savedFileName);
                 controller.saveProject(new File(savedFileName));
                 JOptionPane.showMessageDialog(this,
                         "File successfully saved!",
