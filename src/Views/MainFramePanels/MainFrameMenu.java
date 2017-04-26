@@ -5,6 +5,7 @@ import Views.CustomComponents.CatMenu;
 import Views.CustomComponents.CatMenuBar;
 import Views.DashboardMainFrame;
 import Views.DashboardSettingsDialog;
+import Views.ViewPresets.ChartType;
 
 import javax.swing.*;
 
@@ -40,7 +41,17 @@ public class MainFrameMenu extends CatMenuBar {
             }
         });
 
+        JMenuItem exportItem = new JMenuItem("Export Chart");
+        exportItem.addActionListener((e)-> {
+            if(frame.getRequestedChart() == ChartType.LINE){
+                frame.getChartPanel().saveTimeChart(frame.getChartPanel().getTimeChartMap());
+            } else {
+                frame.getChartPanel().saveAttributeChart(frame.getChartPanel().getAttributeChartMap());
+            }
+        });
+
         fileMenu.add(saveAsMenuItem);
+        fileMenu.add(exportItem);
         fileMenu.add(settingsItem);
         fileMenu.add(closeProjectItem);
         fileMenu.add(exitItem);

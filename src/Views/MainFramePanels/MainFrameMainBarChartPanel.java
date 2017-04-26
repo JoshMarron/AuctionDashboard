@@ -6,15 +6,19 @@ import Views.CustomComponents.CatPanel;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 import Views.ViewPresets.ColorSettings;
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.chart.*;
+import javafx.scene.image.WritableImage;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -26,6 +30,7 @@ import java.util.ArrayList;
 public class MainFrameMainBarChartPanel extends MainFrameMainAttributeChartPanel {
 
     private JFXPanel chartPanel;
+    private BarChart<String, Number> barChart;
 
     public MainFrameMainBarChartPanel() {
         this.init();
@@ -47,7 +52,7 @@ public class MainFrameMainBarChartPanel extends MainFrameMainAttributeChartPanel
         xAxis.setLabel(attribute.toString());
         yAxis.setLabel(type.toString());
 
-        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+        barChart = new BarChart<>(xAxis, yAxis);
         barChart.setTitle(type.toString() + " by " + attribute.toString());
         barChart.setLegendVisible(false);
 
@@ -62,5 +67,10 @@ public class MainFrameMainBarChartPanel extends MainFrameMainAttributeChartPanel
         scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
 
         chartPanel.setScene(scene);
+
+    }
+
+    public BarChart getChart(){
+        return barChart;
     }
 }
