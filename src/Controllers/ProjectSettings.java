@@ -1,6 +1,5 @@
 package Controllers;
 
-import java.awt.*;
 import java.time.Instant;
 
 /**
@@ -8,7 +7,7 @@ import java.time.Instant;
  */
 public class ProjectSettings {
 
-    private static int bounceMinutes = 525600; //Default assumes no timeout for bounces
+    private static int bounceSeconds = 525600; //Default assumes no timeout for bounces
     private static int bouncePages = 1; //Default bounce definition is one page viewed
     public static final Instant MIN_DATE = Instant.EPOCH;
     public static final Instant MAX_DATE = Instant.parse("2999-12-31T23:59:59Z");
@@ -17,12 +16,12 @@ public class ProjectSettings {
 
     }
 
-    public static int getBounceMinutes() {
-        return bounceMinutes;
+    public static int getBounceSeconds() {
+        return bounceSeconds;
     }
 
-    public static void setBounceMinutes(int bounceMinutes) {
-        ProjectSettings.bounceMinutes = bounceMinutes;
+    public static void setBounceSeconds(int bounceSeconds) {
+        ProjectSettings.bounceSeconds = bounceSeconds;
     }
 
     public static int getBouncePages() {
@@ -35,7 +34,7 @@ public class ProjectSettings {
 
     //Resets the bounce definition to its default values
     public static void setDefaultBounceRate() {
-        ProjectSettings.bounceMinutes = Integer.MAX_VALUE;
+        ProjectSettings.bounceSeconds = Integer.MAX_VALUE;
         ProjectSettings.bouncePages = 1;
     }
 

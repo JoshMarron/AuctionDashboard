@@ -1,7 +1,6 @@
 
 package Model;
 
-import Controllers.DashboardMainFrameController;
 import Controllers.ProjectSettings;
 import Controllers.Queries.AttributeDataQuery;
 import Controllers.Queries.Query;
@@ -9,15 +8,12 @@ import Controllers.Queries.TimeDataQuery;
 import Controllers.Results.AttributeQueryResult;
 import Controllers.Results.QueryResult;
 import Controllers.Results.TimeQueryResult;
-import DataStructures.ClickLog;
 import DataStructures.CsvInterfaces.Gender;
 import DataStructures.CsvInterfaces.Income;
-import DataStructures.ServerLog;
 import Model.DBEnums.DatabaseStatements;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Model.DBEnums.TableType;
-import Model.DBEnums.attributes.Attribute;
 import Model.DBEnums.headers.*;
 import Model.TableModels.Click;
 import Model.TableModels.Impression;
@@ -25,18 +21,12 @@ import Model.TableModels.ServerVisit;
 import Model.TableModels.User;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
-import com.sun.org.apache.xpath.internal.SourceTree;
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
-import javafx.scene.chart.NumberAxis;
 
-import javax.swing.plaf.nimbus.State;
-import javax.xml.transform.Result;
 import java.io.File;
 import java.sql.*;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.Date;
 
 /**
  * Created by Philip on 26/02/2017.
@@ -1328,7 +1318,8 @@ public class DatabaseManager {
 						"JOIN user ON server_log.user_id = user.user_id " +
 						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
 						"WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
-						" AND ( strftime('%M', exit_date) - strftime('%M', entry_date) ) <= " + ProjectSettings.getBounceMinutes() +
+						" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) / 60) " +
+						"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) / 60) ) <= " + ProjectSettings.getBounceSeconds() +
 						" AND " +
 						"" + this.setBetween(q, "entry_date") +
 						this.setFilters(q) +
@@ -1441,7 +1432,7 @@ public class DatabaseManager {
 		}
 		System.out.println(sql);
 
-		return null;
+		return new AttributeQueryResult(q.getMetric(), createAttributeMap(sql));
 	}
 
 	private TimeQueryResult resolveTimeDataQuery(TimeDataQuery q) {
@@ -1483,7 +1474,9 @@ public class DatabaseManager {
 						"JOIN user ON server_log.user_id = user.user_id " +
 						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
 						"WHERE pages_viewed = 1 AND " +
-						this.setBetween(q, "entry_date") +
+						"( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
+						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= " + ProjectSettings.getBounceSeconds() +
+						" AND " + this.setBetween(q, "entry_date") +
 						this.setFilters(q) +
 						this.timeGroup(q, "entry_date") +
 						" ORDER BY entry_date;";
