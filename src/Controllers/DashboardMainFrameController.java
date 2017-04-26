@@ -1,10 +1,9 @@
 package Controllers;
 
-import Controllers.Queries.AttributeDataQuery;
-import Controllers.Queries.TimeDataQuery;
-import Controllers.Queries.TimeQueryBuilder;
+import Controllers.Queries.*;
 import Controllers.Results.AttributeQueryResult;
 import Controllers.Results.TimeQueryResult;
+import Controllers.Results.TotalQueryResult;
 import Model.CorruptTableException;
 import Model.DatabaseManager;
 import Views.DashboardMainFrame;
@@ -51,7 +50,7 @@ public class DashboardMainFrameController {
             });
             Map<AttributeType, List<String>> attributeValues = model.getAllValuesOfAttributes();
             frame.setUpFilterOptions(attributeValues);
-            Map<MetricType, Number> results = this.calculateKeyMetrics();
+            Map<MetricType, Number> results = this.fastNoFilterKeyMetrics();
             this.displayMetrics(results);
         });
         try {
@@ -110,7 +109,6 @@ public class DashboardMainFrameController {
     }
 
     public void saveProject(File filename) throws IOException {
-        System.out.println(filename.getAbsolutePath());
         File savedProjects = new File("data/saved.txt");
         savedProjects.getParentFile().mkdirs();
         savedProjects.createNewFile();
@@ -120,7 +118,6 @@ public class DashboardMainFrameController {
         FileUtils.writeStringToFile(savedProjects, filename.getAbsolutePath() + '\n', "utf-8");
         FileUtils.writeLines(savedProjects, previousProjects, "\n", true);
     }
-
     public void closeProject() {
         frame.setVisible(false);
         DashboardStartupFrame startupFrame = new DashboardStartupFrame(frame.getHomeDir());
@@ -129,7 +126,7 @@ public class DashboardMainFrameController {
         startupFrame.initStartup();
     }
 
-    private Map<MetricType, Number> calculateKeyMetrics() {
+    private Map<MetricType, Number> fastNoFilterKeyMetrics() {
         Map<MetricType, Number> results = new HashMap<>();
 
         if (availableLogs.contains(LogType.IMPRESSION)) {
@@ -139,23 +136,80 @@ public class DashboardMainFrameController {
             results.put(MetricType.TOTAL_CLICKS, model.getTotalClicks());
             results.put(MetricType.TOTAL_UNIQUES, model.getTotalUniques());
         }
-        if (availableLogs.contains(LogType.CLICK) && availableLogs.contains(LogType.IMPRESSION)) {
+        if (availableLogs.contains(LogType.IMPRESSION) && availableLogs.contains(LogType.CLICK)) {
             results.put(MetricType.TOTAL_COST, model.getTotalCampaignCost());
             results.put(MetricType.CPC, model.getCPC());
-            results.put(MetricType.CTR, model.getCTR());
             results.put(MetricType.CPM, model.getCPM());
+            results.put(MetricType.CTR, model.getCTR());
         }
-
-        if(availableLogs.contains(LogType.SERVER_LOG)){
+        if (availableLogs.contains(LogType.SERVER_LOG)) {
             results.put(MetricType.TOTAL_BOUNCES, model.getTotalBounces());
             results.put(MetricType.TOTAL_CONVERSIONS, model.getTotalConversions());
         }
-
-        if(availableLogs.contains(LogType.SERVER_LOG) && availableLogs.contains(LogType.CLICK)){
+        if (availableLogs.contains(LogType.SERVER_LOG) && availableLogs.contains(LogType.CLICK)) {
             results.put(MetricType.CPA, model.getCPA());
             results.put(MetricType.BOUNCE_RATE, model.getBounceRate());
         }
 
+        return results;
+    }
+
+    // This one is slow and should only be used when there are filters
+    private Map<MetricType, Number> calculateKeyMetrics(TotalQuery query) {
+        Map<MetricType, Number> results = new HashMap<>();
+        query = query.deriveQuery(MetricType.TOTAL_IMPRESSIONS);
+        TotalQueryResult result;
+
+        if (availableLogs.contains(LogType.IMPRESSION)) {
+            result = (TotalQueryResult) model.resolveQuery(query);
+            results.put(MetricType.TOTAL_IMPRESSIONS, result.getData());
+        }
+        if (availableLogs.contains(LogType.CLICK)) {
+            query = query.deriveQuery(MetricType.TOTAL_CLICKS);
+            result = (TotalQueryResult) model.resolveQuery(query);
+            results.put(MetricType.TOTAL_CLICKS, result.getData());
+
+            query = query.deriveQuery(MetricType.TOTAL_UNIQUES);
+            result = (TotalQueryResult) model.resolveQuery(query);
+            results.put(MetricType.TOTAL_UNIQUES, result.getData());
+        }
+        if (availableLogs.contains(LogType.CLICK) && availableLogs.contains(LogType.IMPRESSION)) {
+            query = query.deriveQuery(MetricType.TOTAL_COST);
+            result = (TotalQueryResult) model.resolveQuery(query);
+            results.put(MetricType.TOTAL_COST, result.getData());
+
+            query = query.deriveQuery(MetricType.CPC);
+            result = (TotalQueryResult) model.resolveQuery(query);
+            results.put(MetricType.CPC, result.getData());
+
+            query = query.deriveQuery(MetricType.CTR);
+            result = (TotalQueryResult) model.resolveQuery(query);
+            results.put(MetricType.CTR, result.getData());
+
+            query = query.deriveQuery(MetricType.CPM);
+            result = (TotalQueryResult) model.resolveQuery(query);
+            results.put(MetricType.CPM, result.getData());
+        }
+
+        if(availableLogs.contains(LogType.SERVER_LOG)){
+            query = query.deriveQuery(MetricType.TOTAL_BOUNCES);
+            result = (TotalQueryResult) model.resolveQuery(query);
+            results.put(MetricType.TOTAL_BOUNCES, result.getData());
+
+            query = query.deriveQuery(MetricType.TOTAL_CONVERSIONS);
+            result = (TotalQueryResult) model.resolveQuery(query);
+            results.put(MetricType.TOTAL_CONVERSIONS, result.getData());
+        }
+
+        if(availableLogs.contains(LogType.SERVER_LOG) && availableLogs.contains(LogType.CLICK)){
+            query = query.deriveQuery(MetricType.CPA);
+            result = (TotalQueryResult) model.resolveQuery(query);
+            results.put(MetricType.CPA, result.getData());
+
+            query = query.deriveQuery(MetricType.BOUNCE_RATE);
+            result = (TotalQueryResult) model.resolveQuery(query);
+            results.put(MetricType.BOUNCE_RATE, result.getData());
+        }
 
         return results;
 
