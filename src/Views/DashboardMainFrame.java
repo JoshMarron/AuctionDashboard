@@ -165,6 +165,11 @@ public class DashboardMainFrame extends CatFrame {
         this.finishedLoading();
     }
 
+    public void displayDoubleChart(MetricType type, DateEnum granularity, Map<Instant, Number> data1, Map<Instant, Number> data2) {
+        chartPanel.displayDoubleTimeChart(requestedChart, type, granularity, data1, data2);
+        this.finishedLoading();
+    }
+
     public void saveFileAs() {
         JFileChooser saveChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("CAT CatAnalysis Files", "cat");
@@ -189,7 +194,6 @@ public class DashboardMainFrame extends CatFrame {
                         "The file could not be saved at the selected location!",
                         "Saving error!",
                         JOptionPane.ERROR_MESSAGE);
-                return;
             }
         }
 

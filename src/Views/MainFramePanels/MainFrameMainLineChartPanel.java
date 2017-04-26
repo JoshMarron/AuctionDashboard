@@ -73,4 +73,44 @@ public class MainFrameMainLineChartPanel extends MainFrameMainTimeChartPanel {
 
         });
     }
+
+    @Override
+    public void displayDoubleChart(MetricType type, DateEnum granularity, Map<Instant, Number> data1, Map<Instant, Number> data2) {
+        Platform.runLater(() -> {
+            CategoryAxis xAxis = new CategoryAxis();
+            NumberAxis yAxis = new NumberAxis();
+
+            xAxis.setLabel("Date");
+            yAxis.setLabel(type.toString());
+
+            LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
+            chart.setTitle(type.toString() + " over time");
+            XYChart.Series series1 = new XYChart.Series();
+            series1.setName(type.toString() + " for Campaign 2");
+            XYChart.Series series2 = new XYChart.Series();
+            series2.setName(type.toString() + " for Campaign 1");
+
+            if (granularity.equals(DateEnum.HOURS)) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                        .withLocale(Locale.UK)
+                        .withZone(ZoneId.systemDefault());
+                data1.keySet().stream().sorted().forEach((time) -> series1.getData().add(new XYChart.Data(formatter.format(time), data1.get(time))));
+                data2.keySet().stream().sorted().forEach((time) -> series2.getData().add(new XYChart.Data(formatter.format(time), data2.get(time))));
+            }
+            else {
+                DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+                        .withLocale(Locale.UK)
+                        .withZone(ZoneId.systemDefault());
+                data1.keySet().stream().sorted().forEach((time) -> series1.getData().add(new XYChart.Data(formatter.format(time), data1.get(time))));
+                data2.keySet().stream().sorted().forEach((time) -> series2.getData().add(new XYChart.Data(formatter.format(time), data2.get(time))));
+            }
+
+            Scene scene = new Scene(chart);
+            scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
+            chart.getData().addAll(series1, series2);
+
+            chartPanel.setScene(scene);
+
+        });
+    }
 }

@@ -42,9 +42,10 @@ public class MainFrameMenu extends CatMenuBar {
 
         JMenuItem addSecondCampaignItem = new JMenuItem("Add second campaign...");
         addSecondCampaignItem.addActionListener((e) -> {
-            JFileChooser chooser = new JFileChooser();
+            frame.addSecondCampaign();
         });
 
+        fileMenu.add(addSecondCampaignItem);
         fileMenu.add(saveAsMenuItem);
         fileMenu.add(settingsItem);
         fileMenu.add(closeProjectItem);
