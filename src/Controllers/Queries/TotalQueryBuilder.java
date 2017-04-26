@@ -12,9 +12,6 @@ import java.util.Map;
  */
 public class TotalQueryBuilder extends QueryBuilder {
 
-    private Instant startDate;
-    private Instant endDate;
-
     public TotalQueryBuilder(MetricType metric) {
         super(metric);
     }
@@ -25,25 +22,17 @@ public class TotalQueryBuilder extends QueryBuilder {
     }
 
     public TotalQueryBuilder startDate(Instant startDate) {
-        this.startDate = startDate;
+        this.setStartDate(startDate);
         return this;
     }
 
     public TotalQueryBuilder endDate(Instant endDate) {
-        this.endDate = endDate;
+        this.setEndDate(endDate);
         return this;
     }
 
     @Override
     public Query build() {
         return new TotalQuery(this);
-    }
-
-    public Instant getStartDate() {
-        return startDate;
-    }
-
-    public Instant getEndDate() {
-        return endDate;
     }
 }

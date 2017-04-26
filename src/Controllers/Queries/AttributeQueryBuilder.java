@@ -42,12 +42,12 @@ public class AttributeQueryBuilder extends QueryBuilder {
     }
 
     public AttributeQueryBuilder startDate(Instant startDate) {
-        this.startDate = startDate;
+        this.setStartDate(startDate);
         return this;
     }
 
     public AttributeQueryBuilder endDate(Instant endDate) {
-        this.endDate = endDate;
+        this.setEndDate(endDate);
         return this;
     }
 
