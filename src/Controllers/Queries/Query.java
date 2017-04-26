@@ -34,7 +34,7 @@ public abstract class Query {
 
     @Override
     public int hashCode() {
-        return metric.hashCode() + filters.hashCode();
+        return metric.hashCode() + filters.hashCode() + startDate.hashCode() + endDate.hashCode();
     }
 
     @Override
@@ -43,7 +43,7 @@ public abstract class Query {
             return false;
         }
 
-        return this.filters.equals(((Query) o).getFilters()) && this.metric.equals(((Query) o).getMetric());
+        return this.filters.equals(((Query) o).getFilters()) && this.metric.equals(((Query) o).getMetric()) && this.startDate.equals(((Query) o).getStartDate()) && this.endDate.equals(((Query) o).getEndDate());
     }
 
     public Instant getStartDate() {

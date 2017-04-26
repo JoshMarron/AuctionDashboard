@@ -24,7 +24,7 @@ public class AttributeDataQuery extends Query{
 
     @Override
     public int hashCode() {
-        return attribute.hashCode() + startDate.hashCode() + endDate.hashCode() + super.hashCode();
+        return attribute.hashCode() + super.hashCode();
     }
 
     @Override
