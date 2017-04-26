@@ -68,6 +68,10 @@ public class MainFrameChartDisplayPanel extends CatPanel {
         chart.displayChart(type, attr, data);
     }
 
+    public void displayDoubleTimeChart(ChartType chartType, MetricType type, AttributeType attr, Map<Instant, Number> data1, Map<Instant, Number> data2) {
+
+    }
+
     public ChartType getCurrentChart() {
         return this.currentChart;
     }
