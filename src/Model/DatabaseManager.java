@@ -616,7 +616,9 @@ public class DatabaseManager {
     }
 
     public Number getTotalBounces() {
-	    String sql = "SELECT count(server_log_id) FROM server_log WHERE pages_viewed = 1;";
+	    String sql = "SELECT count(server_log_id) FROM server_log WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
+		" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) " +
+				"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) ) <= " + ProjectSettings.getBounceSeconds() + ";";
 
 	    return getSingleMetric(sql);
     }
@@ -1313,8 +1315,8 @@ public class DatabaseManager {
 						"JOIN user ON server_log.user_id = user.user_id " +
 						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
 						"WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
-						" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) / 60) " +
-						"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) / 60) ) <= " + ProjectSettings.getBounceSeconds() +
+						" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) " +
+						"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) ) <= " + ProjectSettings.getBounceSeconds() +
 						" AND " +
 						"" + this.setBetween(q, "entry_date") +
 						this.setFilters(q) + ";";
