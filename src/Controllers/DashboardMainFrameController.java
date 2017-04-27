@@ -248,6 +248,16 @@ public class DashboardMainFrameController {
         frame.setController(newController);
     }
 
+    public void restart() {
+        frame.setVisible(false);
+        this.frame = new DashboardMainFrame(new File(System.getProperty("user.home")));
+        this.frame.setController(this);
+        SwingUtilities.invokeLater(() -> {
+            frame.init();
+            this.displayMainFrame(this.availableLogs);
+        });
+    }
+
     public DashboardMainFrame getFrame() {
         return frame;
     }

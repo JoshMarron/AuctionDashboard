@@ -156,7 +156,7 @@ public class DialogColourCustomisationPanel extends CatPanel{
     }
 
     public static java.awt.Color fxPickerToSwingColor(ColorPicker picker){
-        return new java.awt.Color((int)picker.getValue().getRed()*255, (int)picker.getValue().getGreen()*255, (int)picker.getValue().getBlue()*255);
+        return new java.awt.Color((int)(picker.getValue().getRed()*255), (int)(picker.getValue().getGreen()*255), (int)(picker.getValue().getBlue()*255));
     }
 
 }

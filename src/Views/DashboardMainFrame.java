@@ -292,6 +292,10 @@ public class DashboardMainFrame extends CatFrame {
         this.refresh();
     }
 
+    public void restart() {
+        controller.restart();
+    }
+
     public void switchToMultiFilterDialog() {
         this.optionsPanel.switchToMultiFilterDialog();
     }
