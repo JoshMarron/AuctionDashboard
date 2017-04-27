@@ -58,11 +58,11 @@ public class DatabaseTestMain {
 //		System.out.println(model.setFilters(q));
 //		System.out.println(model.timeGroup(q, "click_date"));
 
-		TimeQueryResult result = (TimeQueryResult) model.resolveQuery(timeQ);
-		System.out.println(result.getData());
-
-		AttributeDataQuery attQ = new AttributeQueryBuilder(MetricType.CPA, AttributeType.GENDER).filters(map).build();
-//		AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(attQ);
+//		TimeQueryResult result = (TimeQueryResult) model.resolveQuery(timeQ);
 //		System.out.println(result.getData());
+
+		AttributeDataQuery attQ = new AttributeQueryBuilder(MetricType.TOTAL_UNIQUES, AttributeType.GENDER).filters(map).build();
+		AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(attQ);
+		System.out.println(result.getData());
 	}
 }
