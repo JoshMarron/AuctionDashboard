@@ -93,6 +93,8 @@ public class MainFrameChartDisplayPanel extends CatPanel {
 
     public ChartType getCurrentChart() {
         return this.currentChart;
+    }
+
     public Map<ChartType, MainFrameMainTimeChartPanel> getTimeChartMap(){
         return timeChartMap;
     }
