@@ -36,8 +36,6 @@ public class DatabaseManager {
 	
 	private String filename;
 	private String url;
-	private Map<Instant, Number> totalCostDaysMap;
-	private TimeDataQuery tqrCostCPM;
 
 	public DatabaseManager() {
 
@@ -326,198 +324,6 @@ public class DatabaseManager {
 //		long finalTime = System.nanoTime() - startTime;
 //		System.out.println("Time taken for " + logType + ": " + (finalTime / 1000000) + "ms = " + (finalTime / 1000000000) + "s");
 	}
-	
-	/**
-	 * Get all the data from the impressions table
-	 *
-	 * @return List of Impression data
-	 */
-	public List<Impression> selectAllImpressions() {
-		List<Impression> impressions = new ArrayList<>();
-		String sql = "SELECT * FROM " + TableType.SITE_IMPRESSION.toString();
-		
-		ResultSet resultSet = null;
-		
-		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-			resultSet = stmt.executeQuery(sql);
-			long impressionID;
-			long userID;
-			String context;
-			double impressionCost;
-			Instant impressionDate;
-			Impression i;
-			
-			while (resultSet.next()) {
-				impressionID = resultSet.getLong(1);
-				userID = resultSet.getLong(2);
-				context = resultSet.getString(3);
-				impressionCost = resultSet.getDouble(4);
-				impressionDate = this.stringToInstant(resultSet.getString(5));
-				
-				i = new Impression(impressionID, userID, context, impressionCost, impressionDate);
-				impressions.add(i);
-				
-			}
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return impressions;
-	}
-	
-	/**
-	 * Selects all data from click table and returns it
-	 *
-	 * @return List of all Click data
-	 */
-	public List<Click> selectAllClicks() {
-		List<Click> clicks = new ArrayList<>();
-		String sql = "SELECT * FROM " + TableType.CLICK.toString();
-		
-		ResultSet resultSet;
-		
-		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-			resultSet = stmt.executeQuery(sql);
-			long clickID;
-			long userID;
-			Instant clickDate;
-			double cost;
-			Click c;
-			
-			while (resultSet.next()) {
-				clickID = resultSet.getInt(1);
-				userID = resultSet.getInt(2);
-				
-				clickDate = stringToInstant(resultSet.getString(3));
-				
-				cost = resultSet.getDouble(4);
-				
-				c = new Click(clickID, userID, clickDate, cost);
-				clicks.add(c);
-			}
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return clicks;
-	}
-	
-	/**
-	 * Selects all data from user database and returns it
-	 *
-	 * @return List of all User information
-	 */
-	public List<User> getAllUsers() {
-		List<User> users = new ArrayList<>();
-		String sql = "SELECT * FROM " + TableType.USER.toString();
-		
-		ResultSet resultSet;
-		
-		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-			resultSet = stmt.executeQuery(sql);
-			long userID;
-			String ageRange;
-			Gender gender;
-			Income income;
-			User u;
-			
-			while (resultSet.next()) {
-				userID = resultSet.getInt(1);
-				ageRange = resultSet.getString(2);
-				
-				gender = Gender.valueOf(resultSet.getString(3));
-				
-				income = Income.valueOf(resultSet.getString(4));
-				
-				u = new User(userID, ageRange, gender, income);
-				users.add(u);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return users;
-	}
-	
-	/**
-	 * Gets all data from server_log database and returns it
-	 *
-	 * @return List of all ServerVisit information
-	 */
-	public List<ServerVisit> getAllServerVisits() {
-		List<ServerVisit> serverVisits = new ArrayList<>();
-		String sql = "SELECT * FROM " + TableType.SERVER_LOG.toString();
-		
-		ResultSet resultSet;
-		
-		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-			resultSet = stmt.executeQuery(sql);
-			long ServerID;
-			long userID;
-			Instant entryDate;
-			String exitDateString;
-			Instant exitDateInstant;
-			int pagesViewed;
-			boolean conversion;
-			ServerVisit sv;
-			
-			while (resultSet.next()) {
-				ServerID = resultSet.getLong(1);
-				userID = resultSet.getLong(2);
-				entryDate = stringToInstant(resultSet.getString(3));
-				
-				// Catch the n/a case
-				exitDateString = resultSet.getString(4);
-				if (exitDateString.equals("n/a")) {
-					exitDateInstant = null;
-				} else {
-					exitDateInstant = stringToInstant(exitDateString);
-				}
-				
-				pagesViewed = resultSet.getInt(5);
-				conversion = false;
-				try {
-					conversion = conversionToBoolean(resultSet.getString(6));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-				sv = new ServerVisit(ServerID, userID, entryDate, exitDateInstant, pagesViewed, conversion);
-				serverVisits.add(sv);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return serverVisits;
-	}
-	
-	/**
-	 * Simple class I used to test database queries in the console
-	 *
-	 * @param resultSet the ResultSet which is gathered from the SQL query
-	 */
-	public void printToConsole(ResultSet resultSet) {
-		try {
-			ResultSetMetaData resultData = resultSet.getMetaData();
-			System.out.println("Printing Result Set Data...");
-			int cols = resultData.getColumnCount();
-			
-			while (resultSet.next()) {
-				for (int i = 1; i <= cols; i++) {
-					if (i > 1) System.out.print("   ");
-					System.out.print(resultSet.getString(i) + " " + resultData.getColumnName(i));
-				}
-				System.out.println("");
-			}
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-	}
 
 	private Number getSingleMetric(String sql) {
 		ResultSet result;
@@ -565,29 +371,6 @@ public class DatabaseManager {
 
         return values;
     }
-	
-	/**
-	 * Simple function to get a unique number of Header from a TableType
-	 *
-	 * @param header distinct header
-	 * @return distinct header count for table
-	 */
-	public int getNoOfUnique(Header header) {
-		String sql = "" +
-				"SELECT count(" + header.toString() + ") FROM (" +
-				"   SELECT DISTINCT " + header.toString() + " FROM " + header.getTable().toString() +
-				")";
-		
-		ResultSet resultSet;
-		
-		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-			resultSet = stmt.executeQuery(sql);
-			return resultSet.getInt(1);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return -1;
-	}
 
 	//===============================================================================
     //=====================SINGLE METRIC METHODS=====================================
@@ -810,70 +593,7 @@ public class DatabaseManager {
 		
 		return DBUtils.truncateInstantMap(createMap(sql), dateEnum);
 	}
-	
-	//Cost per acquisition - total cost/num conversions
-	public Map<Instant, Number> getCPAPer(DateEnum dateEnum) {
-        Map<Instant, Number> costMap = DBUtils.truncateInstantMap(getTotalCostPer(dateEnum), dateEnum);
-        Map<Instant, Number> conversionMap = DBUtils.truncateInstantMap(getConversionNumberPer(dateEnum), dateEnum);
-        Map<Instant, Number> resultMap = new HashMap<>();
 
-        costMap.forEach(resultMap::put);
-
-        conversionMap.forEach((date, val) -> {
-            resultMap.put(date, costMap.get(date).doubleValue() / val.doubleValue());
-        });
-
-        return resultMap;
-
-	}
-
-	//Cost per click - total cost/num click
-	public Map<Instant, Number> getCPCPer(DateEnum dateEnum) {
-		Map<Instant, Number> costMap = DBUtils.truncateInstantMap(getTotalCostPer(dateEnum), dateEnum);
-		Map<Instant, Number> clickMap = DBUtils.truncateInstantMap(getClickCountPer(dateEnum, false), dateEnum);
-		Map<Instant, Number> resultMap = new HashMap<>();
-
-		costMap.forEach(resultMap::put);
-
-		clickMap.forEach((date, val) -> resultMap.put(date, costMap.get(date).doubleValue() / val.doubleValue()));
-
-		return resultMap;
-
-	}
-
-	//CPM - (cost/impressions) * 1000
-	public Map<Instant, Number> getCPMPer(DateEnum dateEnum) {
-        Map<Instant, Number> costMap = DBUtils.truncateInstantMap(getTotalCostPer(dateEnum), dateEnum);
-        Map<Instant, Number> impressionMap = DBUtils.truncateInstantMap(getImpressionCountPer(dateEnum), dateEnum);
-        Map<Instant, Number> resultMap = new HashMap<>();
-
-        costMap.forEach((date, val) -> resultMap.put(date, (val.doubleValue() / impressionMap.get(date).doubleValue()) * 1000));
-
-        return resultMap;
-	}
-
-	//CTR - number of clicks/number of impressions
-	public Map<Instant, Number> getCTRPer(DateEnum dateEnum) {
-		Map<Instant, Number> clickMap = DBUtils.truncateInstantMap(getClickCountPer(dateEnum, false), dateEnum);
-		Map<Instant, Number> impressionMap = DBUtils.truncateInstantMap(getImpressionCountPer(dateEnum), dateEnum);
-        Map<Instant, Number> resultMap = new HashMap<>();
-
-        clickMap.forEach((date, val) -> resultMap.put(date, (val.doubleValue() / impressionMap.get(date).doubleValue())));
-
-        return resultMap;
-	}
-
-	//Can't remember, ask joe
-	public Map<Instant, Number> getBounceRatePer(DateEnum dateEnum) {
-		Map<Instant, Number> bounceMap = DBUtils.truncateInstantMap(getBounceNumberPer(dateEnum), dateEnum);
-		Map<Instant, Number> clickMap = DBUtils.truncateInstantMap(getClickCountPer(dateEnum, false), dateEnum);
-		Map<Instant, Number> resultMap = new HashMap<>();
-
-		bounceMap.forEach((date, val) -> resultMap.put(date, val.doubleValue() / clickMap.get(date).doubleValue()));
-
-		return resultMap;
-	}
-	
 	/**
 	 * Takes a time period and returns map mapping each period of time period and a count for site impressions in said period.
 	 * The instant returned for time will be the earliest time the database finds and will be the full date and time
@@ -1097,7 +817,9 @@ public class DatabaseManager {
 
         return bounceMap;
 	}
-	
+
+	// TODO replace the test methods using above to using below
+
 	/**
 	 * Executes a given sql String Statement and produces a map of the results which it then returns
 	 *
@@ -1190,59 +912,6 @@ public class DatabaseManager {
 	private LocalDateTime stringToDateTime(String dateToParse) {
 		Instant ins = stringToInstant(dateToParse);
 		return LocalDateTime.ofInstant(ins, ZoneId.systemDefault());
-	}
-	
-	/**
-	 * Simple conversion taking a conversion String from the database and converts it to a boolean format
-	 *
-	 * @param conversion Conversion String
-	 * @return
-	 * @throws Exception
-	 */
-	private boolean conversionToBoolean(String conversion) throws Exception {
-		switch (conversion) {
-			case "Yes":
-			case "yes":
-				return true;
-			case "No":
-			case "no":
-				return false;
-			default:
-				throw new Exception("Conversion is not of type \"yes/no\"");
-		}
-	}
-	
-	/**
-	 * Simple method to wipe all the tables if need be
-	 *
-	 * @param logType the log to which the tables that need deleting are attached
-	 */
-	//TODO This is gross but I'm making it public until we can talk about a better management system
-	//TODO Josh
-	public void wipeTable(LogType logType) {
-		
-		try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-			
-			switch (logType) {
-				case CLICK:
-					stmt.execute(DatabaseStatements.DROP_CLICK.getStatement());
-					stmt.execute(DatabaseStatements.CREATE_CLICK.getStatement());
-					break;
-				case IMPRESSION:
-					stmt.execute(DatabaseStatements.DROP_USER.getStatement());
-					stmt.execute(DatabaseStatements.CREATE_USER.getStatement());
-					stmt.execute(DatabaseStatements.DROP_SITE_IMPRESSION.getStatement());
-					stmt.execute(DatabaseStatements.CREATE_SITE_IMPRESSION.getStatement());
-					break;
-				case SERVER_LOG:
-					stmt.execute(DatabaseStatements.DROP_SERVER_LOG.getStatement());
-					stmt.execute(DatabaseStatements.CREATE_SERVER_LOG.getStatement());
-					break;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
 	}
 
 	public List<LogType> getAvailableLogsFromTables() {
