@@ -29,7 +29,7 @@ public class DashboardMultiFilterDialog extends DashboardFilterDialog {
 
     private void init(Map<AttributeType, List<String>> possibleVals) {
         this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-        this.setSize(1200, 800);
+        this.setSize(1200, 1000);
         this.setLocationRelativeTo(null);
         this.setResizable(true);
 
@@ -37,8 +37,12 @@ public class DashboardMultiFilterDialog extends DashboardFilterDialog {
         this.setContentPane(contentPane);
 
         contentPane.setLayout(new BorderLayout());
+        CatPanel dateFilterContainer = new CatPanel();
+        dateFilterContainer.setLayout(new BoxLayout(dateFilterContainer, BoxLayout.X_AXIS));
         dateFilterPanel = new DialogDateFilterPanel();
-        contentPane.add(dateFilterPanel, BorderLayout.NORTH);
+        dateFilterPanel.setPreferredSize(new Dimension(1000, 300));
+        dateFilterContainer.add(dateFilterPanel);
+        contentPane.add(dateFilterContainer, BorderLayout.NORTH);
 
         CatPanel mainPanel = new CatPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
