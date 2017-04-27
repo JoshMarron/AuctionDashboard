@@ -237,4 +237,8 @@ public class DashboardMainFrame extends CatFrame {
     public void setEndDate(Instant endDate) {
         this.endDate = endDate;
     }
+
+    public DashboardMainFrameController getController() {
+        return controller;
+    }
 }

@@ -74,4 +74,8 @@ public class DashboardDoubleMainFrameController extends DashboardMainFrameContro
             // TODO fill in the display for the chart
         });
     }
+
+    public GraphCache getSecondCache() {
+        return secondCache;
+    }
 }
