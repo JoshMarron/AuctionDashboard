@@ -43,10 +43,13 @@ public class DashboardSettingsDialog extends JDialog {
 
         CatButton applyButton = new CatButton("Apply");
         applyButton.addActionListener((e) -> {
-            this.applyColorChanges();
-            this.returnVal = DashboardSettingsDialog.APPROVE_OPTION;
-            this.setBounceVals();
-            this.setVisible(false);
+            int acceptRestart = JOptionPane.showConfirmDialog(this, "The program must restart to apply your changes, is this alright?", "Confirm changes", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            if (acceptRestart == JOptionPane.OK_OPTION) {
+                this.applyColorChanges();
+                this.returnVal = DashboardSettingsDialog.APPROVE_OPTION;
+                this.setBounceVals();
+                this.setVisible(false);
+            }
         });
         CatButton cancelButton = new CatButton("Cancel");
         cancelButton.addActionListener((e) -> {
