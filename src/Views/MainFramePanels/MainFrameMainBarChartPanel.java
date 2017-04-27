@@ -89,7 +89,7 @@ public class MainFrameMainBarChartPanel extends MainFrameMainAttributeChartPanel
         barChart.getData().addAll(series1, series2);
         Scene scene = new Scene(barChart);
         scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
-
+        System.out.println("warning");
         chartPanel.setScene(scene);
 
     }
