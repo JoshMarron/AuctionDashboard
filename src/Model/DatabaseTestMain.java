@@ -1,11 +1,9 @@
 package Model;
 
-import Controllers.Queries.AttributeDataQuery;
-import Controllers.Queries.AttributeQueryBuilder;
-import Controllers.Queries.TimeDataQuery;
-import Controllers.Queries.TimeQueryBuilder;
+import Controllers.Queries.*;
 import Controllers.Results.AttributeQueryResult;
 import Controllers.Results.TimeQueryResult;
+import Controllers.Results.TotalQueryResult;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Model.DBEnums.attributes.AgeAttribute;
@@ -90,10 +88,10 @@ public class DatabaseTestMain {
 //        System.out.println(testModel2.values().stream().reduce((a, b) -> a.doubleValue() + b.doubleValue()));
 
 		HashMap<AttributeType, List<String>> map = new HashMap<>();
-		map.put(AttributeType.GENDER, Arrays.asList("Male", "Female"));
-		map.put(AttributeType.INCOME, Arrays.asList("Low"));
-		map.put(AttributeType.AGE, Arrays.asList("25-34", "35-44"));
-		map.put(AttributeType.CONTEXT, Arrays.asList("Social Media"));
+//		map.put(AttributeType.GENDER, Arrays.asList("Male", "Female"));
+//		map.put(AttributeType.INCOME, Arrays.asList("Low"));
+//		map.put(AttributeType.AGE, Arrays.asList("25-34", "35-44"));
+//		map.put(AttributeType.CONTEXT, Arrays.asList("Social Media"));
 		System.out.println("map: " + map);
 
 		//TODO fix weeks working
@@ -104,11 +102,11 @@ public class DatabaseTestMain {
 //		System.out.println(model.setFilters(q));
 //		System.out.println(model.timeGroup(q, "click_date"));
 
-//		TimeQueryResult result = (TimeQueryResult) model.resolveQuery(timeQ);
-//		System.out.println(result.getData());
-
-		AttributeDataQuery attQ = new AttributeQueryBuilder(MetricType.TOTAL_CLICKS, AttributeType.GENDER).filters(map).build();
-		AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(attQ);
+		TimeQueryResult result = (TimeQueryResult) model.resolveQuery(timeQ);
 		System.out.println(result.getData());
+
+//		TotalQuery attQ = new TotalQueryBuilder(MetricType.TOTAL_BOUNCES).filters(map).build();
+//		TotalQueryResult result = (TotalQueryResult) model.resolveQuery(attQ);
+//		System.out.println(result.getData());
 	}
 }

@@ -191,7 +191,6 @@ public class TestMetricByAttribute {
 
     @Test
     public void testGetBouncesByMatchingAttribute() {
-        Map<String, Number> testMap = model.getTotalBouncesForAttribute(AttributeType.INCOME);
         AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_BOUNCES, AttributeType.INCOME).build();
 
         ProjectSettings.setBouncePages(1);
@@ -206,29 +205,38 @@ public class TestMetricByAttribute {
 
     @Test
     public void testGetBouncesByDifferentAttributes() {
-        Map<String, Number> testMap = model.getTotalBouncesForAttribute(AttributeType.AGE);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_BOUNCES, AttributeType.AGE).build();
 
-        Assert.assertEquals(2, testMap.size());
-        Assert.assertEquals(1, testMap.get("<25").intValue());
-        Assert.assertEquals(1, testMap.get("25-34").intValue());
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
+
+        Assert.assertEquals(2, result.getData().size());
+        Assert.assertEquals(1, result.getData().get("<25").intValue());
+        Assert.assertEquals(1, result.getData().get("25-34").intValue());
     }
 
     @Test
     public void testGetTotalCostForAttribute() {
         Map<String, Number> testMap = model.getTotalCostForAttribute(AttributeType.GENDER);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_COST, AttributeType.GENDER).build();
 
-        Assert.assertEquals(2, testMap.size());
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
+
+        Assert.assertEquals(2, result.getData().size());
 
         //Sum up both click and impression cost across genders
-        Assert.assertEquals(4400, testMap.get("Male").intValue());
-        Assert.assertEquals(1200, testMap.get("Female").intValue());
+        Assert.assertEquals(4400, result.getData().get("Male").intValue());
+        Assert.assertEquals(1200, result.getData().get("Female").intValue());
 
         testMap = model.getTotalCostForAttribute(AttributeType.AGE);
-        Assert.assertEquals(4, testMap.size());
+        query = new AttributeQueryBuilder(MetricType.TOTAL_COST, AttributeType.AGE).build();
 
-        Assert.assertEquals(1400, testMap.get("25-34").intValue());
-        Assert.assertEquals(3000, testMap.get("35-44").intValue());
-        Assert.assertEquals(800, testMap.get(">55").intValue());
+        result = (AttributeQueryResult) model.resolveQuery(query);
+
+        Assert.assertEquals(4, result.getData().size());
+
+        Assert.assertEquals(1400, result.getData().get("25-34").intValue());
+        Assert.assertEquals(3000, result.getData().get("35-44").intValue());
+        Assert.assertEquals(800, result.getData().get(">55").intValue());
     }
 
     @Test

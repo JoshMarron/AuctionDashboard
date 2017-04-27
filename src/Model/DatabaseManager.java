@@ -980,15 +980,25 @@ public class DatabaseManager {
 						this.setFilters(q) + ";";
 				break;
 			case TOTAL_BOUNCES:
-				sql = "SELECT count(server_log_id) " +
+				sql = "SELECT count(server_log.server_log_id) " +
 						"FROM server_log " +
 						"JOIN user ON server_log.user_id = user.user_id " +
-						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
-						"WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
-						" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) " +
-						"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) ) <= " + ProjectSettings.getBounceSeconds() +
-						" AND " +
-						"" + this.setBetween(q, "entry_date") +
+						"JOIN site_impression ON user.user_id = site_impression.user_id " +
+						"JOIN ( " +
+						"SELECT " +
+						"server_log_id, " +
+						"CASE " +
+						"WHEN exit_date = \"n/a\" " +
+						"THEN pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+						"ELSE " +
+						"pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+						"AND ( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
+						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= 525600 " +
+						"END bounce " +
+						"FROM server_log " +
+						") aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 " +
+						"WHERE " +
+						this.setBetween(q, "entry_date") +
 						this.setFilters(q) + ";";
 				break;
 			case TOTAL_CONVERSIONS:
@@ -1271,14 +1281,25 @@ public class DatabaseManager {
 						" ORDER BY click_date;";
 				break;
 			case TOTAL_BOUNCES:  //TODO set custom bounce rate definition
-				sql = "SELECT entry_date, count(server_log_id) " +
+				sql = "SELECT entry_date, count(server_log.server_log_id) " +
 						"FROM server_log " +
 						"JOIN user ON server_log.user_id = user.user_id " +
-						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
-						"WHERE pages_viewed = 1 AND " +
-						"( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
-						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= " + ProjectSettings.getBounceSeconds() +
-						" AND " + this.setBetween(q, "entry_date") +
+						"JOIN site_impression ON user.user_id = site_impression.user_id " +
+						"JOIN ( " +
+						"SELECT " +
+						"server_log_id, " +
+						"CASE " +
+						"WHEN exit_date = \"n/a\" " +
+						"THEN pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+						"ELSE " +
+						"pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+						"AND ( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
+						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= 525600 " +
+						"END bounce " +
+						"FROM server_log " +
+						") aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 " +
+						"WHERE " +
+						this.setBetween(q, "entry_date") +
 						this.setFilters(q) +
 						this.timeGroup(q, "entry_date") +
 						" ORDER BY entry_date;";
