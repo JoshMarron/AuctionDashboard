@@ -399,9 +399,25 @@ public class DatabaseManager {
     }
 
     public Number getTotalBounces() {
-	    String sql = "SELECT count(server_log_id) FROM server_log WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
-		" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) " +
-				"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) ) <= " + ProjectSettings.getBounceSeconds() + ";";
+		TotalQuery query = new TotalQueryBuilder(MetricType.TOTAL_BOUNCES).build();
+		System.out.println(((TotalQueryResult) this.resolveQuery(query)).getData());
+		String sql = "SELECT count(server_log.server_log_id) " +
+				"FROM server_log " +
+				"JOIN user ON server_log.user_id = user.user_id " +
+				"JOIN site_impression ON user.user_id = site_impression.user_id " +
+				"JOIN ( " +
+				"SELECT " +
+				"server_log_id, " +
+				"CASE " +
+				"WHEN exit_date = \"n/a\" " +
+				"THEN pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+				"ELSE " +
+				"pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+				"OR ( (strftime('%s', exit_date)) " +
+				"- (strftime('%s', entry_date)) ) <=  " + ProjectSettings.getBounceSeconds() +
+				" END bounce " +
+				"FROM server_log " +
+				") aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 ;";
 
 	    return getSingleMetric(sql);
     }

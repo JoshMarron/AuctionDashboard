@@ -58,6 +58,6 @@ public class DialogBounceDefinitionPanel extends CatPanel {
     }
 
     public int getBounceTime() {
-        return bounceTimeBox.isSelected() ? bounceTimeSpinner.getNumber() : Integer.MAX_VALUE;
+        return bounceTimeBox.isSelected() ? bounceTimeSpinner.getNumber() : -1;
     }
 }
