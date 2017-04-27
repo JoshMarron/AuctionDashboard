@@ -1094,38 +1094,38 @@ public class DatabaseManager {
 						" GROUP BY " + att + ";";
 				break;
 			case TOTAL_BOUNCES:
-				sql = "SELECT " + att + ", count(server_log_id) " +
-						"FROM server_log " +
-						"JOIN user ON server_log.user_id = user.user_id " +
-						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
-						"WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
-						" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) " +
-						"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) ) <= " + ProjectSettings.getBounceSeconds() +
-						" AND " +
-						"" + this.setBetween(q, "entry_date") +
-						this.setFilters(q) +
-						" GROUP BY " + att + ";";
-				sql = "SELECT gender, count(server_log.server_log_id) " +
+//				sql = "SELECT " + att + ", count(server_log_id) " +
+//						"FROM server_log " +
+//						"JOIN user ON server_log.user_id = user.user_id " +
+//						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
+//						"WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
+//						" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) " +
+//						"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) ) <= " + ProjectSettings.getBounceSeconds() +
+//						" AND " +
+//						"" + this.setBetween(q, "entry_date") +
+//						this.setFilters(q) +
+//						" GROUP BY " + att + ";";
+				sql = "SELECT " + att + ", count(server_log.server_log_id) " +
 						"FROM server_log " +
 						"JOIN user ON server_log.user_id = user.user_id " +
 						"JOIN site_impression ON user.user_id = site_impression.user_id " +
 						"JOIN ( " +
-						"    SELECT " +
-						"      server_log_id, " +
-						"      CASE " +
-						"      WHEN exit_date = \"n/a\" " +
-						"        THEN pages_viewed <= 1 " +
-						"      ELSE " +
-						"        pages_viewed <= 1 " +
-						"        AND ( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
-						"              - (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= 525600 " +
-						"      END bounce " +
-						"    FROM server_log " +
-						"    ) aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 " +
-						"AND " +
+						"SELECT " +
+						"server_log_id, " +
+						"CASE " +
+						"WHEN exit_date = \"n/a\" " +
+						"THEN pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+						"ELSE " +
+						"pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+						"AND ( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
+						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= 525600 " +
+						"END bounce " +
+						"FROM server_log " +
+						") aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 " +
+						"WHERE " +
 						this.setBetween(q, "entry_date") +
 						this.setFilters(q) +
-						"GROUP BY gender;";
+						"GROUP BY " + att + ";";
 				break;
 			case TOTAL_CONVERSIONS:
 				sql = "SELECT " + att + ", count(server_log_id) " +
@@ -1424,7 +1424,13 @@ public class DatabaseManager {
 				"strftime(" + gran + ",'" + q.getEndDate().toString().replace("Z", "") + "') ";
 	}
 
-	private String setBetween(Query q, String dateString) {
+	private String setBetween(AttributeDataQuery q, String dateString) {
+		return "strftime('%d,%m,%Y'," + dateString + ") BETWEEN " +
+				"strftime('%d,%m,%Y','" + q.getStartDate().toString().replace("Z", "") + "') AND " +
+				"strftime('%d,%m,%Y','" + q.getEndDate().toString().replace("Z", "") + "') ";
+	}
+
+	private String setBetween(TotalQuery q, String dateString) {
 		return "strftime('%d,%m,%Y'," + dateString + ") BETWEEN " +
 				"strftime('%d,%m,%Y','" + q.getStartDate().toString().replace("Z", "") + "') AND " +
 				"strftime('%d,%m,%Y','" + q.getEndDate().toString().replace("Z", "") + "') ";

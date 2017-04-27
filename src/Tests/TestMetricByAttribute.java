@@ -1,5 +1,6 @@
 package Tests;
 
+import Controllers.ProjectSettings;
 import Controllers.Queries.AttributeDataQuery;
 import Controllers.Queries.AttributeQueryBuilder;
 import Controllers.Results.AttributeQueryResult;
@@ -29,6 +30,8 @@ public class TestMetricByAttribute {
         testDB = new File("db/testdb");
         model = new DatabaseManager();
         model.createDB(testDB.getAbsolutePath());
+
+        model.initTables();
 
         String[] dummyImpression1 = {"2015-01-01 12:00:00", "1", "Male", "25-34", "High", "Blog", "200"};
         String[] dummyImpression2 = {"2015-01-01 14:00:00", "2", "Female", "<25", "High", "Fashion", "400"};
@@ -190,6 +193,9 @@ public class TestMetricByAttribute {
     public void testGetBouncesByMatchingAttribute() {
         Map<String, Number> testMap = model.getTotalBouncesForAttribute(AttributeType.INCOME);
         AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_BOUNCES, AttributeType.INCOME).build();
+
+        ProjectSettings.setBouncePages(1);
+        ProjectSettings.setBounceSeconds(525600);
 
         AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
 
