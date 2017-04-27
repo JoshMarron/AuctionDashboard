@@ -24,8 +24,8 @@ public class CatTextArea extends JTextArea {
     }
 
     private void initTextArea() {
-        this.setBackground(ColorSettings.TEXT_AREA_BG_COLOR.getColor());
-        this.setForeground(ColorSettings.TEXT_AREA_TEXT_COLOR.getColor());
+        this.setBackground(ColorSettings.TEXT_AREA_BG_COLOR);
+        this.setForeground(ColorSettings.TEXT_AREA_TEXT_COLOR);
         this.setFont(FontSettings.TEXT_AREA_FONT.getFont());
 
     }

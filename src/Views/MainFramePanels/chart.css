@@ -5,10 +5,11 @@
 .chart-title {
     -fx-text-fill: #E1E6EF;
     -fx-font: bold 40px "Tahoma";
+    -fx-wrap-text : true;
 }
 
 .chart-bar {
-    -fx-bar-fill: #92abb9;
+    #-fx-bar-fill: #92abb9;
 }
 
 .axis-label {

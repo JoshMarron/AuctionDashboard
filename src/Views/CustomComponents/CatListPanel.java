@@ -15,7 +15,7 @@ public class CatListPanel extends CatPanel {
     }
 
     private void init() {
-        this.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR.getColor()));
+        this.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR));
     }
 
 }

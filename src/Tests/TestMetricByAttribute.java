@@ -1,7 +1,13 @@
 package Tests;
 
+import Controllers.ProjectSettings;
+import Controllers.Queries.AttributeDataQuery;
+import Controllers.Queries.AttributeQueryBuilder;
+import Controllers.Results.AttributeQueryResult;
 import Model.DBEnums.LogType;
+import Model.DBEnums.attributes.Attribute;
 import Model.DatabaseManager;
+import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 import org.junit.After;
 import org.junit.Assert;
@@ -71,48 +77,56 @@ public class TestMetricByAttribute {
 
     @Test
     public void testGetImpressionsByDifferentAttributes() {
-        Map<String, Number> testMap = model.getTotalImpressionsForAttribute(AttributeType.AGE);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_IMPRESSIONS, AttributeType.AGE).build();
+
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
 
         //We expect 4 entries because all 4 users have different ages
-        Assert.assertEquals(testMap.size(), 4);
+        Assert.assertEquals(result.getData().size(), 4);
 
         //Test some of the actual values
-        Assert.assertEquals(1, testMap.get("<25").intValue());
-        Assert.assertEquals(1, testMap.get("25-34").intValue());
+        Assert.assertEquals(1, result.getData().get("<25").intValue());
+        Assert.assertEquals(1, result.getData().get("25-34").intValue());
     }
 
     @Test
     public void testGetImpressionsByMatchingAttributes() {
         Map<String, Number> testMap = model.getTotalImpressionsForAttribute(AttributeType.GENDER);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_IMPRESSIONS, AttributeType.GENDER).build();
+
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
 
         //We expect to see two genders
-        Assert.assertEquals(testMap.size(), 2);
+        Assert.assertEquals(result.getData().size(), 2);
 
-        Assert.assertEquals(2, testMap.get("Male").intValue());
-        Assert.assertEquals(2, testMap.get("Female").intValue());
+        Assert.assertEquals(2, result.getData().get("Male").intValue());
+        Assert.assertEquals(2, result.getData().get("Female").intValue());
     }
 
     @Test
     public void testGetClicksByDifferentAttributes() {
-        Map<String, Number> testMap = model.getTotalClicksForAttribute(AttributeType.AGE);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_CLICKS, AttributeType.AGE).build();
+
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
 
         //There are only 2 clicks and both users have different ages
-        Assert.assertEquals(2, testMap.size());
+        Assert.assertEquals(2, result.getData().size());
 
-        Assert.assertEquals(1, testMap.get("25-34").intValue());
-        Assert.assertEquals(1, testMap.get("35-44").intValue());
+        Assert.assertEquals(1, result.getData().get("25-34").intValue());
+        Assert.assertEquals(1, result.getData().get("35-44").intValue());
     }
 
     @Test
     public void testGetClicksByMatchingAttributes() {
-        Map<String, Number> testMap = model.getTotalClicksForAttribute(AttributeType.GENDER);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_CLICKS, AttributeType.GENDER).build();
+
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
 
         //Both users who clicked have the same gender
-        Assert.assertEquals(1, testMap.size());
-
-        Assert.assertEquals(2, testMap.get("Male").intValue());
+        Assert.assertEquals(1, result.getData().size());
+        Assert.assertEquals(2, result.getData().get("Male").intValue());
         //No female users clicked so we should get a null result
-        Assert.assertNull(testMap.get("Female"));
+        Assert.assertNull(result.getData().get("Female"));
     }
 
     @Test
@@ -123,10 +137,13 @@ public class TestMetricByAttribute {
         model.insertData(LogType.CLICK, moreData);
 
         Map<String, Number> testMap = model.getTotalUniquesForAttribute(AttributeType.GENDER);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_UNIQUES, AttributeType.GENDER).build();
 
-        Assert.assertEquals(1, testMap.size());
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
+
+        Assert.assertEquals(1, result.getData().size());
         //One user clicks twice so this should give us a different unique value
-        Assert.assertEquals(2, testMap.get("Male").intValue());
+        Assert.assertEquals(2, result.getData().get("Male").intValue());
     }
 
     @Test
@@ -136,151 +153,190 @@ public class TestMetricByAttribute {
         moreData.add(clickDummy3);
         model.insertData(LogType.CLICK, moreData);
 
-        Map<String, Number> testMap = model.getTotalUniquesForAttribute(AttributeType.CONTEXT);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_UNIQUES, AttributeType.CONTEXT).build();
 
-        Assert.assertEquals(2, testMap.size());
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
 
-        Assert.assertEquals(1, testMap.get("Blog").intValue());
-        Assert.assertEquals(1, testMap.get("Social Media").intValue());
+        Assert.assertEquals(2, result.getData().size());
+
+        Assert.assertEquals(1, result.getData().get("Blog").intValue());
+        Assert.assertEquals(1, result.getData().get("Social Media").intValue());
     }
 
     @Test
     public void testGetConversionsByMatchingAttribute() {
         Map<String, Number> testMap = model.getTotalConversionsForAttribute(AttributeType.CONTEXT);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_CONVERSIONS, AttributeType.CONTEXT).build();
 
-        Assert.assertEquals(1, testMap.size());
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
 
-        Assert.assertEquals(2, testMap.get("Social Media").intValue());
+        Assert.assertEquals(1, result.getData().size());
+
+        Assert.assertEquals(2, result.getData().get("Social Media").intValue());
         Assert.assertNull(testMap.get("Blog"));
     }
 
     @Test
     public void testGetConversionsByDifferentAttributes() {
-        Map<String, Number> testMap = model.getTotalConversionsForAttribute(AttributeType.AGE);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_CONVERSIONS, AttributeType.AGE).build();
 
-        Assert.assertEquals(2, testMap.size());
-        Assert.assertEquals(1, testMap.get(">55").intValue());
-        Assert.assertEquals(1, testMap.get("35-44").intValue());
-        Assert.assertNull(testMap.get("<25"));
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
+
+        Assert.assertEquals(2, result.getData().size());
+        Assert.assertEquals(1, result.getData().get(">55").intValue());
+        Assert.assertEquals(1, result.getData().get("35-44").intValue());
+        Assert.assertNull(result.getData().get("<25"));
     }
 
     @Test
     public void testGetBouncesByMatchingAttribute() {
-        Map<String, Number> testMap = model.getTotalBouncesForAttribute(AttributeType.INCOME);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_BOUNCES, AttributeType.INCOME).build();
 
-        Assert.assertEquals(1, testMap.size());
-        Assert.assertEquals(2, testMap.get("High").intValue());
-        Assert.assertNull(testMap.get("Low"));
+        ProjectSettings.setBouncePages(1);
+        ProjectSettings.setBounceSeconds(525600);
+
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
+
+        Assert.assertEquals(1, result.getData().size());
+        Assert.assertEquals(2, result.getData().get("High").intValue());
+        Assert.assertNull(result.getData().get("Low"));
     }
 
     @Test
     public void testGetBouncesByDifferentAttributes() {
-        Map<String, Number> testMap = model.getTotalBouncesForAttribute(AttributeType.AGE);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_BOUNCES, AttributeType.AGE).build();
 
-        Assert.assertEquals(2, testMap.size());
-        Assert.assertEquals(1, testMap.get("<25").intValue());
-        Assert.assertEquals(1, testMap.get("25-34").intValue());
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
+
+        Assert.assertEquals(2, result.getData().size());
+        Assert.assertEquals(1, result.getData().get("<25").intValue());
+        Assert.assertEquals(1, result.getData().get("25-34").intValue());
     }
 
     @Test
     public void testGetTotalCostForAttribute() {
-        Map<String, Number> testMap = model.getTotalCostForAttribute(AttributeType.GENDER);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.TOTAL_COST, AttributeType.GENDER).build();
 
-        Assert.assertEquals(2, testMap.size());
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
+        System.out.println(result.getData());
+        Assert.assertEquals(2, result.getData().size());
 
         //Sum up both click and impression cost across genders
-        Assert.assertEquals(4400, testMap.get("Male").intValue());
-        Assert.assertEquals(1200, testMap.get("Female").intValue());
+        Assert.assertEquals(4400, result.getData().get("Male").intValue());
+        Assert.assertEquals(1200, result.getData().get("Female").intValue());
 
-        testMap = model.getTotalCostForAttribute(AttributeType.AGE);
-        Assert.assertEquals(4, testMap.size());
+        query = new AttributeQueryBuilder(MetricType.TOTAL_COST, AttributeType.AGE).build();
 
-        Assert.assertEquals(1400, testMap.get("25-34").intValue());
-        Assert.assertEquals(3000, testMap.get("35-44").intValue());
-        Assert.assertEquals(800, testMap.get(">55").intValue());
+        result = (AttributeQueryResult) model.resolveQuery(query);
+
+        Assert.assertEquals(4, result.getData().size());
+
+        Assert.assertEquals(1400, result.getData().get("25-34").intValue());
+        Assert.assertEquals(3000, result.getData().get("35-44").intValue());
+        Assert.assertEquals(800, result.getData().get(">55").intValue());
     }
 
     @Test
     public void testGetCTRForAttribute() {
-        Map<String, Number> testMap = model.getCTRForAttribute(AttributeType.GENDER);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.CTR, AttributeType.GENDER).build();
 
-        Assert.assertEquals(2, testMap.size());
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
+
+        Assert.assertEquals(2, result.getData().size());
 
         //2 clicks divided by 2 impressions
-        Assert.assertEquals(1.0, testMap.get("Male").doubleValue(), 0.00001);
-        Assert.assertEquals(0.0, testMap.get("Female").doubleValue(), 0.00001);
+        Assert.assertEquals(1.0, result.getData().get("Male").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, result.getData().get("Female").doubleValue(), 0.00001);
 
-        testMap = model.getCTRForAttribute(AttributeType.AGE);
+        query = new AttributeQueryBuilder(MetricType.CTR, AttributeType.AGE).build();
 
-        Assert.assertEquals(4, testMap.size());
+        result = (AttributeQueryResult) model.resolveQuery(query);
 
-        Assert.assertEquals(1.0, testMap.get("25-34").doubleValue(), 0.00001);
-        Assert.assertEquals(0.0, testMap.get("<25").doubleValue(), 0.00001);
+        Assert.assertEquals(4, result.getData().size());
+
+        Assert.assertEquals(1.0, result.getData().get("25-34").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, result.getData().get("<25").doubleValue(), 0.00001);
     }
 
     @Test
     public void testGetCPAForAttribute() {
-        Map<String, Number> testMap = model.getCPAForAttribute(AttributeType.CONTEXT);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.CPA, AttributeType.CONTEXT).build();
 
-        Assert.assertEquals(3, testMap.size());
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
 
-        Assert.assertEquals(1900.0, testMap.get("Social Media").doubleValue(), 0.00001);
-        Assert.assertEquals(0.0, testMap.get("Blog").doubleValue(), 0.00001);
 
-        testMap = model.getCPAForAttribute(AttributeType.INCOME);
+        Assert.assertEquals(3, result.getData().size());
 
-        Assert.assertEquals(3, testMap.size());
-        Assert.assertEquals(3000.0, testMap.get("Low").doubleValue(), 0.00001);
-        Assert.assertEquals(0.0, testMap.get("High").doubleValue(), 0.00001);
+        Assert.assertEquals(1900.0, result.getData().get("Social Media").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, result.getData().get("Blog").doubleValue(), 0.00001);
+
+        query = new AttributeQueryBuilder(MetricType.CPA, AttributeType.INCOME).build();
+
+        result = (AttributeQueryResult) model.resolveQuery(query);
+
+        Assert.assertEquals(3, result.getData().size());
+        Assert.assertEquals(3000.0, result.getData().get("Low").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, result.getData().get("High").doubleValue(), 0.00001);
     }
 
     @Test
     public void testGetCPCForAttribute() {
         Map<String, Number> testMap = model.getCPCForAttribute(AttributeType.GENDER);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.CPC, AttributeType.GENDER).build();
 
-        Assert.assertEquals(2, testMap.size());
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
 
-        Assert.assertEquals(2200.0, testMap.get("Male").doubleValue(), 0.00001);
-        Assert.assertEquals(0.0, testMap.get("Female").doubleValue(), 0.00001);
+        Assert.assertEquals(2, result.getData().size());
 
-        testMap = model.getCPCForAttribute(AttributeType.CONTEXT);
+        Assert.assertEquals(2200.0, result.getData().get("Male").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, result.getData().get("Female").doubleValue(), 0.00001);
 
-        Assert.assertEquals(3, testMap.size());
+        query = new AttributeQueryBuilder(MetricType.CPC, AttributeType.CONTEXT).build();
 
-        Assert.assertEquals(1400.0, testMap.get("Blog").doubleValue(), 0.00001);
-        Assert.assertEquals(3800.0, testMap.get("Social Media").doubleValue(), 0.00001);
-        Assert.assertEquals(0.0, testMap.get("Fashion").doubleValue(), 0.00001);
+        result = (AttributeQueryResult) model.resolveQuery(query);
+
+        Assert.assertEquals(3, result.getData().size());
+
+        Assert.assertEquals(1400.0, result.getData().get("Blog").doubleValue(), 0.00001);
+        Assert.assertEquals(3800.0, result.getData().get("Social Media").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, result.getData().get("Fashion").doubleValue(), 0.00001);
     }
 
     @Test
     public void testGetCPMForAttribute() {
-        Map<String, Number> testMap = model.getCPMForAttribute(AttributeType.GENDER);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.CPM, AttributeType.GENDER).build();
 
-        Assert.assertEquals(2, testMap.size());
-        Assert.assertEquals(2200000.0, testMap.get("Male").doubleValue(), 0.00001);
-        Assert.assertEquals(600000.0, testMap.get("Female").doubleValue(), 0.00001);
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
 
-        testMap = model.getCPMForAttribute(AttributeType.INCOME);
+        Assert.assertEquals(2, result.getData().size());
+        Assert.assertEquals(2200000.0, result.getData().get("Male").doubleValue(), 0.00001);
+        Assert.assertEquals(600000.0, result.getData().get("Female").doubleValue(), 0.00001);
 
-        Assert.assertEquals(3, testMap.size());
-        Assert.assertEquals(900000.0, testMap.get("High").doubleValue(), 0.00001);
-        Assert.assertEquals(3000000.0, testMap.get("Low").doubleValue(), 0.00001);
+        query = new AttributeQueryBuilder(MetricType.CPM, AttributeType.INCOME).build();
+
+        result = (AttributeQueryResult) model.resolveQuery(query);
+
+        Assert.assertEquals(3, result.getData().size());
+        Assert.assertEquals(900000.0, result.getData().get("High").doubleValue(), 0.00001);
+        Assert.assertEquals(3000000.0, result.getData().get("Low").doubleValue(), 0.00001);
     }
 
     @Test
     public void testGetBounceRateForAttribute() {
-        Map<String, Number> testMap = model.getBounceRateForAttribute(AttributeType.GENDER);
+        AttributeDataQuery query = new AttributeQueryBuilder(MetricType.BOUNCE_RATE, AttributeType.GENDER).build();
 
-        System.out.println(testMap);
+        AttributeQueryResult result = (AttributeQueryResult) model.resolveQuery(query);
 
-        Assert.assertEquals(2, testMap.size());
-        Assert.assertEquals(0.5, testMap.get("Male").doubleValue(), 0.00001);
-        Assert.assertEquals(1.0, testMap.get("Female").doubleValue(), 0.00001);
+        Assert.assertEquals(2, result.getData().size());
+        Assert.assertEquals(0.5, result.getData().get("Male").doubleValue(), 0.00001);
+        Assert.assertEquals(1.0, result.getData().get("Female").doubleValue(), 0.00001);
 
-        testMap = model.getBounceRateForAttribute(AttributeType.INCOME);
+        query = new AttributeQueryBuilder(MetricType.BOUNCE_RATE, AttributeType.INCOME).build();
 
-        Assert.assertEquals(2, testMap.size());
-        Assert.assertEquals(2.0, testMap.get("High").doubleValue(), 0.00001);
-        Assert.assertEquals(0.0, testMap.get("Low").doubleValue(), 0.00001);
+        result = (AttributeQueryResult) model.resolveQuery(query);
+
+        Assert.assertEquals(2, result.getData().size());
+        Assert.assertEquals(2.0, result.getData().get("High").doubleValue(), 0.00001);
+        Assert.assertEquals(0.0, result.getData().get("Low").doubleValue(), 0.00001);
     }
 }

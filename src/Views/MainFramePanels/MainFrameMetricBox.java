@@ -75,14 +75,14 @@ public class MainFrameMetricBox extends CatListPanel {
         public void mouseEntered(MouseEvent e) {
             if (dataAvailable) {
                 MainFrameMetricBox.this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                MainFrameMetricBox.this.setBackground(ColorSettings.BUTTON_HOVER_COLOR.getColor());
+                MainFrameMetricBox.this.setBackground(ColorSettings.BUTTON_HOVER_COLOR);
                 repaint();
             }
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
-            MainFrameMetricBox.this.setBackground(ColorSettings.BG_COLOR.getColor());
+            MainFrameMetricBox.this.setBackground(ColorSettings.BG_COLOR);
             repaint();
         }
     }

@@ -1,9 +1,14 @@
 package Tests;
 
 
+import Controllers.ProjectSettings;
+import Controllers.Queries.TimeDataQuery;
+import Controllers.Queries.TimeQueryBuilder;
+import Controllers.Results.TimeQueryResult;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Model.DatabaseManager;
+import Views.MetricType;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static com.sun.xml.internal.ws.dump.LoggingDumpTube.Position.Before;
 
 public class TestMetricByDate {
     DatabaseManager model;
@@ -74,12 +81,14 @@ public class TestMetricByDate {
     @After
     public void tearDown() {
         testDB.delete();
+        ProjectSettings.setDefaultBounceRate();
         System.out.println(testDB.exists());
     }
 
     @Test
     public void testImpressionsPerDay() {
-        testMap = model.getImpressionCountPer(DateEnum.DAYS);
+        TimeDataQuery query = new TimeQueryBuilder(MetricType.TOTAL_IMPRESSIONS).build();
+        testMap = ((TimeQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(3, testMap.size());
 
@@ -90,7 +99,8 @@ public class TestMetricByDate {
 
     @Test
     public void testClicksPerDay() {
-        testMap = model.getClickCountPer(DateEnum.DAYS, false);
+        TimeDataQuery query = new TimeQueryBuilder(MetricType.TOTAL_CLICKS).build();
+        testMap = ((TimeQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(2, testMap.size());
 
@@ -100,7 +110,8 @@ public class TestMetricByDate {
 
     @Test
     public void testConversionsPerDay() {
-        testMap = model.getConversionNumberPer(DateEnum.DAYS);
+        TimeDataQuery query = new TimeQueryBuilder(MetricType.TOTAL_CONVERSIONS).build();
+        testMap = ((TimeQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(2, testMap.size());
 
@@ -115,7 +126,8 @@ public class TestMetricByDate {
         moreData.add(clickDummy3);
         model.insertData(LogType.CLICK, moreData);
 
-        testMap = model.getClickCountPer(DateEnum.DAYS, true);
+        TimeDataQuery query = new TimeQueryBuilder(MetricType.TOTAL_UNIQUES).build();
+        testMap = ((TimeQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(2, testMap.size());
 
@@ -125,7 +137,8 @@ public class TestMetricByDate {
 
     @Test
     public void testBouncesPerDay() {
-        testMap = model.getBounceNumberPer(DateEnum.DAYS);
+        TimeDataQuery query = new TimeQueryBuilder(MetricType.TOTAL_BOUNCES).build();
+        testMap = ((TimeQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(2, testMap.size());
 
@@ -135,8 +148,9 @@ public class TestMetricByDate {
 
     @Test
     public void testTotalCostPerDay() {
-        testMap = model.getTotalCostPer(DateEnum.DAYS);
-
+        TimeDataQuery query = new TimeQueryBuilder(MetricType.TOTAL_COST).build();
+        testMap = ((TimeQueryResult) model.resolveQuery(query)).getData();
+        System.out.println(testMap);
         Assert.assertEquals(3, testMap.size());
 
         Assert.assertEquals(1800.0, testMap.get(day1).doubleValue(), 0.00001);
