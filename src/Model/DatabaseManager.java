@@ -975,7 +975,7 @@ public class DatabaseManager {
 						this.setFilters(q) + ";";
 				break;
 			case TOTAL_UNIQUES:
-				sql = "SELECT count( DISTINCT click.user)) " +
+				sql = "SELECT count( DISTINCT click.user) " +
 						"FROM click " +
 						"JOIN user ON click.user_id = user.user_id " +
 						"WHERE " + this.setBetween(q, "click_date") +

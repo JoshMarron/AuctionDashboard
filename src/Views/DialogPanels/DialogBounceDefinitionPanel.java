@@ -30,11 +30,11 @@ public class DialogBounceDefinitionPanel extends CatPanel {
                 "Bounce Definition", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
                 FontSettings.GLOB_FONT.getFont(), ColorSettings.TEXT_COLOR));
 
-        CatLabel bounceTimeLabel = new CatLabel("Visit length (in minutes): ");
+        CatLabel bounceTimeLabel = new CatLabel("Visit length (in seconds): ");
         CatLabel bouncePageLabel = new CatLabel("Pages viewed: ");
 
         bouncePageSpinner = new CatNumberSpinner(1);
-        bounceTimeSpinner = new CatNumberSpinner(1);
+        bounceTimeSpinner = new CatNumberSpinner(60);
 
         bouncePageBox = new CatCheckBox("Use");
         bounceTimeBox = new CatCheckBox("Use");

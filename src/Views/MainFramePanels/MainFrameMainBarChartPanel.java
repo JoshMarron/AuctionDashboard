@@ -100,9 +100,4 @@ public class MainFrameMainBarChartPanel extends MainFrameMainAttributeChartPanel
         chartPanel.setScene(scene);
 
     }
-
-    @Override
-    public void displayDoubleChart(MetricType type, AttributeType attr, Map<String, Number> data1, Map<String, Number> data2) {
-
-    }
 }

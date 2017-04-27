@@ -2,6 +2,7 @@ package Tests;
 
 import Controllers.DashboardDoubleMainFrameController;
 import Controllers.DashboardMainFrameController;
+import Controllers.DashboardMultiFilterController;
 import Controllers.Queries.TimeDataQuery;
 import Controllers.Queries.TimeQueryBuilder;
 import Controllers.Results.TimeQueryResult;
@@ -9,6 +10,7 @@ import Model.DBEnums.LogType;
 import Model.DatabaseManager;
 import Views.DashboardMainFrame;
 import Views.MetricType;
+import Views.ViewPresets.AttributeType;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,6 +21,7 @@ import java.io.File;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -120,7 +123,7 @@ public class ComponentAndIntegrationTests {
             // Test that the controller was switched
             Assert.assertTrue(frame.getController() instanceof DashboardDoubleMainFrameController);
 
-            controller.requestTimeChart(query);
+            frame.getController().requestTimeChart(query);
 
             // Check the data was cached properly inside the new controller
             TimeQueryResult result1 = (TimeQueryResult) controller.getCache().hitCache(query);
@@ -132,18 +135,35 @@ public class ComponentAndIntegrationTests {
             // Check we actually got the correct data
             Assert.assertEquals(2, result1.getData().size());
             Assert.assertEquals(1, result1.getData().get(day1));
+            Assert.assertEquals(2, result2.getData().size());
         });
     }
 
     @Test
     public void testSwitchToMultiFilterMode() {
+        Map<AttributeType, List<String>> filters1 = new HashMap<>();
+        filters1.put(AttributeType.GENDER, Arrays.asList("Male"));
+        Map<AttributeType, List<String>> filters2 = new HashMap<>();
+        filters2.put(AttributeType.GENDER, Arrays.asList("Female"));
+
+        // Check the queries are actually different
+        TimeDataQuery query1 = new TimeQueryBuilder(MetricType.TOTAL_CLICKS).filters(filters1).build();
+        TimeDataQuery query2 = new TimeQueryBuilder(MetricType.TOTAL_CLICKS).filters(filters2).build();
+
+        Assert.assertFalse(query1.equals(query2));
+
         DashboardMainFrame frame = new DashboardMainFrame(null);
         DashboardMainFrameController controller = new DashboardMainFrameController(frame, model);
         frame.setController(controller);
-        TimeDataQuery query = new TimeQueryBuilder(MetricType.TOTAL_CLICKS).build();
         SwingUtilities.invokeLater(() -> {
             frame.init();
-            // Check we don't already have a DashboardMultiController
+            // Check we don't already have a DashboardMultiFilterController
+            Assert.assertFalse(frame.getController() instanceof DashboardMultiFilterController);
+
+            frame.startMultiFilter();
+            Assert.assertTrue(frame.getController() instanceof DashboardMultiFilterController);
+
+
         });
     }
 

@@ -69,6 +69,11 @@ public class DashboardMultiFilterDialog extends DashboardFilterDialog {
 
         CatButton confirmButton = new CatButton("Apply Filters");
         confirmButton.addActionListener((e) -> {
+            if (this.getStartDate().isAfter(this.getEndDate())) {
+                JOptionPane.showMessageDialog(this, "The start date must be before the end date!",
+                        "Date Selection Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             this.setReturnVal(DashboardFilterDialog.APPROVE_OPTION);
             this.setVisible(false);
         });
