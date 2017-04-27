@@ -18,5 +18,6 @@ public class ColorController {
         ColorSettings.BUTTON_COLOR = colors.get(2);
         ColorSettings.TEXT_AREA_BG_COLOR = colors.get(3);
         ColorSettings.TEXT_AREA_TEXT_COLOR = colors.get(4);
+        ColorSettings.BUTTON_HOVER_COLOR = ColorSettings.BUTTON_COLOR.brighter();
     }
 }
