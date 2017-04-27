@@ -1417,7 +1417,7 @@ public class DatabaseManager {
 					}
 				});
 
-				return new TimeQueryResult(q.getMetric(), impressionCostMap);
+				return new TimeQueryResult(q.getMetric(), clickCostMap);
 		}
 		System.out.println(sql);
 
