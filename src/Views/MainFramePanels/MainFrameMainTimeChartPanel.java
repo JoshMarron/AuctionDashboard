@@ -5,6 +5,7 @@ import Views.CustomComponents.CatPanel;
 import Views.MetricType;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -13,4 +14,5 @@ import java.util.Map;
 abstract class MainFrameMainTimeChartPanel extends CatPanel {
 
     abstract public void displayChart(MetricType type, DateEnum granularity, Map<Instant, Number> data);
+    abstract public void displayDoubleChart(MetricType type, DateEnum granularity, Map<Instant, Number> data1, Map<Instant, Number> data2);
 }

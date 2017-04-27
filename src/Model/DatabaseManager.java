@@ -1,16 +1,18 @@
 
 package Model;
 
-import Controllers.DashboardMainFrameController;
-import DataStructures.ClickLog;
+import Controllers.ProjectSettings;
+import Controllers.Queries.*;
+import Controllers.Results.AttributeQueryResult;
+import Controllers.Results.QueryResult;
+import Controllers.Results.TimeQueryResult;
+import Controllers.Results.TotalQueryResult;
 import DataStructures.CsvInterfaces.Gender;
 import DataStructures.CsvInterfaces.Income;
-import DataStructures.ServerLog;
 import Model.DBEnums.DatabaseStatements;
 import Model.DBEnums.DateEnum;
 import Model.DBEnums.LogType;
 import Model.DBEnums.TableType;
-import Model.DBEnums.attributes.Attribute;
 import Model.DBEnums.headers.*;
 import Model.TableModels.Click;
 import Model.TableModels.Impression;
@@ -18,18 +20,12 @@ import Model.TableModels.ServerVisit;
 import Model.TableModels.User;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
-import com.sun.org.apache.xpath.internal.SourceTree;
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
-import javafx.scene.chart.NumberAxis;
 
-import javax.swing.plaf.nimbus.State;
-import javax.xml.transform.Result;
 import java.io.File;
 import java.sql.*;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.Date;
 
 /**
  * Created by Philip on 26/02/2017.
@@ -41,7 +37,8 @@ public class DatabaseManager {
 	private String filename;
 	private String url;
 	private Map<Instant, Number> totalCostDaysMap;
-	
+	private TimeDataQuery tqrCostCPM;
+
 	public DatabaseManager() {
 
 //		filename = "db/model3.db";
@@ -619,7 +616,9 @@ public class DatabaseManager {
     }
 
     public Number getTotalBounces() {
-	    String sql = "SELECT count(server_log_id) FROM server_log WHERE pages_viewed = 1;";
+	    String sql = "SELECT count(server_log_id) FROM server_log WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
+		" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) " +
+				"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) ) <= " + ProjectSettings.getBounceSeconds() + ";";
 
 	    return getSingleMetric(sql);
     }
@@ -1271,4 +1270,472 @@ public class DatabaseManager {
 
         return logs;
     }
+
+    public synchronized QueryResult resolveQuery(Query q) {
+
+		System.out.println(q);
+
+		if (q instanceof TimeDataQuery) {
+			return resolveTimeDataQuery((TimeDataQuery) q);
+		} else if (q instanceof AttributeDataQuery) {
+			return resolveAttributeDataQuery((AttributeDataQuery) q);
+		} else if (q instanceof TotalQuery) {
+			return resolveTotalQuery((TotalQuery) q);
+		}
+
+		System.out.println("failed");
+		return null;
+	}
+
+	private TotalQueryResult resolveTotalQuery(TotalQuery q) {
+		String sql = null;
+
+		switch (q.getMetric()) {
+			case TOTAL_IMPRESSIONS:
+				sql = "SELECT count(site_impression_id) " +
+						"FROM site_impression " +
+						"JOIN user ON site_impression.user_id = user.user_id " +
+						"WHERE " + this.setBetween(q, "impression_date") +
+						this.setFilters(q) + ";";
+				break;
+			case TOTAL_CLICKS:
+				sql = "SELECT count(click_id) " +
+						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) + ";";
+				break;
+			case TOTAL_UNIQUES:
+				sql = "SELECT count( DISTINCT click_id) " +
+						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) + ";";
+				break;
+			case TOTAL_BOUNCES:
+				sql = "SELECT count(server_log_id) " +
+						"FROM server_log " +
+						"JOIN user ON server_log.user_id = user.user_id " +
+						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
+						"WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
+						" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) " +
+						"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) ) <= " + ProjectSettings.getBounceSeconds() +
+						" AND " +
+						"" + this.setBetween(q, "entry_date") +
+						this.setFilters(q) + ";";
+				break;
+			case TOTAL_CONVERSIONS:
+				sql = "SELECT count(server_log_id) " +
+						"FROM server_log " +
+						"JOIN user ON server_log.user_id = user.user_id " +
+						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
+						"WHERE conversion = 'Yes' AND " +
+						this.setBetween(q, "entry_date") +
+						this.setFilters(q) + ";";
+				break;
+			case CPA:  // total cost / total conversion
+				TotalQuery tqrCostCPA = q.deriveQuery(MetricType.TOTAL_COST);
+				TotalQueryResult costCPA = resolveTotalQuery(tqrCostCPA);
+
+				TotalQuery tqrConversionCPA = q.deriveQuery(MetricType.TOTAL_CONVERSIONS);
+				TotalQueryResult conversionCPA = resolveTotalQuery(tqrConversionCPA);
+
+				return new TotalQueryResult(q.getMetric(), costCPA.getData().doubleValue() / conversionCPA.getData().doubleValue());
+			case CPC: // total cost / total clicks
+				TotalQuery tqrCostCPC = q.deriveQuery(MetricType.TOTAL_COST);
+				TotalQueryResult costCPC = resolveTotalQuery(tqrCostCPC);
+
+				TotalQuery tqrClicksCPC = q.deriveQuery(MetricType.TOTAL_CLICKS);
+				TotalQueryResult clicksCPC = resolveTotalQuery(tqrClicksCPC);
+
+				return new TotalQueryResult(q.getMetric(), costCPC.getData().doubleValue() / clicksCPC.getData().doubleValue());
+			case CPM: // 1000 * ( total cost / total impressions ):
+				TotalQuery tqrCostCPM = q.deriveQuery(MetricType.TOTAL_COST);
+				TotalQueryResult costCPM = resolveTotalQuery(tqrCostCPM);
+
+				TotalQuery tqrImpressionsCPM = q.deriveQuery(MetricType.TOTAL_IMPRESSIONS);
+				TotalQueryResult impressionsCPM = resolveTotalQuery(tqrImpressionsCPM);
+
+				return new TotalQueryResult(q.getMetric(), 1000 * costCPM.getData().doubleValue() / impressionsCPM.getData().doubleValue());
+			case BOUNCE_RATE: // total bounces / total clicks
+				TotalQuery tqrBounceBR = q.deriveQuery(MetricType.TOTAL_BOUNCES);
+				TotalQueryResult bounceBR = resolveTotalQuery(tqrBounceBR);
+
+				TotalQuery tqrClicksBR = q.deriveQuery(MetricType.TOTAL_CLICKS);
+				TotalQueryResult clicksBR = resolveTotalQuery(tqrClicksBR);
+
+				return new TotalQueryResult(q.getMetric(), bounceBR.getData().doubleValue() / clicksBR.getData().doubleValue());
+			case CTR: // total clicks / total impressions
+				TotalQuery tqrClickCTR = q.deriveQuery(MetricType.TOTAL_CLICKS);
+				TotalQueryResult clickCTR = resolveTotalQuery(tqrClickCTR);
+
+				TotalQuery tqrImpressionsCTR = q.deriveQuery(MetricType.TOTAL_IMPRESSIONS);
+				TotalQueryResult impressionsCTR = resolveTotalQuery(tqrImpressionsCTR);
+
+				return new TotalQueryResult(q.getMetric(), clickCTR.getData().doubleValue() / impressionsCTR.getData().doubleValue());
+			case TOTAL_COST:
+				String impressionSql = "SELECT SUM(impression_cost) " +
+						"FROM site_impression " +
+						"JOIN user ON site_impression.user_id = user.user_id " +
+						"WHERE " + this.setBetween(q, "impression_date") +
+						this.setFilters(q) + ";";
+				String clickSql = "SELECT SUM(cost) " +
+						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"JOIN site_impression ON click.user_id = site_impression.user_id " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) + ";";
+				Number impressionCost = getSingleMetric(impressionSql);
+				Number clickCost = getSingleMetric(clickSql);
+
+				return new TotalQueryResult(q.getMetric(), impressionCost.doubleValue() + clickCost.doubleValue());
+		}
+
+		return new TotalQueryResult(q.getMetric(), getSingleMetric(sql));
+	}
+
+	private AttributeQueryResult resolveAttributeDataQuery(AttributeDataQuery q) {
+		String sql = null;
+		String att = q.getAttribute().getQueryBit();
+
+		switch (q.getMetric()) {
+			case TOTAL_IMPRESSIONS:
+				sql = "SELECT " + att + ", count(site_impression_id) " +
+						"FROM site_impression " +
+						"JOIN user ON site_impression.user_id = user.user_id " +
+						"WHERE " + this.setBetween(q, "impression_date") +
+						this.setFilters(q) +
+						" GROUP BY " + att + ";";
+				break;
+			case TOTAL_CLICKS:
+				sql = "SELECT " + att + ", count(click_id) " +
+						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"JOIN site_impression ON click.user_id = site_impression.user_id " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) +
+						" GROUP BY " + att + ";";
+				break;
+			case TOTAL_UNIQUES:
+				sql = "SELECT " + att + ", count( DISTINCT click_id) " +
+						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"JOIN site_impression ON click.user_id = site_impression.user_id " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) +
+						" GROUP BY " + att + ";";
+				break;
+			case TOTAL_BOUNCES:
+				sql = "SELECT " + att + ", count(server_log_id) " +
+						"FROM server_log " +
+						"JOIN user ON server_log.user_id = user.user_id " +
+						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
+						"WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
+						" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) / 60) " +
+						"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) / 60) ) <= " + ProjectSettings.getBounceSeconds() +
+						" AND " +
+						"" + this.setBetween(q, "entry_date") +
+						this.setFilters(q) +
+						" GROUP BY " + att + ";";
+				break;
+			case TOTAL_CONVERSIONS:
+				sql = "SELECT " + att + ", count(server_log_id) " +
+						"FROM server_log " +
+						"JOIN user ON server_log.user_id = user.user_id " +
+						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
+						"WHERE conversion = 'Yes' AND " +
+						this.setBetween(q, "entry_date") +
+						this.setFilters(q) +
+						" GROUP BY " + att + ";";
+				break;
+			case CPA: // total cost / total conversion
+				AttributeDataQuery tqrCostCPA = q.deriveQuery(MetricType.TOTAL_COST, q.getAttribute());
+				AttributeQueryResult costCPA = resolveAttributeDataQuery(tqrCostCPA);
+
+				AttributeDataQuery tqrConversionCPA = q.deriveQuery(MetricType.TOTAL_CONVERSIONS, q.getAttribute());
+				AttributeQueryResult conversionCPA = resolveAttributeDataQuery(tqrConversionCPA);
+
+				Map<String, Number> resultDataCPA = new HashMap<>();
+
+				costCPA.getData().forEach(resultDataCPA::put);
+
+				conversionCPA.getData().forEach((string, val) -> resultDataCPA.put(string, resultDataCPA.get(string).doubleValue() / val.doubleValue()));
+
+				return new AttributeQueryResult(q.getMetric(), resultDataCPA);
+			case CPC: // total cost / total clicks
+				AttributeDataQuery tqrCostCPC = q.deriveQuery(MetricType.TOTAL_COST, q.getAttribute());
+				AttributeQueryResult costCPC = resolveAttributeDataQuery(tqrCostCPC);
+
+				AttributeDataQuery tqrClickCPC = q.deriveQuery(MetricType.TOTAL_CONVERSIONS, q.getAttribute());
+				AttributeQueryResult clickCPC = resolveAttributeDataQuery(tqrClickCPC);
+
+				Map<String, Number> resultDataCPC = new HashMap<>();
+
+				costCPC.getData().forEach(resultDataCPC::put);
+
+				clickCPC.getData().forEach((string, val) -> resultDataCPC.put(string, resultDataCPC.get(string).doubleValue() / val.doubleValue()));
+
+				return new AttributeQueryResult(q.getMetric(), resultDataCPC);
+			case CPM: // 1000 * ( total cost / total impressions )
+				AttributeDataQuery tqrCostCPM = q.deriveQuery(MetricType.TOTAL_COST, q.getAttribute());
+				AttributeQueryResult costCPM = resolveAttributeDataQuery(tqrCostCPM);
+
+				AttributeDataQuery tqrImpressionsCPM = q.deriveQuery(MetricType.TOTAL_IMPRESSIONS, q.getAttribute());
+				AttributeQueryResult impressionsCPM = resolveAttributeDataQuery(tqrImpressionsCPM);
+
+				Map<String, Number> resultDataCPM = new HashMap<>();
+
+				costCPM.getData().forEach(resultDataCPM::put);
+
+				impressionsCPM.getData().forEach((string, val) -> resultDataCPM.put(string, 1000 * (resultDataCPM.get(string).doubleValue() / val.doubleValue())));
+
+				return new AttributeQueryResult(q.getMetric(), resultDataCPM);
+			case BOUNCE_RATE: // total bounces / total clicks
+				AttributeDataQuery tqrBounceBR = q.deriveQuery(MetricType.TOTAL_BOUNCES, q.getAttribute());
+				AttributeQueryResult bounceBR = resolveAttributeDataQuery(tqrBounceBR);
+
+				AttributeDataQuery tqrClickBR = q.deriveQuery(MetricType.TOTAL_CONVERSIONS, q.getAttribute());
+				AttributeQueryResult clickBR = resolveAttributeDataQuery(tqrClickBR);
+
+				Map<String, Number> resultDataBR = new HashMap<>();
+
+				bounceBR.getData().forEach(resultDataBR::put);
+
+				clickBR.getData().forEach((string, val) -> resultDataBR.put(string, resultDataBR.get(string).doubleValue() / val.doubleValue()));
+
+				return new AttributeQueryResult(q.getMetric(), resultDataBR);
+			case CTR: // total clicks / total impressions
+				AttributeDataQuery tqrClickCTR = q.deriveQuery(MetricType.TOTAL_CLICKS, q.getAttribute());
+				AttributeQueryResult clickCTR = resolveAttributeDataQuery(tqrClickCTR);
+
+				AttributeDataQuery tqrImpressionsCTR = q.deriveQuery(MetricType.TOTAL_IMPRESSIONS, q.getAttribute());
+				AttributeQueryResult impressionsCTR = resolveAttributeDataQuery(tqrImpressionsCTR);
+
+				Map<String, Number> resultDataCTR = new HashMap<>();
+
+				clickCTR.getData().forEach(resultDataCTR::put);
+
+				impressionsCTR.getData().forEach((string, val) -> resultDataCTR.put(string, resultDataCTR.get(string).doubleValue() / val.doubleValue()));
+
+				return new AttributeQueryResult(q.getMetric(), resultDataCTR);
+			case TOTAL_COST:
+				String impressionSql = "SELECT " + att + ", SUM(impression_cost) " +
+						"FROM site_impression " +
+						"JOIN user ON site_impression.user_id = user.user_id " +
+						"WHERE " + this.setBetween(q, "impression_date") +
+						this.setFilters(q) +
+						" GROUP BY " + att + ";";
+				String clickSql = "SELECT " + att + ", SUM(cost) " +
+						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"JOIN site_impression ON click.user_id = site_impression.user_id " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) +
+						" GROUP BY " + att + ";";
+				Map<String, Number> impressionCostMap = createAttributeMap(impressionSql);
+				Map<String, Number> clickCostMap = createAttributeMap(clickSql);
+
+				clickCostMap.forEach((string, val) -> {
+					if (impressionCostMap.containsKey(string)) {
+						clickCostMap.put(string, val.doubleValue() + impressionCostMap.get(string).doubleValue());
+					}
+				});
+
+				return new AttributeQueryResult(q.getMetric(), clickCostMap);
+		}
+
+		return new AttributeQueryResult(q.getMetric(), createAttributeMap(sql));
+	}
+
+	private TimeQueryResult resolveTimeDataQuery(TimeDataQuery q) {
+		String sql = null;
+
+		switch (q.getMetric()) {
+			case TOTAL_IMPRESSIONS:
+				sql = "SELECT impression_date, count(site_impression_id) " +
+						"FROM site_impression " +
+						"JOIN user ON site_impression.user_id = user.user_id " +
+						"WHERE " + this.setBetween(q, "impression_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "impression_date") +
+						" ORDER BY impression_date;";
+				break;
+			case TOTAL_CLICKS:
+				sql = "SELECT click_date, count(click_id) " +
+						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"JOIN site_impression ON click.user_id = site_impression.user_id " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "click_date") +
+						" ORDER BY click_date;";
+				break;
+			case TOTAL_UNIQUES:
+				sql = "SELECT click_date, count( DISTINCT click_id) " +
+						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"JOIN site_impression ON click.user_id = site_impression.user_id " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "click_date") +
+						" ORDER BY click_date;";
+				break;
+			case TOTAL_BOUNCES:  //TODO set custom bounce rate definition
+				sql = "SELECT entry_date, count(server_log_id) " +
+						"FROM server_log " +
+						"JOIN user ON server_log.user_id = user.user_id " +
+						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
+						"WHERE pages_viewed = 1 AND " +
+						"( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
+						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= " + ProjectSettings.getBounceSeconds() +
+						" AND " + this.setBetween(q, "entry_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "entry_date") +
+						" ORDER BY entry_date;";
+				break;
+			case TOTAL_CONVERSIONS:
+				sql = "SELECT entry_date, count(server_log_id) " +
+						"FROM server_log " +
+						"JOIN user ON server_log.user_id = user.user_id " +
+						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
+						"WHERE conversion = 'Yes' AND " +
+						this.setBetween(q, "entry_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "entry_date") +
+						" ORDER BY entry_date;";
+				break;
+			case CPA: // total cost / total conversion
+				TimeDataQuery tqrCostCPA = q.deriveQuery(MetricType.TOTAL_COST);
+				TimeQueryResult costCPA = resolveTimeDataQuery(tqrCostCPA);
+
+				TimeDataQuery tqrConversionCPA = q.deriveQuery(MetricType.TOTAL_CONVERSIONS);
+				TimeQueryResult conversionCPA = resolveTimeDataQuery(tqrConversionCPA);
+
+				Map<Instant, Number> resultDataCPA = new HashMap<>();
+
+				costCPA.getData().forEach(resultDataCPA::put);
+
+				conversionCPA.getData().forEach((date, val) -> resultDataCPA.put(date, resultDataCPA.get(date).doubleValue() / val.doubleValue()));
+
+				return new TimeQueryResult(q.getMetric(), resultDataCPA);
+			case CPC: // total cost / total clicks
+				TimeDataQuery tqrCostCPC = q.deriveQuery(MetricType.TOTAL_COST);
+				TimeQueryResult costCPC = resolveTimeDataQuery(tqrCostCPC);
+
+				TimeDataQuery tqrClickCPC = q.deriveQuery(MetricType.TOTAL_CLICKS);
+				TimeQueryResult clickCPC = resolveTimeDataQuery(tqrClickCPC);
+
+				Map<Instant, Number> resultDataCPC = new HashMap<>();
+
+				costCPC.getData().forEach(resultDataCPC::put);
+
+				clickCPC.getData().forEach((date, val) -> resultDataCPC.put(date, resultDataCPC.get(date).doubleValue() / val.doubleValue()));
+
+				return new TimeQueryResult(q.getMetric(), resultDataCPC);
+			case CPM: // 1000 * ( total cost / total impressions )
+				TimeDataQuery tqrCostCPM = q.deriveQuery(MetricType.TOTAL_COST);
+				TimeQueryResult costCPM = resolveTimeDataQuery(tqrCostCPM);
+
+				TimeDataQuery tqrImpressionCPM = q.deriveQuery(MetricType.TOTAL_IMPRESSIONS);
+				TimeQueryResult impressionCPM = resolveTimeDataQuery(tqrImpressionCPM);
+
+				Map<Instant, Number> resultDataCPM = new HashMap<>();
+
+				costCPM.getData().forEach(resultDataCPM::put);
+
+				impressionCPM.getData().forEach((date, val) -> resultDataCPM.put(date, 1000 * (resultDataCPM.get(date).doubleValue() / val.doubleValue())));
+
+				return new TimeQueryResult(q.getMetric(), resultDataCPM);
+			case BOUNCE_RATE: // total bounces / total clicks
+				TimeDataQuery tqrBounceBR = q.deriveQuery(MetricType.TOTAL_BOUNCES);
+				TimeQueryResult bounceBR = resolveTimeDataQuery(tqrBounceBR);
+
+				TimeDataQuery tqrClickBR = q.deriveQuery(MetricType.TOTAL_CLICKS);
+				TimeQueryResult clickBR = resolveTimeDataQuery(tqrClickBR);
+
+				Map<Instant, Number> resultDataBR = new HashMap<>();
+
+				bounceBR.getData().forEach(resultDataBR::put);
+
+				clickBR.getData().forEach((date, val) -> resultDataBR.put(date, resultDataBR.get(date).doubleValue() / val.doubleValue()));
+
+				return new TimeQueryResult(q.getMetric(), resultDataBR);
+			case CTR: // total clicks / total impressions
+				TimeDataQuery tqrClickCTR = q.deriveQuery(MetricType.TOTAL_CLICKS);
+				TimeQueryResult clickCTR = resolveTimeDataQuery(tqrClickCTR);
+
+				TimeDataQuery tqrImpressionCTR = q.deriveQuery(MetricType.TOTAL_IMPRESSIONS);
+				TimeQueryResult impressionCTR = resolveTimeDataQuery(tqrImpressionCTR);
+
+				Map<Instant, Number> resultDataCTR = new HashMap<>();
+
+				clickCTR.getData().forEach(resultDataCTR::put);
+
+				impressionCTR.getData().forEach((date, val) -> resultDataCTR.put(date, resultDataCTR.get(date).doubleValue() / val.doubleValue()));
+
+				return new TimeQueryResult(q.getMetric(), resultDataCTR);
+			case TOTAL_COST:
+				String impressionSql = "SELECT impression_date, SUM(impression_cost) " +
+						"FROM site_impression " +
+						"JOIN user ON site_impression.user_id = user.user_id " +
+						"WHERE " + this.setBetween(q, "impression_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "impression_date") +
+						" ORDER BY impression_date;";
+				String clickSql = "SELECT click_date, SUM(cost) " +
+						"FROM click " +
+						"JOIN user ON click.user_id = user.user_id " +
+						"JOIN site_impression ON click.user_id = site_impression.user_id " +
+						"WHERE " + this.setBetween(q, "click_date") +
+						this.setFilters(q) +
+						this.timeGroup(q, "click_date") +
+						" ORDER BY click_date;";
+				Map<Instant, Number> impressionCostMap = DBUtils.truncateInstantMap(createMap(impressionSql), q.getGranularity());
+				Map<Instant, Number> clickCostMap = DBUtils.truncateInstantMap(createMap(clickSql), q.getGranularity());
+
+				clickCostMap.forEach((date, val) -> {
+					if (impressionCostMap.containsKey(date)) {
+						clickCostMap.put(date, val.doubleValue() + impressionCostMap.get(date).doubleValue());
+					}
+				});
+
+				return new TimeQueryResult(q.getMetric(), clickCostMap);
+		}
+
+		return new TimeQueryResult(q.getMetric(), DBUtils.truncateInstantMap(createMap(sql), q.getGranularity()));
+	}
+
+	/* Relies on granualarity */
+	private String timeGroup(TimeDataQuery q, String dateString) {
+		return "GROUP BY strftime(" + q.getGranularity().getSql() + ", " + dateString + ")";
+	}
+
+	private String setFilters(Query q) {
+		StringBuilder builder = new StringBuilder();
+		for (Map.Entry<AttributeType, List<String>> entry : q.getFilters().entrySet()) {
+			builder.append(" AND (");
+			for (int i = 0; i < entry.getValue().size(); i++) {
+				builder.append(entry.getKey().getQueryBit() + " = '" + entry.getValue().get(i) + "'");
+				if (i < entry.getValue().size() - 1) {
+					builder.append(" OR ");
+				}
+			}
+			builder.append(")");
+		}
+		return builder.toString();
+	}
+
+	/* Only TimeDataQuery has time constraints */
+	private String setBetween(TimeDataQuery q, String dateString) {
+		String gran = q.getGranularity().getSql();
+		return "strftime(" + gran + "," + dateString + ") BETWEEN " +
+				"strftime(" + gran + ",'" + q.getStartDate().toString().replace("Z", "") + "') AND " +
+				"strftime(" + gran + ",'" + q.getEndDate().toString().replace("Z", "") + "') ";
+	}
+
+	private String setBetween(Query q, String dateString) {
+		return "strftime('%d,%m,%Y'," + dateString + ") BETWEEN " +
+				"strftime('%d,%m,%Y','" + q.getStartDate().toString().replace("Z", "") + "') AND " +
+				"strftime('%d,%m,%Y','" + q.getEndDate().toString().replace("Z", "") + "') ";
+	}
 }

@@ -29,9 +29,26 @@ import java.util.stream.Collectors;
 public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel {
 
     private JFXPanel chartPanel;
+    private JFXPanel secondChartPanel;
     private ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
+    private ObservableList<PieChart.Data> pieData2 = FXCollections.observableArrayList();
     private DecimalFormat df = new DecimalFormat("#.##");
     private final PieChart chart = new PieChart(pieData) {
+        @Override
+        protected void layoutChartChildren(double top, double left, double contentWidth, double contentHeight) {
+            if (getLabelsVisible()) {
+                getData().forEach(d -> {
+                    Optional<Node> opTextNode = chart.lookupAll(".chart-pie-label").stream().filter(n -> n instanceof Text && ((Text) n).getText().contains(d.getName())).findAny();
+                    if (opTextNode.isPresent()) {
+                        ((Text) opTextNode.get()).setText(d.getName() + ": " + df.format(d.getPieValue()));
+                    }
+                });
+            }
+            super.layoutChartChildren(top, left, contentWidth, contentHeight);
+        }
+    };
+
+    private final PieChart secondPie = new PieChart(pieData) {
         @Override
         protected void layoutChartChildren(double top, double left, double contentWidth, double contentHeight) {
             if (getLabelsVisible()) {
@@ -54,9 +71,10 @@ public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel
         this.setLayout(new BorderLayout());
 
         chartPanel = new JFXPanel();
+        secondChartPanel = new JFXPanel();
         chartPanel.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR));
+        secondChartPanel.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR));
 
-        this.add(chartPanel, BorderLayout.CENTER);
     }
 
     @Override
@@ -82,7 +100,52 @@ public class MainFrameMainPieChartPanel extends MainFrameMainAttributeChartPanel
             }
 
         });
+
+        this.removeAll();
+        this.setLayout(new BorderLayout());
+        this.add(chartPanel, BorderLayout.CENTER);
     }
+
+    @Override
+    public void displayDoubleChart(MetricType type, AttributeType attr, Map<String, Number> data1, Map<String, Number> data2) {
+        Platform.runLater(() -> {
+            pieData = FXCollections.observableArrayList();
+            chart.setTitle(type.toString() + " by " + attr.toString() + " (Series 1)");
+
+            pieData2 = FXCollections.observableArrayList();
+            secondPie.setTitle(type.toString() + " by " + attr.toString() + " (Series 2)");
+
+            List<String> sortedKeys = AttributeType.sortAttributeValues(attr, new ArrayList<>(data1.keySet()));
+
+            sortedKeys.forEach((name) -> {
+                pieData.add(new PieChart.Data(name, data1.get(name).doubleValue()));
+                pieData2.add(new PieChart.Data(name, data2.get(name).doubleValue()));
+            });
+
+            chart.setData(pieData);
+            secondPie.setData(pieData2);
+
+            if (chartPanel.getScene() == null) {
+
+                Scene scene = new Scene(chart);
+                scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
+                chartPanel.setScene(scene);
+            }
+            if (secondChartPanel.getScene() == null) {
+
+                Scene scene = new Scene(secondPie);
+                scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
+                secondChartPanel.setScene(scene);
+            }
+        });
+
+        this.removeAll();
+        this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        this.add(chartPanel);
+        this.add(secondChartPanel);
+    }
+
+
 
     public PieChart getChart(){
         return chart;

@@ -1,11 +1,13 @@
 package Views.MainFramePanels;
 
+import Model.DBEnums.DateEnum;
 import Views.CustomComponents.CatButton;
 import Views.CustomComponents.CatComboBox;
 import Views.CustomComponents.CatLabel;
 import Views.CustomComponents.CatPanel;
 import Views.DashboardFilterDialog;
 import Views.DashboardMainFrame;
+import Views.DashboardMultiFilterDialog;
 import Views.ViewPresets.AttributeType;
 import Views.ViewPresets.ChartType;
 import Views.ViewPresets.ColorSettings;
@@ -29,7 +31,6 @@ public class MainFrameChartOptionsPanel extends CatPanel {
 
     public MainFrameChartOptionsPanel(DashboardMainFrame parent) {
         this.parent = parent;
-        this.possibleVals = possibleVals;
         this.init();
     }
 
@@ -44,11 +45,17 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         filterButton.setFont(FontSettings.GLOB_FONT.getFont().deriveFont(20F));
         filterButton.setBorder(BorderFactory.createLineBorder(ColorSettings.PANEL_BORDER_COLOR));
         filterButton.addActionListener((e) -> {
-            int returnVal = filterDialog.showFilterDialog();
-            System.out.println("closed");
-            System.out.println(returnVal);
-            if (returnVal == DashboardFilterDialog.APPROVE_OPTION) {
-                System.out.println(filterDialog.getFilters());
+            if (filterDialog instanceof DashboardMultiFilterDialog) {
+                int returnVal = filterDialog.showFilterDialog();
+                if (returnVal == DashboardFilterDialog.APPROVE_OPTION) {
+                    parent.requestMultiFilterRefresh(filterDialog.getStartDate(), filterDialog.getEndDate(),
+                            filterDialog.getFilters(), ((DashboardMultiFilterDialog) filterDialog).getSecondFilters());
+                }
+            } else {
+                int returnVal = filterDialog.showFilterDialog();
+                if (returnVal == DashboardFilterDialog.APPROVE_OPTION) {
+                    parent.requestFilterRefresh(filterDialog.getStartDate(), filterDialog.getEndDate(), filterDialog.getFilters());
+                }
             }
         });
         filterButtonPanel.add(filterButton, BorderLayout.CENTER);
@@ -67,8 +74,15 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         timeChartTypeLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
         CatComboBox<ChartType> timeChartPicker = new CatComboBox<>();
         timeChartPicker.addItem(ChartType.LINE);
+        CatLabel timeChartGranularityLabel = new CatLabel("Granularity: ");
+        timeChartGranularityLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+        CatComboBox<DateEnum> timeChartGranularityPicker = new CatComboBox<>();
+        for (DateEnum dateEnum: DateEnum.values()) {
+            timeChartGranularityPicker.addItem(dateEnum);
+        }
         CatButton timeChartGoButton = new CatButton("Go!");
-        timeChartGoButton.addActionListener((e) -> this.requestNewTimeChart((ChartType) timeChartPicker.getSelectedItem()));
+        timeChartGoButton.addActionListener((e) -> this.requestNewTimeChart((ChartType) timeChartPicker.getSelectedItem(),
+                (DateEnum) timeChartGranularityPicker.getSelectedItem()));
 
         timeChartOptionsPanel.add(Box.createRigidArea(new Dimension(20, 0)));
         timeChartOptionsPanel.add(timeChartLabel);
@@ -76,6 +90,9 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         timeChartOptionsPanel.add(timeChartTypeLabel);
         timeChartOptionsPanel.add(timeChartPicker);
         timeChartOptionsPanel.add(Box.createHorizontalGlue());
+        timeChartOptionsPanel.add(timeChartGranularityLabel);
+        timeChartOptionsPanel.add(timeChartGranularityPicker);
+        timeChartOptionsPanel.add(Box.createGlue());
         timeChartOptionsPanel.add(timeChartGoButton);
         timeChartOptionsPanel.add(Box.createRigidArea(new Dimension(20, 0)));
 
@@ -138,8 +155,8 @@ public class MainFrameChartOptionsPanel extends CatPanel {
         this.add(filterButtonPanel, filterCon);
     }
 
-    private void requestNewTimeChart(ChartType chartType) {
-        parent.requestTimeChartTypeChange(chartType);
+    private void requestNewTimeChart(ChartType chartType, DateEnum granularity) {
+        parent.requestTimeChartTypeChange(chartType, granularity);
     }
 
     private void requestNewAttributeChart(ChartType chartType, AttributeType attr) {
@@ -150,5 +167,9 @@ public class MainFrameChartOptionsPanel extends CatPanel {
     public void setUpFilterOptions(Map<AttributeType, List<String>> possibleVals) {
         this.possibleVals = possibleVals;
         this.filterDialog = new DashboardFilterDialog(parent, possibleVals);
+    }
+
+    public void switchToMultiFilterDialog() {
+        this.filterDialog = new DashboardMultiFilterDialog(parent, possibleVals);
     }
 }

@@ -1,10 +1,13 @@
 package Controllers.Queries;
 
+import Controllers.ProjectSettings;
 import Model.DBEnums.DateEnum;
+import Model.DatabaseManager;
 import Views.MetricType;
 import Views.ViewPresets.AttributeType;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,18 +16,15 @@ import java.util.Map;
 public class TimeQueryBuilder extends QueryBuilder {
 
     private DateEnum granularity;
-    private Instant startDate;
-    private Instant endDate;
 
     public TimeQueryBuilder(MetricType metric) {
         super(metric);
         //Set the default values of optional parameters
         this.granularity = DateEnum.DAYS;
-        this.startDate = Instant.MIN;
-        this.endDate = Instant.MAX;
     }
 
     public TimeDataQuery build() {
+        System.out.println("builder: " + this.getFilters());
         return new TimeDataQuery(this);
     }
 
@@ -34,12 +34,12 @@ public class TimeQueryBuilder extends QueryBuilder {
     }
 
     public TimeQueryBuilder startDate(Instant startDate) {
-        this.startDate = startDate;
+        this.setStartDate(startDate);
         return this;
     }
 
     public TimeQueryBuilder endDate(Instant endDate) {
-        this.endDate = endDate;
+        this.setEndDate(endDate);
         return this;
     }
 
@@ -47,11 +47,9 @@ public class TimeQueryBuilder extends QueryBuilder {
         return granularity;
     }
 
-    public Instant getStartDate() {
-        return startDate;
+    public TimeQueryBuilder filters(Map<AttributeType, List<String>> filters) {
+        this.setFilters(filters);
+        return this;
     }
 
-    public Instant getEndDate() {
-        return endDate;
-    }
 }

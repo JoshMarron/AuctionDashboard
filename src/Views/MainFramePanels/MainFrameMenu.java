@@ -37,10 +37,23 @@ public class MainFrameMenu extends CatMenuBar {
         settingsItem.addActionListener((e) -> {
             int settingsVal = settingsDialog.showDialog();
             if (settingsVal == DashboardSettingsDialog.APPROVE_OPTION) {
-                System.out.println(ProjectSettings.getBounceMinutes() + " -- " + ProjectSettings.getBouncePages());
+                frame.refresh();
             }
         });
 
+        JMenuItem addSecondCampaignItem = new JMenuItem("Add second campaign...");
+        addSecondCampaignItem.addActionListener((e) -> {
+            frame.addSecondCampaign();
+        });
+
+        JMenuItem multiFilterModeItem = new JMenuItem("Start multi filter mode");
+        multiFilterModeItem.addActionListener((e) -> {
+            JOptionPane.showMessageDialog(frame, "Multi filter mode started, choose the filters with the Add Filter button", "Multi Filter Mode", JOptionPane.INFORMATION_MESSAGE);
+            frame.startMultiFilter();
+        });
+
+        fileMenu.add(addSecondCampaignItem);
+        fileMenu.add(multiFilterModeItem);
         JMenuItem exportItem = new JMenuItem("Export Chart");
         exportItem.addActionListener((e)-> {
             if(frame.getRequestedChart() == ChartType.LINE){

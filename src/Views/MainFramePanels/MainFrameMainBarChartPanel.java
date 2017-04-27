@@ -17,9 +17,6 @@ import javafx.scene.image.WritableImage;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -72,5 +69,35 @@ public class MainFrameMainBarChartPanel extends MainFrameMainAttributeChartPanel
 
     public BarChart getChart(){
         return barChart;
+    }
+
+    @Override
+    public void displayDoubleChart(MetricType type, AttributeType attr, Map<String, Number> data1, Map<String, Number> data2) {
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+
+        xAxis.setLabel(attr.toString());
+        yAxis.setLabel(type.toString());
+
+        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+        barChart.setTitle(type.toString() + " by " + attr.toString());
+
+        XYChart.Series series1 = new XYChart.Series();
+        series1.setName("Campaign 1");
+        XYChart.Series series2 = new XYChart.Series();
+        series2.setName("Campaign 2");
+
+        List<String> sortedKeys = AttributeType.sortAttributeValues(attr, new ArrayList<>(data1.keySet()));
+        sortedKeys.forEach((key) -> {
+            series1.getData().add(new XYChart.Data(key, data1.get(key).doubleValue()));
+            series2.getData().add(new XYChart.Data(key, data2.get(key).doubleValue()));
+        });
+
+        barChart.getData().addAll(series1, series2);
+        Scene scene = new Scene(barChart);
+        scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
+
+        chartPanel.setScene(scene);
+
     }
 }
