@@ -1,8 +1,12 @@
 package Tests;
 
 
+import Controllers.Queries.TotalQuery;
+import Controllers.Queries.TotalQueryBuilder;
+import Controllers.Results.TotalQueryResult;
 import Model.DBEnums.LogType;
 import Model.DatabaseManager;
+import Views.MetricType;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -71,14 +75,16 @@ public class TestMetricGet {
 
     @Test
     public void testGetImpressions() {
-        testVal = model.getTotalImpressions();
+        TotalQuery query = new TotalQueryBuilder(MetricType.TOTAL_IMPRESSIONS).build();
+        testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(4, testVal.intValue());
     }
 
     @Test
     public void testGetClicks() {
-        testVal = model.getTotalClicks();
+        TotalQuery query = new TotalQueryBuilder(MetricType.TOTAL_CLICKS).build();
+        testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(2, testVal.intValue());
     }
@@ -90,63 +96,72 @@ public class TestMetricGet {
         moreData.add(clickDummy3);
         model.insertData(LogType.CLICK, moreData);
 
-        testVal = model.getTotalUniques();
+        TotalQuery query = new TotalQueryBuilder(MetricType.TOTAL_UNIQUES).build();
+        testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(2, testVal.intValue());
     }
 
     @Test
     public void testGetConversions() {
-        testVal = model.getTotalConversions();
+        TotalQuery query = new TotalQueryBuilder(MetricType.TOTAL_CONVERSIONS).build();
+        testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(2, testVal.intValue());
     }
 
     @Test
     public void testGetBounces() {
-        testVal = model.getTotalBounces();
+        TotalQuery query = new TotalQueryBuilder(MetricType.TOTAL_BOUNCES).build();
+        testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(2, testVal.intValue());
     }
 
     @Test
     public void testGetTotalCost() {
-        testVal = model.getTotalCampaignCost();
+        TotalQuery query = new TotalQueryBuilder(MetricType.TOTAL_COST).build();
+        testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(5600.0, testVal.doubleValue(), 0.00001);
     }
 
     @Test
     public void testGetCPA() {
-        testVal = model.getCPA();
+        TotalQuery query = new TotalQueryBuilder(MetricType.CPA).build();
+        testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(2800.0, testVal.doubleValue(), 0.00001);
     }
 
     @Test
     public void testGetCPC() {
-        testVal = model.getCPC();
+        TotalQuery query = new TotalQueryBuilder(MetricType.CPC).build();
+        testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(2800.0, testVal.doubleValue(), 0.00001);
     }
 
     @Test
     public void testGetCPM() {
-        testVal = model.getCPM();
+        TotalQuery query = new TotalQueryBuilder(MetricType.CPM).build();
+        testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(1400000.0, testVal.doubleValue(), 0.00001);
     }
 
     @Test
     public void testGetCTR() {
-        testVal = model.getCTR();
+        TotalQuery query = new TotalQueryBuilder(MetricType.CTR).build();
+        testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(0.5, testVal.doubleValue(), 0.00001);
     }
 
     @Test
     public void testGetBounceRate() {
-        testVal = model.getBounceRate();
+        TotalQuery query = new TotalQueryBuilder(MetricType.BOUNCE_RATE).build();
+        testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(1.0, testVal.doubleValue(), 0.00001);
     }
