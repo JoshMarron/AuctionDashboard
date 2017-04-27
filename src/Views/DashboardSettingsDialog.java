@@ -30,7 +30,7 @@ public class DashboardSettingsDialog extends JDialog {
     }
 
     private void init() {
-        this.setSize(800, 500);
+        this.setSize(1200, 800);
         this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
         this.setResizable(false);
 
@@ -96,6 +96,5 @@ public class DashboardSettingsDialog extends JDialog {
         colors.add(colourPanel.getChosenTextAreaBackgroundColor());
         colors.add(colourPanel.getChosenTextAreaTextColor());
         ColorController.applyColorChanges(colors);
-        repaint();
     }
 }

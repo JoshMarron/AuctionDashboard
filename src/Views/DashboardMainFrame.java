@@ -140,7 +140,9 @@ public class DashboardMainFrame extends CatFrame {
 
     public void requestMultiFilterRefresh(Instant startDate, Instant endDate, Map<AttributeType, List<String>> filters1, Map<AttributeType, List<String>> filters2) {
         this.startDate = startDate;
+        System.out.println(startDate);
         this.endDate = endDate;
+        System.out.println(endDate);
         this.filters = filters1;
         this.filters2 = filters2;
         requestNewChart();
@@ -163,7 +165,11 @@ public class DashboardMainFrame extends CatFrame {
                         .startDate(startDate)
                         .endDate(endDate)
                         .build();
-
+                if (filters.containsKey(currentAttribute)) {
+                    JOptionPane.showMessageDialog(this, "Cannot display an attribute chart for an attribute (" + currentAttribute.toString() + ") which is being filtered on.", "Filtering Error", JOptionPane.ERROR_MESSAGE);
+                    finishedLoading();
+                    return;
+                }
                 controller.requestAttributeChart(query);
             }
         } else {
@@ -193,7 +199,11 @@ public class DashboardMainFrame extends CatFrame {
                         .startDate(startDate)
                         .endDate(endDate)
                         .build();
-
+                if (filters.containsKey(currentAttribute) || filters2.containsKey(currentAttribute)) {
+                    JOptionPane.showMessageDialog(this, "Cannot display an attribute chart for an attribute (" + currentAttribute.toString() + ") which is being filtered on.", "Filtering Error", JOptionPane.ERROR_MESSAGE);
+                    finishedLoading();
+                    return;
+                }
                 ((DashboardMultiFilterController) controller).requestMultiAttributeChart(query1, query2);
             }
         }
@@ -290,6 +300,10 @@ public class DashboardMainFrame extends CatFrame {
         this.refresh();
     }
 
+    public void restart() {
+        controller.restart();
+    }
+
     public void switchToMultiFilterDialog() {
         this.optionsPanel.switchToMultiFilterDialog();
     }
@@ -320,5 +334,9 @@ public class DashboardMainFrame extends CatFrame {
 
     public void saveExport(WritableImage image, File file){
         controller.saveChartExport(image, file);
+    }
+
+    public DashboardMainFrameController getController() {
+        return controller;
     }
 }

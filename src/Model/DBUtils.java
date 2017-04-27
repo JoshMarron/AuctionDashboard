@@ -3,8 +3,11 @@ package Model;
 import Model.DBEnums.DateEnum;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +27,7 @@ public class DBUtils {
                 map.forEach((date, val) -> resultMap.put(date.truncatedTo(ChronoUnit.HOURS), val));
                 break;
             case WEEKS:
-                map.forEach((date, val) -> resultMap.put(date.truncatedTo(ChronoUnit.WEEKS), val));
+                map.forEach((date, val) -> resultMap.put(date.truncatedTo(ChronoUnit.DAYS), val));
                 break;
         }
 
