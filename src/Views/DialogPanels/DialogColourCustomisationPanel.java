@@ -56,18 +56,9 @@ public class DialogColourCustomisationPanel extends CatPanel{
     private void initColorOptionsPanel(){
         colorOptions = new CatPanel();
         colorOptions.setLayout(new BoxLayout(colorOptions, BoxLayout.X_AXIS));
-        CatLabel colourThemeLabel = new CatLabel("Use selected theme:");
-        CatLabel colourCustomLabel = new CatLabel ("Use custom colours:");
-        useCustomColours = new CatCheckBox("");
-        themeSelector = new CatComboBox();
-        themeSelector.setMaximumSize(themeSelector.getPreferredSize());
         colorOptions.add(Box.createHorizontalGlue());
-        colorOptions.add(colourThemeLabel);
-        colorOptions.add(themeSelector);
 
         colorOptions.add(Box.createHorizontalGlue());
-        colorOptions.add(colourCustomLabel);
-        colorOptions.add(useCustomColours);
         colorOptions.add(Box.createHorizontalGlue());
     }
 
