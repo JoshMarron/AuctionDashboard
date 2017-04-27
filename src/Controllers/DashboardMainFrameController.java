@@ -227,6 +227,7 @@ public class DashboardMainFrameController {
         }
 
         DashboardDoubleMainFrameController newController = new DashboardDoubleMainFrameController(frame, model, secondModel);
+        newController.setAvailableLogs(availableLogs);
         frame.setController(newController);
 
     }
