@@ -1701,7 +1701,7 @@ public class DatabaseManager {
 
 				return new TimeQueryResult(q.getMetric(), clickCostMap);
 		}
-
+		System.out.println(sql);
 		return new TimeQueryResult(q.getMetric(), DBUtils.truncateInstantMap(createMap(sql), q.getGranularity()));
 	}
 
@@ -1723,14 +1723,6 @@ public class DatabaseManager {
 			builder.append(")");
 		}
 		return builder.toString();
-	}
-
-	/* Only TimeDataQuery has time constraints */
-	private String setBetween(TimeDataQuery q, String dateString) {
-		String gran = q.getGranularity().getSql();
-		return "strftime(" + gran + "," + dateString + ") BETWEEN " +
-				"strftime(" + gran + ",'" + q.getStartDate().toString().replace("Z", "") + "') AND " +
-				"strftime(" + gran + ",'" + q.getEndDate().toString().replace("Z", "") + "') ";
 	}
 
 	private String setBetween(Query q, String dateString) {
