@@ -8,7 +8,6 @@ import Views.DialogPanels.DialogBounceDefinitionPanel;
 import Views.DialogPanels.DialogColourCustomisationPanel;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -86,7 +85,7 @@ public class DashboardSettingsDialog extends JDialog {
 
     private void setBounceVals() {
         ProjectSettings.setBouncePages(bouncePanel.getBouncePages());
-        ProjectSettings.setBounceMinutes(bouncePanel.getBounceTime());
+        ProjectSettings.setBounceSeconds(bouncePanel.getBounceTime());
     }
 
     private void applyColorChanges(){
