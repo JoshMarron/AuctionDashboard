@@ -1106,17 +1106,6 @@ public class DatabaseManager {
 						" GROUP BY " + att + ";";
 				break;
 			case TOTAL_BOUNCES:
-//				sql = "SELECT " + att + ", count(server_log_id) " +
-//						"FROM server_log " +
-//						"JOIN user ON server_log.user_id = user.user_id " +
-//						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
-//						"WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
-//						" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) " +
-//						"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) ) <= " + ProjectSettings.getBounceSeconds() +
-//						" AND " +
-//						"" + this.setBetween(q, "entry_date") +
-//						this.setFilters(q) +
-//						" GROUP BY " + att + ";";
 				sql = "SELECT " + att + ", count(server_log.server_log_id) " +
 						"FROM server_log " +
 						"JOIN user ON server_log.user_id = user.user_id " +
@@ -1156,27 +1145,31 @@ public class DatabaseManager {
 				AttributeDataQuery tqrConversionCPA = q.deriveQuery(MetricType.TOTAL_CONVERSIONS, q.getAttribute());
 				AttributeQueryResult conversionCPA = resolveAttributeDataQuery(tqrConversionCPA);
 
-				Map<String, Number> resultDataCPA = new HashMap<>();
+				costCPA.getData().forEach((attr, value) -> {
+					if (conversionCPA.getData().containsKey(attr)) {
+						conversionCPA.getData().put(attr, (value.doubleValue() / conversionCPA.getData().get(attr).doubleValue()));
+					} else {
+						conversionCPA.getData().put(attr, 0.0);
+					}
+				});
 
-				costCPA.getData().forEach(resultDataCPA::put);
-
-				conversionCPA.getData().forEach((string, val) -> resultDataCPA.put(string, resultDataCPA.get(string).doubleValue() / val.doubleValue()));
-
-				return new AttributeQueryResult(q.getMetric(), resultDataCPA);
+				return new AttributeQueryResult(q.getMetric(), conversionCPA.getData());
 			case CPC: // total cost / total clicks
 				AttributeDataQuery tqrCostCPC = q.deriveQuery(MetricType.TOTAL_COST, q.getAttribute());
 				AttributeQueryResult costCPC = resolveAttributeDataQuery(tqrCostCPC);
 
-				AttributeDataQuery tqrClickCPC = q.deriveQuery(MetricType.TOTAL_CONVERSIONS, q.getAttribute());
+				AttributeDataQuery tqrClickCPC = q.deriveQuery(MetricType.TOTAL_CLICKS, q.getAttribute());
 				AttributeQueryResult clickCPC = resolveAttributeDataQuery(tqrClickCPC);
 
-				Map<String, Number> resultDataCPC = new HashMap<>();
+				costCPC.getData().forEach((attr, value) -> {
+					if (clickCPC.getData().containsKey(attr)) {
+						clickCPC.getData().put(attr, (value.doubleValue() / clickCPC.getData().get(attr).doubleValue()));
+					} else {
+						clickCPC.getData().put(attr, 0.0);
+					}
+				});
 
-				costCPC.getData().forEach(resultDataCPC::put);
-
-				clickCPC.getData().forEach((string, val) -> resultDataCPC.put(string, resultDataCPC.get(string).doubleValue() / val.doubleValue()));
-
-				return new AttributeQueryResult(q.getMetric(), resultDataCPC);
+				return new AttributeQueryResult(q.getMetric(), clickCPC.getData());
 			case CPM: // 1000 * ( total cost / total impressions )
 				AttributeDataQuery tqrCostCPM = q.deriveQuery(MetricType.TOTAL_COST, q.getAttribute());
 				AttributeQueryResult costCPM = resolveAttributeDataQuery(tqrCostCPM);
@@ -1184,27 +1177,31 @@ public class DatabaseManager {
 				AttributeDataQuery tqrImpressionsCPM = q.deriveQuery(MetricType.TOTAL_IMPRESSIONS, q.getAttribute());
 				AttributeQueryResult impressionsCPM = resolveAttributeDataQuery(tqrImpressionsCPM);
 
-				Map<String, Number> resultDataCPM = new HashMap<>();
+				costCPM.getData().forEach((attr, value) -> {
+					if (impressionsCPM.getData().containsKey(attr)) {
+						impressionsCPM.getData().put(attr, ((value.doubleValue() / impressionsCPM.getData().get(attr).doubleValue()) * 1000));
+					} else {
+						impressionsCPM.getData().put(attr, 0.0);
+					}
+				});
 
-				costCPM.getData().forEach(resultDataCPM::put);
-
-				impressionsCPM.getData().forEach((string, val) -> resultDataCPM.put(string, 1000 * (resultDataCPM.get(string).doubleValue() / val.doubleValue())));
-
-				return new AttributeQueryResult(q.getMetric(), resultDataCPM);
+				return new AttributeQueryResult(q.getMetric(), impressionsCPM.getData());
 			case BOUNCE_RATE: // total bounces / total clicks
 				AttributeDataQuery tqrBounceBR = q.deriveQuery(MetricType.TOTAL_BOUNCES, q.getAttribute());
 				AttributeQueryResult bounceBR = resolveAttributeDataQuery(tqrBounceBR);
 
-				AttributeDataQuery tqrClickBR = q.deriveQuery(MetricType.TOTAL_CONVERSIONS, q.getAttribute());
+				AttributeDataQuery tqrClickBR = q.deriveQuery(MetricType.TOTAL_CLICKS, q.getAttribute());
 				AttributeQueryResult clickBR = resolveAttributeDataQuery(tqrClickBR);
 
-				Map<String, Number> resultDataBR = new HashMap<>();
+				clickBR.getData().forEach((attr, value) -> {
+					if (bounceBR.getData().containsKey(attr)) {
+						bounceBR.getData().put(attr, bounceBR.getData().get(attr).doubleValue() / value.doubleValue());
+					} else {
+						bounceBR.getData().put(attr, 0.0);
+					}
+				});
 
-				bounceBR.getData().forEach(resultDataBR::put);
-
-				clickBR.getData().forEach((string, val) -> resultDataBR.put(string, resultDataBR.get(string).doubleValue() / val.doubleValue()));
-
-				return new AttributeQueryResult(q.getMetric(), resultDataBR);
+				return new AttributeQueryResult(q.getMetric(), bounceBR.getData());
 			case CTR: // total clicks / total impressions
 				AttributeDataQuery tqrClickCTR = q.deriveQuery(MetricType.TOTAL_CLICKS, q.getAttribute());
 				AttributeQueryResult clickCTR = resolveAttributeDataQuery(tqrClickCTR);
@@ -1212,13 +1209,15 @@ public class DatabaseManager {
 				AttributeDataQuery tqrImpressionsCTR = q.deriveQuery(MetricType.TOTAL_IMPRESSIONS, q.getAttribute());
 				AttributeQueryResult impressionsCTR = resolveAttributeDataQuery(tqrImpressionsCTR);
 
-				Map<String, Number> resultDataCTR = new HashMap<>();
+				impressionsCTR.getData().forEach((attr, value) -> {
+					if (clickCTR.getData().containsKey(attr)) {
+						clickCTR.getData().put(attr, clickCTR.getData().get(attr).doubleValue() / value.doubleValue());
+					} else {
+						clickCTR.getData().put(attr, 0.0);
+					}
+				});
 
-				clickCTR.getData().forEach(resultDataCTR::put);
-
-				impressionsCTR.getData().forEach((string, val) -> resultDataCTR.put(string, resultDataCTR.get(string).doubleValue() / val.doubleValue()));
-
-				return new AttributeQueryResult(q.getMetric(), resultDataCTR);
+				return new AttributeQueryResult(q.getMetric(), clickCTR.getData());
 			case TOTAL_COST:
 				String impressionSql = "SELECT " + att + ", SUM(impression_cost) " +
 						"FROM site_impression " +
@@ -1226,6 +1225,7 @@ public class DatabaseManager {
 						"WHERE " + this.setBetween(q, "impression_date") +
 						this.setFilters(q) +
 						" GROUP BY " + att + ";";
+				System.out.println(impressionSql);
 				String clickSql = "SELECT " + att + ", SUM(cost) " +
 						"FROM click " +
 						"JOIN user ON click.user_id = user.user_id " +
@@ -1233,16 +1233,19 @@ public class DatabaseManager {
 						"WHERE " + this.setBetween(q, "click_date") +
 						this.setFilters(q) +
 						" GROUP BY " + att + ";";
+				System.out.println(clickSql);
 				Map<String, Number> impressionCostMap = createAttributeMap(impressionSql);
 				Map<String, Number> clickCostMap = createAttributeMap(clickSql);
 
 				clickCostMap.forEach((string, val) -> {
 					if (impressionCostMap.containsKey(string)) {
-						clickCostMap.put(string, val.doubleValue() + impressionCostMap.get(string).doubleValue());
+						impressionCostMap.put(string, val.doubleValue() + impressionCostMap.get(string).doubleValue());
+					} else {
+						impressionCostMap.put(string, val);
 					}
 				});
 
-				return new AttributeQueryResult(q.getMetric(), clickCostMap);
+				return new AttributeQueryResult(q.getMetric(), impressionCostMap);
 		}
 		System.out.println(sql);
 
@@ -1414,7 +1417,7 @@ public class DatabaseManager {
 					}
 				});
 
-				return new TimeQueryResult(q.getMetric(), clickCostMap);
+				return new TimeQueryResult(q.getMetric(), impressionCostMap);
 		}
 		System.out.println(sql);
 
