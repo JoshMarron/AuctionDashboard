@@ -96,6 +96,5 @@ public class DashboardSettingsDialog extends JDialog {
         colors.add(colourPanel.getChosenTextAreaBackgroundColor());
         colors.add(colourPanel.getChosenTextAreaTextColor());
         ColorController.applyColorChanges(colors);
-        repaint();
     }
 }

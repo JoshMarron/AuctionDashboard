@@ -13,10 +13,10 @@ import javax.swing.*;
  */
 public class ColorController {
     public static void applyColorChanges(java.util.ArrayList<Color> colors){
-        //ColorSettings.BG_COLOR = colors.get(0);
-        //ColorSettings.TEXT_COLOR = colors.get(1);
-        //ColorSettings.BUTTON_COLOR = colors.get(2);
-        //ColorSettings.TEXT_AREA_BG_COLOR = colors.get(3);
-        //ColorSettings.TEXT_AREA_TEXT_COLOR = colors.get(4);
+        ColorSettings.BG_COLOR = colors.get(0);
+        ColorSettings.TEXT_COLOR = colors.get(1);
+        ColorSettings.BUTTON_COLOR = colors.get(2);
+        ColorSettings.TEXT_AREA_BG_COLOR = colors.get(3);
+        ColorSettings.TEXT_AREA_TEXT_COLOR = colors.get(4);
     }
 }

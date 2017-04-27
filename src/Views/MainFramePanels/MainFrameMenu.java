@@ -38,6 +38,7 @@ public class MainFrameMenu extends CatMenuBar {
             int settingsVal = settingsDialog.showDialog();
             if (settingsVal == DashboardSettingsDialog.APPROVE_OPTION) {
                 frame.refresh();
+                frame.restart();
             }
         });
 
