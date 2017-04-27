@@ -74,4 +74,8 @@ public class DashboardDoubleMainFrameController extends DashboardMainFrameContro
             this.getFrame().displayDoubleChart(query.getMetric(), query.getAttribute(), mainResult.getData(), secondResult.getData());
         });
     }
+
+    public GraphCache getSecondCache() {
+        return secondCache;
+    }
 }

@@ -975,22 +975,32 @@ public class DatabaseManager {
 						this.setFilters(q) + ";";
 				break;
 			case TOTAL_UNIQUES:
-				sql = "SELECT count( DISTINCT click_id) " +
+				sql = "SELECT count( DISTINCT click.user)) " +
 						"FROM click " +
 						"JOIN user ON click.user_id = user.user_id " +
 						"WHERE " + this.setBetween(q, "click_date") +
 						this.setFilters(q) + ";";
 				break;
 			case TOTAL_BOUNCES:
-				sql = "SELECT count(server_log_id) " +
+				sql = "SELECT count(server_log.server_log_id) " +
 						"FROM server_log " +
 						"JOIN user ON server_log.user_id = user.user_id " +
-						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
-						"WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
-						" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) " +
-						"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) ) <= " + ProjectSettings.getBounceSeconds() +
-						" AND " +
-						"" + this.setBetween(q, "entry_date") +
+						"JOIN site_impression ON user.user_id = site_impression.user_id " +
+						"JOIN ( " +
+						"SELECT " +
+						"server_log_id, " +
+						"CASE " +
+						"WHEN exit_date = \"n/a\" " +
+						"THEN pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+						"ELSE " +
+						"pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+						"AND ( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
+						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= 525600 " +
+						"END bounce " +
+						"FROM server_log " +
+						") aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 " +
+						"WHERE " +
+						this.setBetween(q, "entry_date") +
 						this.setFilters(q) + ";";
 				break;
 			case TOTAL_CONVERSIONS:
@@ -1059,6 +1069,7 @@ public class DatabaseManager {
 
 				return new TotalQueryResult(q.getMetric(), impressionCost.doubleValue() + clickCost.doubleValue());
 		}
+		System.out.println(sql);
 
 		return new TotalQueryResult(q.getMetric(), getSingleMetric(sql));
 	}
@@ -1086,7 +1097,7 @@ public class DatabaseManager {
 						" GROUP BY " + att + ";";
 				break;
 			case TOTAL_UNIQUES:
-				sql = "SELECT " + att + ", count( DISTINCT click_id) " +
+				sql = "SELECT " + att + ", count( DISTINCT click.user_id) " +
 						"FROM click " +
 						"JOIN user ON click.user_id = user.user_id " +
 						"JOIN site_impression ON click.user_id = site_impression.user_id " +
@@ -1095,17 +1106,38 @@ public class DatabaseManager {
 						" GROUP BY " + att + ";";
 				break;
 			case TOTAL_BOUNCES:
-				sql = "SELECT " + att + ", count(server_log_id) " +
+//				sql = "SELECT " + att + ", count(server_log_id) " +
+//						"FROM server_log " +
+//						"JOIN user ON server_log.user_id = user.user_id " +
+//						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
+//						"WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
+//						" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) " +
+//						"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00'))) ) <= " + ProjectSettings.getBounceSeconds() +
+//						" AND " +
+//						"" + this.setBetween(q, "entry_date") +
+//						this.setFilters(q) +
+//						" GROUP BY " + att + ";";
+				sql = "SELECT " + att + ", count(server_log.server_log_id) " +
 						"FROM server_log " +
 						"JOIN user ON server_log.user_id = user.user_id " +
-						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
-						"WHERE pages_viewed <= " + ProjectSettings.getBouncePages() +
-						" AND ( ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) / 60) " +
-						"- ((strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) / 60) ) <= " + ProjectSettings.getBounceSeconds() +
-						" AND " +
-						"" + this.setBetween(q, "entry_date") +
+						"JOIN site_impression ON user.user_id = site_impression.user_id " +
+						"JOIN ( " +
+						"SELECT " +
+						"server_log_id, " +
+						"CASE " +
+						"WHEN exit_date = \"n/a\" " +
+						"THEN pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+						"ELSE " +
+						"pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+						"AND ( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
+						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= 525600 " +
+						"END bounce " +
+						"FROM server_log " +
+						") aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 " +
+						"WHERE " +
+						this.setBetween(q, "entry_date") +
 						this.setFilters(q) +
-						" GROUP BY " + att + ";";
+						"GROUP BY " + att + ";";
 				break;
 			case TOTAL_CONVERSIONS:
 				sql = "SELECT " + att + ", count(server_log_id) " +
@@ -1212,6 +1244,7 @@ public class DatabaseManager {
 
 				return new AttributeQueryResult(q.getMetric(), clickCostMap);
 		}
+		System.out.println(sql);
 
 		return new AttributeQueryResult(q.getMetric(), createAttributeMap(sql));
 	}
@@ -1240,7 +1273,7 @@ public class DatabaseManager {
 						" ORDER BY click_date;";
 				break;
 			case TOTAL_UNIQUES:
-				sql = "SELECT click_date, count( DISTINCT click_id) " +
+				sql = "SELECT click_date, count( DISTINCT click.user_id) " +
 						"FROM click " +
 						"JOIN user ON click.user_id = user.user_id " +
 						"JOIN site_impression ON click.user_id = site_impression.user_id " +
@@ -1250,14 +1283,25 @@ public class DatabaseManager {
 						" ORDER BY click_date;";
 				break;
 			case TOTAL_BOUNCES:  //TODO set custom bounce rate definition
-				sql = "SELECT entry_date, count(server_log_id) " +
+				sql = "SELECT entry_date, count(server_log.server_log_id) " +
 						"FROM server_log " +
 						"JOIN user ON server_log.user_id = user.user_id " +
-						"JOIN site_impression ON server_log.user_id = site_impression.user_id " +
-						"WHERE pages_viewed = 1 AND " +
-						"( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
-						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= " + ProjectSettings.getBounceSeconds() +
-						" AND " + this.setBetween(q, "entry_date") +
+						"JOIN site_impression ON user.user_id = site_impression.user_id " +
+						"JOIN ( " +
+						"SELECT " +
+						"server_log_id, " +
+						"CASE " +
+						"WHEN exit_date = \"n/a\" " +
+						"THEN pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+						"ELSE " +
+						"pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
+						"AND ( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
+						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= 525600 " +
+						"END bounce " +
+						"FROM server_log " +
+						") aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 " +
+						"WHERE " +
+						this.setBetween(q, "entry_date") +
 						this.setFilters(q) +
 						this.timeGroup(q, "entry_date") +
 						" ORDER BY entry_date;";
@@ -1371,6 +1415,7 @@ public class DatabaseManager {
 				return new TimeQueryResult(q.getMetric(), clickCostMap);
 		}
 		System.out.println(sql);
+
 		return new TimeQueryResult(q.getMetric(), DBUtils.truncateInstantMap(createMap(sql), q.getGranularity()));
 	}
 

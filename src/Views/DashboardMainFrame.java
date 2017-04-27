@@ -327,4 +327,8 @@ public class DashboardMainFrame extends CatFrame {
     public void saveExport(WritableImage image, File file){
         controller.saveChartExport(image, file);
     }
+
+    public DashboardMainFrameController getController() {
+        return controller;
+    }
 }
