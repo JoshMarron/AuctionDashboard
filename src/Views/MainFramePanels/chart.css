@@ -9,7 +9,7 @@
 }
 
 .chart-bar {
-    -fx-bar-fill: #92abb9;
+    #-fx-bar-fill: #92abb9;
 }
 
 .axis-label {

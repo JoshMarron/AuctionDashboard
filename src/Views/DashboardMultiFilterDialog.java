@@ -27,7 +27,7 @@ public class DashboardMultiFilterDialog extends DashboardFilterDialog {
 
     private void init(Map<AttributeType, List<String>> possibleVals) {
         this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-        this.setSize(1200, 600);
+        this.setSize(1200, 800);
         this.setLocationRelativeTo(null);
         this.setResizable(true);
 

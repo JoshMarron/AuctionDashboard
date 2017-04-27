@@ -25,13 +25,11 @@ import java.util.concurrent.*;
  * It does this with a pool of threads so that the GUI does not lock up
  */
 public class DashboardMainFrameController {
-    //TODO add reference to backend CSV parser + data access
     private DashboardMainFrame frame;
     private DatabaseManager model;
     private List<LogType> availableLogs;
     private GraphCache cache;
 
-    //TODO allow this to be set based on the device?
     private ExecutorService helpers = Executors.newFixedThreadPool(4);
 
     public DashboardMainFrameController(DashboardMainFrame frame, DatabaseManager model) {
