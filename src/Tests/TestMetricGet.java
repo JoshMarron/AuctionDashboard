@@ -1,6 +1,7 @@
 package Tests;
 
 
+import Controllers.ProjectSettings;
 import Controllers.Queries.TotalQuery;
 import Controllers.Queries.TotalQueryBuilder;
 import Controllers.Results.TotalQueryResult;
@@ -116,6 +117,22 @@ public class TestMetricGet {
         testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
 
         Assert.assertEquals(2, testVal.intValue());
+
+        // Change the bounce definition
+        ProjectSettings.setBouncePages(2);
+        testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
+        Assert.assertEquals(3, testVal.intValue());
+
+        String[] dummyServer1 = {"2015-01-01 12:00:00", "1", "2015-01-01 12:00:30", "5", "No"};
+        List<String[]> moreData = new ArrayList<>();
+        moreData.add(dummyServer1);
+        model.insertData(LogType.SERVER_LOG, moreData);
+
+        // Try finding bounce based on time too
+        ProjectSettings.setBounceSeconds(35);
+        testVal = ((TotalQueryResult) model.resolveQuery(query)).getData();
+        Assert.assertEquals(4, testVal.intValue());
+
     }
 
     @Test

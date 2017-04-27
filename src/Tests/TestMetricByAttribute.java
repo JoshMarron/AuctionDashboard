@@ -32,8 +32,6 @@ public class TestMetricByAttribute {
         model = new DatabaseManager();
         model.createDB(testDB.getAbsolutePath());
 
-        model.initTables();
-
         String[] dummyImpression1 = {"2015-01-01 12:00:00", "1", "Male", "25-34", "High", "Blog", "200"};
         String[] dummyImpression2 = {"2015-01-01 14:00:00", "2", "Female", "<25", "High", "Fashion", "400"};
         String[] dummyImpression3 = {"2015-01-02 12:00:00", "3", "Male", "35-44", "Low", "Social Media", "600"};
