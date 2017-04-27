@@ -403,8 +403,6 @@ public class DatabaseManager {
 		System.out.println(((TotalQueryResult) this.resolveQuery(query)).getData());
 		String sql = "SELECT count(server_log.server_log_id) " +
 				"FROM server_log " +
-				"JOIN user ON server_log.user_id = user.user_id " +
-				"JOIN site_impression ON user.user_id = site_impression.user_id " +
 				"JOIN ( " +
 				"SELECT " +
 				"server_log_id, " +
