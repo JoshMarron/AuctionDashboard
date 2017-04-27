@@ -994,9 +994,9 @@ public class DatabaseManager {
 						"THEN pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
 						"ELSE " +
 						"pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
-						"AND ( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
-						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <=  " + ProjectSettings.getBounceSeconds() +
-						"END bounce " +
+						"OR ( (strftime('%s', exit_date)) " +
+						"- (strftime('%s', entry_date)) ) <=  " + ProjectSettings.getBounceSeconds() +
+						" END bounce " +
 						"FROM server_log " +
 						") aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 " +
 						"WHERE " +
@@ -1118,9 +1118,9 @@ public class DatabaseManager {
 						"THEN pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
 						"ELSE " +
 						"pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
-						"AND ( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
-						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <=  " + ProjectSettings.getBounceSeconds() +
-						"END bounce " +
+						"OR ( (strftime('%s', exit_date)) " +
+						"- (strftime('%s', entry_date)) ) <=  " + ProjectSettings.getBounceSeconds() +
+						" END bounce " +
 						"FROM server_log " +
 						") aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 " +
 						"WHERE " +
@@ -1298,9 +1298,9 @@ public class DatabaseManager {
 						"THEN pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
 						"ELSE " +
 						"pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
-						"AND ( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
-						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <=  " + ProjectSettings.getBounceSeconds() +
-						"END bounce " +
+						"OR ( (strftime('%s', exit_date))) " +
+						"- (strftime('%s', entry_date)) <=  " + ProjectSettings.getBounceSeconds() +
+						" END bounce " +
 						"FROM server_log " +
 						") aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 " +
 						"WHERE " +

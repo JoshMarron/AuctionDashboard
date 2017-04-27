@@ -1,6 +1,7 @@
 package Tests;
 
 
+import Controllers.ProjectSettings;
 import Controllers.Queries.TimeDataQuery;
 import Controllers.Queries.TimeQueryBuilder;
 import Controllers.Results.TimeQueryResult;
@@ -80,6 +81,7 @@ public class TestMetricByDate {
     @After
     public void tearDown() {
         testDB.delete();
+        ProjectSettings.setDefaultBounceRate();
         System.out.println(testDB.exists());
     }
 
