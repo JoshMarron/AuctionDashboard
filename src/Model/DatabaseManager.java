@@ -1406,9 +1406,11 @@ public class DatabaseManager {
 				Map<Instant, Number> impressionCostMap = DBUtils.truncateInstantMap(createMap(impressionSql), q.getGranularity());
 				Map<Instant, Number> clickCostMap = DBUtils.truncateInstantMap(createMap(clickSql), q.getGranularity());
 
-				clickCostMap.forEach((date, val) -> {
-					if (impressionCostMap.containsKey(date)) {
-						clickCostMap.put(date, val.doubleValue() + impressionCostMap.get(date).doubleValue());
+				impressionCostMap.forEach((date, val) -> {
+					if (clickCostMap.containsKey(date)) {
+						clickCostMap.put(date, val.doubleValue() + clickCostMap.get(date).doubleValue());
+					} else {
+						clickCostMap.put(date, val);
 					}
 				});
 
