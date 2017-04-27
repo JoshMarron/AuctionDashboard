@@ -22,7 +22,6 @@ public class CatComboBox<T> extends JComboBox<T> {
         this.setBackground(ColorSettings.TEXT_AREA_BG_COLOR);
         this.setForeground(ColorSettings.TEXT_AREA_TEXT_COLOR);
         this.setFont(FontSettings.TEXT_AREA_FONT.getFont());
-        this.setMaximumSize(this.getPreferredSize());
 
 
     }

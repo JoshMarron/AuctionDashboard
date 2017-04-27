@@ -9,6 +9,7 @@ import Views.ViewPresets.AttributeType;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
 public class DashboardMultiFilterDialog extends DashboardFilterDialog {
 
     private List<DialogFilterPanel> filterPanels2;
+    private DialogDateFilterPanel dateFilterPanel;
 
     public DashboardMultiFilterDialog(Window parent, Map<AttributeType, List<String>> possibleVals) {
         super(parent, possibleVals);
@@ -35,7 +37,7 @@ public class DashboardMultiFilterDialog extends DashboardFilterDialog {
         this.setContentPane(contentPane);
 
         contentPane.setLayout(new BorderLayout());
-        DialogDateFilterPanel dateFilterPanel = new DialogDateFilterPanel();
+        dateFilterPanel = new DialogDateFilterPanel();
         contentPane.add(dateFilterPanel, BorderLayout.NORTH);
 
         CatPanel mainPanel = new CatPanel();
@@ -89,5 +91,13 @@ public class DashboardMultiFilterDialog extends DashboardFilterDialog {
         }
 
         return filters;
+    }
+
+    public Instant getStartDate() {
+        return this.dateFilterPanel.getStartDate();
+    }
+
+    public Instant getEndDate() {
+        return this.dateFilterPanel.getEndDate();
     }
 }

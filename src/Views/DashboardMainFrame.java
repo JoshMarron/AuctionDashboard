@@ -140,7 +140,9 @@ public class DashboardMainFrame extends CatFrame {
 
     public void requestMultiFilterRefresh(Instant startDate, Instant endDate, Map<AttributeType, List<String>> filters1, Map<AttributeType, List<String>> filters2) {
         this.startDate = startDate;
+        System.out.println(startDate);
         this.endDate = endDate;
+        System.out.println(endDate);
         this.filters = filters1;
         this.filters2 = filters2;
         requestNewChart();
