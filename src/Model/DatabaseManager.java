@@ -995,7 +995,7 @@ public class DatabaseManager {
 						"ELSE " +
 						"pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
 						"AND ( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
-						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= 525600 " +
+						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <=  " + ProjectSettings.getBounceSeconds() +
 						"END bounce " +
 						"FROM server_log " +
 						") aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 " +
@@ -1119,7 +1119,7 @@ public class DatabaseManager {
 						"ELSE " +
 						"pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
 						"AND ( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
-						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= 525600 " +
+						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <=  " + ProjectSettings.getBounceSeconds() +
 						"END bounce " +
 						"FROM server_log " +
 						") aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 " +
@@ -1299,7 +1299,7 @@ public class DatabaseManager {
 						"ELSE " +
 						"pages_viewed <= " + ProjectSettings.getBouncePages() + " " +
 						"AND ( (strftime('%s', exit_date) - strftime('%s','1970-01-01 00:00:00')) " +
-						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <= 525600 " +
+						"- (strftime('%s', entry_date) - strftime('%s','1970-01-01 00:00:00')) ) <=  " + ProjectSettings.getBounceSeconds() +
 						"END bounce " +
 						"FROM server_log " +
 						") aux ON aux.server_log_id = server_log.server_log_id AND bounce = 1 " +
